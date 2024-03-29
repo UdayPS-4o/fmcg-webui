@@ -4,15 +4,29 @@ const fs = require('fs').promises;
 const path = require('path');
 const app = express();
 const PORT = 80;
+const io = require('socket.io');
+
 const spawn = require('child_process').spawn;
 // app.use(express.static('./node_modules/public'));
 app.use(express.static('./public'));
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use((err, req, res, next) => {
+    if (err.code === 'MODULE_NOT_FOUND' && err.message.includes('io')) {
+        // Hide the 'io' error in development
+        if (process.env.NODE_ENV === 'development') { return next(); } 
+
+        // Alternatively, display a basic message to the user if preferred
+        res.status(500).send("Something went wrong. Please try again later."); 
+    } else {
+        next(err); // Pass other errors to the default handler 
+    }
+});
+
 
 app.set('view engine', 'ejs');
 
-const uniqueIdentifiers = ['receiptNo', 'voucherNo'];
+const uniqueIdentifiers = ['receiptNo', 'voucherNo', 'subgroup'];
 
 const getDbfData = (path) => {
     return new Promise((resolve, reject) => {
@@ -42,20 +56,6 @@ const getCmplData = async (req, res) => {
     }
 };
 
-const getSubGroup = async (req, res) => {
-    const cmpl = await getCmplData("99");
-    let cmpldata = cmpl.map((x)=> {
-        return {
-            "M_GROUP"   : x.M_GROUP,
-            "M_NAME"    : x.M_NAME,
-            "PARTY_MAP" : x.PARTY_MAP,
-            "C_CODE"    : x.C_CODE,
-            "C_NAME"    : x.C_NAME,
-        }
-    });
-    cmpldata = cmpl.filter((x)=>{x.C_CODE.endsWith("000")});
-    
-}
 
 
 // Endpoint to get data from CMPL.DBF and return as JSON
@@ -192,9 +192,12 @@ const saveDataToJsonFile = async (filePath, data) => {
 app.post('/:formType', async (req, res) => {
     const { formType } = req.params;
     const formData = req.body;
-    
+    const ogform = JSON.parse(JSON.stringify(formData));
     if (formData.party && typeof formData.party === 'string') {
         formData.party = JSON.parse(formData.party)[0].value;
+    }
+    if (formData.subgroup && typeof formData.subgroup === 'string') {
+        formData.subgroup = JSON.parse(formData.subgroup)[0].value;
     }
     
     const filePath = path.join(__dirname, 'db', `${formType}.json`);
@@ -211,10 +214,12 @@ app.post('/:formType', async (req, res) => {
         // const entryExists = dbData.some(entry => entry.receiptNo === formData.receiptNo);
         // entry key can be voucherNo or receiptNo
 
-        const entryExists = dbData.some(entry => uniqueIdentifiers.some(key => entry[key] === formData[key]));
-
+        // const entryExists = dbData.some(entry => uniqueIdentifiers.some(key => entry[key] === formData[key]));
+        const validKEY = uniqueIdentifiers.find(key => formData[key]);
+        const entryExists = dbData.some(entry => entry[validKEY] === formData[validKEY]);
+        
         if (entryExists) {
-            return res.status(400).send('Error: Entry with this receiptNo already exists.');
+            return res.status(400).send('Error: Entry with this receiptNo already exists. ' + validKEY +" | "+ JSON.stringify(ogform));
         } else {
             dbData.push(formData);
             await fs.writeFile(filePath, JSON.stringify(dbData, null, 2), 'utf8');
@@ -307,7 +312,7 @@ app.get('/edit/:page/:id', async (req, res) => {
         // find the entry with the specified receiptNo or voucherNo or any unique identifier
         let keys = Object.keys(data[0]);
         let validKey = keys.find(key => uniqueIdentifiers.includes(key));
-
+        console.log("validKEY",validKey)
         let receipt = data.find(entry => entry[validKey] === id);
         
         if (!receipt) {
@@ -358,9 +363,7 @@ initServer();
 
 
 // ignore errors
-process.on('uncaughtException', (err) => {
-    console.error('Uncaught Exception:', err);
-});
+process.env.NODE_ENV==='production';
 
 process.on('unhandledRejection', (reason, promise) => {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
@@ -368,6 +371,11 @@ process.on('unhandledRejection', (reason, promise) => {
 
 
 
-
-
-
+process.on('uncaughtException', (err) => {
+    if (err.code === 'MODULE_NOT_FOUND' && err.message.includes('io')) {
+        // Do nothing: Hide this error
+        console.log('Suppressed "Cannot find module \'io\'" error'); // Log the suppression
+    } else {
+        console.error("--------------",err); // Log other errors
+    }
+});

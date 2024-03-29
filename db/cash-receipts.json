@@ -26,5 +26,19 @@
     "party": "AA001",
     "amount": "15",
     "discount": "0"
+  },
+  {
+    "date": "2024-03-30",
+    "receiptNo": "5",
+    "party": "AA001",
+    "amount": "111",
+    "discount": "1"
+  },
+  {
+    "date": "2024-03-30",
+    "receiptNo": "6",
+    "party": "CT001",
+    "amount": "1221",
+    "discount": ""
   }
 ]
