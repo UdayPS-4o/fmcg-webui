@@ -4,152 +4,42 @@
 <div class="container-xxl flex-grow-1 container-p-y">
    <h4 class="fw-bold py-3 mb-4">
       <!-- <span class="text-muted fw-light">Account Settings /</span> -->
-      Print
+      <!-- Print -->
+      <button class="btn btn-primary" onclick="formprint()">Print</button>
    </h4>
 
    <div class="row">
       <div class="card">
-         <div class="card-body">
-           
+         <div class="card-body" style="overflow: auto;">
+            <section id="printable">
+            <%- include('../partials/print-cash') %>
+         </section>
          </div>
        </div>
    </div>
 </div>
 
+<div style="display: none;">
+<iframe src="" id="myIframe" frameborder="0"></iframe>
+</div>
 
 <%- include('../partials/bottom') %>
 
    <script>
-      (async () => {
-
-         const url = "/cmpl";
-         const response = await fetch(url);
-         const json = await response.json();
-         // for each object in json array, take out C_NAME as name and C_CODE as email
-         let usersList = json.map(user => ({
-            name: user.C_NAME,
-            title: user.C_NAME,
-            email: user.C_CODE,
-            Email: user.C_CODE,
-            value: user.C_CODE,
-            avatar: "/assets/img/avatars/3.png"
-         }));
-
-
-
-
-         usersList = usersList.filter(user => user.name && user.email);
-         usersList = usersList.slice(2);
-
-         // just keep the keys name,title,email,Email,avatar from each obj in userlist
-
-
-         const TagifyUserListEl = document.querySelector("#party");
-
-
-         function tagTemplate(tagData) {
-            return `
-         <tag title="${tagData.title || tagData.email}"
-         contenteditable='false'
-         spellcheck='false'
-         tabIndex="-1"
-         class="${this.settings.classNames.tag} ${tagData.class ? tagData.class : ''}"
-         ${this.getAttributes(tagData)}
-         >
-         <x title='' class='tagify__tag__removeBtn' role='button' aria-label='remove tag'></x>
-         <div>
-            <div class='tagify__tag__avatar-wrap'>
-               <img onerror="this.style.visibility='hidden'" src="${tagData.avatar}">
-            </div>
-            <span class='tagify__tag-text'>${tagData.name}</span>
-         </div>
-         </tag>
-         `;
-         }
-
-         function suggestionItemTemplate(tagData) {
-            return `
-         <div ${this.getAttributes(tagData)}
-         class='tagify__dropdown__item align-items-center ${tagData.class ? tagData.class : ''}'
-         tabindex="0"
-         role="option"
-         >
-         ${tagData.avatar ?
-                  `<div class='tagify__dropdown__item__avatar-wrap'>
-               <img onerror="this.style.visibility='hidden'" src="${tagData.avatar}">
-            </div>`
-                  : ''
-               }
-         <strong>${tagData.name}</strong>
-         <span>${tagData.email}</span>
-         </div>
-         `;
-         }
-
-         // initialize Tagify on the above input node reference
-         let TagifyUserList = new Tagify(TagifyUserListEl, {
-            // mode:"select",
-            tagTextProp: "name", // very important since a custom template is used with this property as text. allows typing a "value" or a "name" to match input with whitelist
-            enforceWhitelist: true,
-            maxTags: 1,
-            skipInvalid: true, // do not remporarily add invalid tags
-            maxTags: 1,
-            dropdown: {
-               closeOnSelect: true,
-               enabled: 0,
-               classname: "users-list",
-               searchKeys: ["name", "email"] // very important to set by which keys to search for suggesttions when typing
-            },
-            templates: {
-               tag: tagTemplate,
-               dropdownItem: suggestionItemTemplate
-            },
-            whitelist: usersList
-         });
-
-         TagifyUserList.on("dropdown:show dropdown:updated", onDropdownShow);
-         TagifyUserList.on("dropdown:select", onSelectSuggestion);
-
-         let addAllSuggestionsEl;
-
-         function onDropdownShow(e) {
-            let dropdownContentEl = e.detail.tagify.DOM.dropdown.content;
-
-            if (TagifyUserList.suggestedListItems.length > 1) {
-               addAllSuggestionsEl = getAddAllSuggestionsEl();
-
-               // insert "addAllSuggestionsEl" as the first element in the suggestions list
-               dropdownContentEl.insertBefore(addAllSuggestionsEl, dropdownContentEl.firstChild);
-            }
-         }
-
-         function onSelectSuggestion(e) {
-            if (e.detail.elm == addAllSuggestionsEl) TagifyUserList.dropdown.selectAll.call(TagifyUserList);
-         }
-
-        
-
-         function submit() {
-            TagifyUserList.value.forEach(element => {
-               changepassword(element.value);
-            });
-         }
-
-     
-
-
-      })()
-      function calculate() {
-         let textbox = document.querySelector("input");
-
-         let operators = ["+", "-", "*", "/"];
-         let expression = textbox.value;
-
-                  
-
+    
+    let iframWritten = false;
+     function formprint() {
+      if(iframWritten){
+        let iframe = document.querySelector("#myIframe")
+        iframe.contentWindow.print();
+        return;
       }
-
-
+      let iframe = document.querySelector("#myIframe")
+      iframe.contentDocument.write(document.querySelector("#printable").innerHTML)
+      iframWritten = true;
+      iframe.contentWindow.focus(); // Required for some browsers
+      iframe.contentWindow.print();
+     }
    </script>
 
 
