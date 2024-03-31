@@ -61,6 +61,10 @@ const getCmplData = async (req, res) => {
 // Endpoint to get data from CMPL.DBF and return as JSON
 app.get('/cmpl', getCmplData);
 
+app.get("/", (req, res) => {
+    res.redirect("/account-master");
+});
+
 app.get('/json/:file', async (req, res) => {
     const { file } = req.params;
     try {
