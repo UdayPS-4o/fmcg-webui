@@ -1,30 +1,10 @@
 [
   {
-    "date": "2024-03-08",
+    "date": "2024-03-30",
     "receiptNo": "1",
     "party": "AA001",
-    "amount": "20",
+    "series": "ABCD",
+    "amount": "12334",
     "discount": ""
-  },
-  {
-    "date": "2024-03-08",
-    "receiptNo": "2",
-    "party": "AA001",
-    "amount": "100",
-    "discount": ""
-  },
-  {
-    "date": "2024-03-16",
-    "receiptNo": "3",
-    "party": "AA001",
-    "amount": "500",
-    "discount": "0"
-  },
-  {
-    "date": "2024-03-08",
-    "receiptNo": "4",
-    "party": "AA001",
-    "amount": "15",
-    "discount": "0"
   }
 ]

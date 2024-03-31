@@ -13,7 +13,7 @@
                   <div class="row">
                      <div class="col-md-6">
                         <div class="form-floating mb-3">
-                           <input type="text" class="form-control" id="sub-group" name="subgroup" placeholder="Sub Group" required>
+                           <input type="text" class="form-control" id="sub-group" name="subgroup" placeholder="" required>
                            <label for="sub-group">Sub Group</label>
                         </div>
                      </div>
@@ -124,7 +124,6 @@
             name: user.C_NAME,
             title: user.C_NAME,
             email: user.C_CODE,
-            Email: user.C_CODE,
             value: user.C_CODE.substring(0, 2),
             avatar: "/assets/img/avatars/3.png"
          }));
@@ -143,11 +142,18 @@
          usersList = usersList.filter(user => user.name && user.email);
          usersList.sort((a, b) => a.email.localeCompare(b.email));
 
-         // replace email to getNextSubgroupCode
-         usersList = usersList.map(user => ({
-            ...user,
-            email: user.value+" | "+getNextSubgroupCode(json, user.value)
-         }));
+         let newUserList = [];
+         usersList.forEach(user => {
+            newUserList.push({
+               name: user.name,
+               title: user.name,
+               email: user.value+" | "+getNextSubgroupCode(json, user.value),
+               value: getNextSubgroupCode(json, user.value),
+               avatar: "/assets/img/avatars/3.png"
+            });
+         });
+
+         usersList = newUserList;
 
 
          const TagifyUserListEl = document.querySelector("#sub-group");

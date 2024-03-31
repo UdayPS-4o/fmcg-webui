@@ -35,6 +35,12 @@
                         </div>
                         <div class="col-md-6">
                            <div class="form-floating mb-3">
+                              <input type="text" class="form-control" id="series" name="series" placeholder="Series" min="0" step="0.01">
+                              <label for="series">Series</label>
+                           </div>
+                        </div>
+                        <div class="col-md-6">
+                           <div class="form-floating mb-3">
                               <input type="number" class="form-control" id="amount" name="amount" placeholder="Amount" required min="0" step="0.01">
                               <label for="amount">Amount</label>
                            </div>
@@ -45,6 +51,7 @@
                               <label for="discount">Discount</label>
                            </div>
                         </div>
+                        
                   </div>
                   <div class="col-12 mt-1" style="display: flex; justify-content: end;">
                      <button type="reset" class="btn btn-label-secondary" style="margin-right:20px">Cancel</button>
