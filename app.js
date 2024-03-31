@@ -1,29 +1,21 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+var cookieParser = require('cookie-parser')
 const fs = require("fs").promises;
 const path = require("path");
 const app = express();
 const PORT = 80;
 const io = require("socket.io");
 
+app.use(cookieParser())
+
 const spawn = require("child_process").spawn;
 app.use(express.static("./node_modules/html-template-02"));
 // app.use(express.static('./public'));
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
-app.use((err, req, res, next) => {
-  if (err.code === "MODULE_NOT_FOUND" && err.message.includes("io")) {
-    // Hide the 'io' error in development
-    if (process.env.NODE_ENV === "development") {
-      return next();
-    }
 
-    // Alternatively, display a basic message to the user if preferred
-    res.status(500).send("Something went wrong. Please try again later.");
-  } else {
-    next(err); // Pass other errors to the default handler
-  }
-});
+
 app.post("/api/login", async (req, res) => {
   const formData = req.body;
   console.log(formData);
@@ -45,10 +37,9 @@ app.post("/api/login", async (req, res) => {
       const newToken = Math.random().toString(36).substring(7);
       user.token = newToken;
       await fs.writeFile(filePath, JSON.stringify(dbData, null, 2), "utf8");
-      res
-        .status(200)
+      res.status(200)
+        .header("Set-Cookie", `token=${newToken}; Path=/; Max-Age=3600;`)
         .send("Login successful." + redirect(`/db/cash-receipts`, 500))
-        .cookie("token", newToken, { maxAge: 900000, httpOnly: true });
     } else {
       res.status(404).send("Error: Invalid username or password.");
     }
@@ -62,35 +53,50 @@ app.get("/login", (req, res) => {
   res.render("pages/login/login");
 });
 
+app.get("/logout", (req, res) => {
+  res
+    .status(200)
+    .clearCookie("token")
+    .redirect("/login");
+    // .send("Logout successful." + redirect("/login", 2000));
+
+});
 // set middleware to check if user is logged in
 
-// app.use((req, res, next) => {
-//   const token = req.cookies.token;
-//   if (!token) {
-//     res.redirect("/login");
-//     return;
-//   }
-//   if (token) {
-//     const filePath = path.join(__dirname, "db", "users.json");
-//     fs.readFile(filePath, "utf8")
-//       .then((data) => {
-//         const dbData = JSON.parse(data);
-//         const user = dbData.find((entry) => entry.token === token);
-//         if (user) {
-//           req.user = user;
-//           next();
-//         } else {
-//           res.status(401).send("Unauthorized access");
-//         }
-//       })
-//       .catch((err) => {
-//         console.error(err);
-//         res.status(500).send("Failed to read user data");
-//       });
-//   } else {
-//     res.status(401).send("Unauthorized access");
-//   }
-// });
+app.use((req, res, next) => {
+
+  const token = req?.cookies?.token || "xs";
+
+  if (!token) {
+    res.redirect("/login");
+    return;
+  }
+  if (token) {
+    const filePath = path.join(__dirname, "db", "users.json");
+    fs.readFile(filePath, "utf8")
+      .then((data) => {
+        const dbData = JSON.parse(data);
+        const user = dbData.find((entry) => entry.token === token);
+        if (user) {
+          req.user = user;
+          next();
+        } else {
+          res
+          .status(401)
+          .clearCookie("token")
+          .redirect("/login")
+          // .send("Unauthorized access" + redirect("/login", 1500));
+
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Failed to read user data");
+      });
+  } else {
+    res.status(401).send("Unauthorized access");
+  }
+});
 
 
 app.set("view engine", "ejs");
@@ -459,53 +465,6 @@ app.post("/edit/:formType", async (req, res) => {
   }
 });
 
-app.get("/cash-receipts", async (req, res) => {
-  const filePath = path.join(__dirname, "db", "cash-receipts.json");
-  let nextReceiptNo = 1;
-
-
-
-  const filePath = path.join(__dirname, "db", `${formType}.json`);
-
-  try {
-    let dbData = [];
-    try {
-      const data = await fs.readFile(filePath, "utf8");
-      dbData = JSON.parse(data);
-    } catch (err) {
-      console.log("No existing file, creating a new one.");
-    }
-
-    // const entryExists = dbData.some(entry => entry.receiptNo === formData.receiptNo);
-    // entry key can be voucherNo or receiptNo
-
-    // const entryExists = dbData.some(entry => uniqueIdentifiers.some(key => entry[key] === formData[key]));
-    const validKEY = uniqueIdentifiers.find((key) => formData[key]);
-    const entryExists = dbData.some(
-      (entry) => entry[validKEY] === formData[validKEY]
-    );
-
-    if (entryExists) {
-      return res
-        .status(400)
-        .send(
-          "Error: Entry with this receiptNo already exists. " +
-            validKEY +
-            " | " +
-            JSON.stringify(ogform)
-        );
-    } else {
-      dbData.push(formData);
-      await fs.writeFile(filePath, JSON.stringify(dbData, null, 2), "utf8");
-      res
-        .status(200)
-        .send("Entry added successfully." + redirect(`/db/${formType}`, 500));
-    }
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Failed to add data.");
-  }
-});
 
 app.post("/edit/:formType", async (req, res) => {
   const { formType } = req.params;

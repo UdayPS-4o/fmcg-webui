@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "cookie-parser": "^1.4.6",
     "dbf": "^0.2.0",
     "dbf-reader": "^1.0.3",
     "dbffile": "^1.9.3",
