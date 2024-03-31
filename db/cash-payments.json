@@ -1,18 +1,1 @@
-[
-  {
-    "date": "2024-03-30",
-    "voucherNo": "12",
-    "party": "AA001",
-    "series": "",
-    "amount": "12221",
-    "discount": "345678"
-  },
-  {
-    "date": "2024-03-30",
-    "voucherNo": "32423",
-    "party": "CT000",
-    "series": "ABCD",
-    "amount": "24332",
-    "discount": "2342"
-  }
-]
+[]

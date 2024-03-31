@@ -61,9 +61,10 @@
           <a type="button" data-bs-toggle="modal" class="editbutton" onclick="action('edit','${item.voucherNo}')">
             <i class="fa fa-edit"></i>
             </a> &nbsp;             
-            <a type="button" data-bs-toggle="modal" class="deletebutton" onclick="action('del','${item.voucherNo}')" >
+            <a type="button" data-bs-toggle="modal" class="deletebutton" onclick="action('del','${item.subgroup}')" >
               <i class="fa fa-trash"></i>
             </a>
+            
             `
         })
 
@@ -82,7 +83,12 @@
           console.log("edit");
           window.location.href = `/edit/cash-payments/${id}`;
         } else if (action === "del") {
-          console.log("del");
+          if (confirm("Are you sure you want to delete this record?")) {
+            window.location.href = `/delete/account-master/${id}`;
+            // alert("Record deleted successfully");
+          }
+
+          // console.log("del");
         }
       }
       
