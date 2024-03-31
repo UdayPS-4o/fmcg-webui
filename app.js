@@ -420,7 +420,7 @@ const processData = async (dbData) => {
   
 
 async function watchFile() {
-const dbfFilePath = "C:/Users/udayps/Documents/code/1TA/fmcg/d01-2324/data/CASH.DBF";
+const dbfFilePath = path.join(__dirname, "..",'d01-2324/data', 'CASH.dbf');
 let lastModifiedTime = null;
 
 setInterval(async () => {
@@ -460,7 +460,7 @@ setInterval(async () => {
   
 watchFile(); 
 
-const dbfDir = 'C:/Users/udayps/Documents/code/1TA/fmcg/d01-2324/data';
+const dbfDir = path.join(__dirname, "..",'d01-2324/data');
 const jsonDir = path.join(dbfDir, 'json');
 const indexFilePath = path.join(__dirname, 'db', 'index.json');
 
