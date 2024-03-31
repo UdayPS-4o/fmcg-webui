@@ -71,14 +71,14 @@ app.get('/json/:file', async (req, res) => {
         console.error(`Failed to read or parse ${file}.json:`, error);
         res.status(500).send('Server error');
     }
-
 });
 
 app.get('/dbf/:file', async (req, res) => {
     let { file } = req.params;
     
     try {
-        let dbfFiles = await getDbfData(path.join(__dirname,"..",'d01-2324','data', file));
+        // let dbfFiles = await getDbfData(path.join(__dirname,"..",'d01-2324','data', file));
+        let dbfFiles = await fs.readFile(path.join(__dirname,"..",'d01-2324','data', "json",file.replace(".dbf",".json").replace(".DBF",".json")), 'utf8').then(data => JSON.parse(data));
         res.render('pages/db/dbf', { dbfFiles , name: file, file: file});
         // res.json(dbfFile);
     } catch (error) {
@@ -459,5 +459,53 @@ setInterval(async () => {
 }
   
 watchFile(); 
+
+const dbfDir = 'C:/Users/udayps/Documents/code/1TA/fmcg/d01-2324/data';
+const jsonDir = path.join(dbfDir, 'json');
+const indexFilePath = path.join(__dirname, 'db', 'index.json');
+
+async function convertDbfToJson() {
+  try {
+    // Create directories if they don't exist
+    await fs.mkdir(jsonDir, { recursive: true });
+    await fs.mkdir(path.dirname(indexFilePath), { recursive: true });
+
+    let index = {};
+    try {
+      index = JSON.parse(await fs.readFile(indexFilePath, 'utf-8')) || {};
+    } catch (error) {
+      // Index file likely doesn't exist, that's okay
+    }
+
+    const files = await fs.readdir(dbfDir);
+    // filet .dbf / .DBF files
+    const dbfFiles = files.filter(file => path.extname(file).toLowerCase() === '.dbf' || path.extname(file).toLowerCase() === '.DBF');
+
+    for (const dbfFile of dbfFiles) {
+      const dbfFilePath = path.join(dbfDir, dbfFile);
+      const jsonFilePath = path.join(jsonDir, `${path.basename(path.basename(dbfFile, '.dbf'),".DBF")}.json`);
+
+      const fileStats = await fs.stat(dbfFilePath);
+      const lastModifiedTime = fileStats.mtimeMs;
+
+      if (!(index[dbfFile] && index[dbfFile] == lastModifiedTime)) {
+        console.log(`File ${dbfFile} has been modified since last conversion. Processing...`);
+        const dbData = await getDbfData(dbfFilePath);
+        await fs.writeFile(jsonFilePath, JSON.stringify(dbData, null, 2));
+        index[dbfFile] = lastModifiedTime;
+        console.log(`Converted ${dbfFile} to ${path.basename(jsonFilePath)}`);
+      }
+    }
+
+    await fs.writeFile(indexFilePath, JSON.stringify(index, null, 2));
+  } catch (error) {
+    console.error('Error converting DBF to JSON or handling index:', error);
+  }
+}
+
+setInterval(async () => {
+    convertDbfToJson();
+}, 60 * 1000); 
+convertDbfToJson();
   
   
