@@ -6,5 +6,21 @@
     "series": "ABCD",
     "amount": "12334",
     "discount": ""
+  },
+  {
+    "date": "2024-03-31",
+    "receiptNo": "2",
+    "party": "CT000",
+    "series": "ABCD",
+    "amount": "250",
+    "discount": "00"
+  },
+  {
+    "date": "2024-03-31",
+    "receiptNo": "3",
+    "party": "CT000",
+    "series": "ABCD",
+    "amount": "11",
+    "discount": "345678"
   }
 ]

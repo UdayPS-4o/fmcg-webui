@@ -116,8 +116,11 @@
    <script>
       (async () => {
 
-         const url = "http://localhost/cmpl";
+         const url = "/cmpl";
          const response = await fetch(url);
+         const localurl = "/json/account-master";
+         const local = await fetch(localurl);
+         const localjson = await local.json();
          const json = await response.json();
          // for each object in json array, take out C_NAME as name and C_CODE as email
          let usersList = json.map(user => ({
