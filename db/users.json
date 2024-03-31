@@ -1,0 +1,17 @@
+[
+  {
+    "id": "1",
+    "name": "John Doe",
+    "username": "admin",
+    "password": "123456",
+    "type": "admin",
+    "token": "jqbk2a"
+  },
+  {
+    "id": "2",
+    "name": "Jane Doe",
+    "username": "salesman",
+    "password": "123456",
+    "type": "salesman"
+  }
+]

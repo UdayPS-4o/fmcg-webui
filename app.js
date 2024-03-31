@@ -1,142 +1,221 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const fs = require('fs').promises; 
-const path = require('path');
+const express = require("express");
+const bodyParser = require("body-parser");
+const fs = require("fs").promises;
+const path = require("path");
 const app = express();
 const PORT = 80;
-const io = require('socket.io');
+const io = require("socket.io");
 
-const spawn = require('child_process').spawn;
-app.use(express.static('./node_modules/html-template-02'));
+const spawn = require("child_process").spawn;
+app.use(express.static("./node_modules/html-template-02"));
 // app.use(express.static('./public'));
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use((err, req, res, next) => {
-    if (err.code === 'MODULE_NOT_FOUND' && err.message.includes('io')) {
-        // Hide the 'io' error in development
-        if (process.env.NODE_ENV === 'development') { return next(); } 
-
-        // Alternatively, display a basic message to the user if preferred
-        res.status(500).send("Something went wrong. Please try again later."); 
-    } else {
-        next(err); // Pass other errors to the default handler 
+  if (err.code === "MODULE_NOT_FOUND" && err.message.includes("io")) {
+    // Hide the 'io' error in development
+    if (process.env.NODE_ENV === "development") {
+      return next();
     }
+
+    // Alternatively, display a basic message to the user if preferred
+    res.status(500).send("Something went wrong. Please try again later.");
+  } else {
+    next(err); // Pass other errors to the default handler
+  }
+});
+app.post("/api/login", async (req, res) => {
+  const formData = req.body;
+  console.log(formData);
+  const { username, password } = formData;
+  const filePath = path.join(__dirname, "db", "users.json");
+  try {
+    let dbData = await fs
+      .readFile(filePath, "utf8")
+      .then((data) => JSON.parse(data))
+      .catch(() => {
+        throw new Error("Database file read error or file does not exist.");
+      });
+
+    const user = dbData.find(
+      (entry) => entry.username === username && entry.password === password
+    );
+
+    if (user) {
+      const newToken = Math.random().toString(36).substring(7);
+      user.token = newToken;
+      await fs.writeFile(filePath, JSON.stringify(dbData, null, 2), "utf8");
+      res
+        .status(200)
+        .send("Login successful." + redirect(`/db/cash-receipts`, 500))
+        .cookie("token", newToken, { maxAge: 900000, httpOnly: true });
+    } else {
+      res.status(404).send("Error: Invalid username or password.");
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Failed to login.");
+  }
 });
 
+app.get("/login", (req, res) => {
+  res.render("pages/login/login");
+});
 
-app.set('view engine', 'ejs');
+// set middleware to check if user is logged in
 
-const uniqueIdentifiers = ['receiptNo', 'voucherNo', 'subgroup'];
+// app.use((req, res, next) => {
+//   const token = req.cookies.token;
+//   if (!token) {
+//     res.redirect("/login");
+//     return;
+//   }
+//   if (token) {
+//     const filePath = path.join(__dirname, "db", "users.json");
+//     fs.readFile(filePath, "utf8")
+//       .then((data) => {
+//         const dbData = JSON.parse(data);
+//         const user = dbData.find((entry) => entry.token === token);
+//         if (user) {
+//           req.user = user;
+//           next();
+//         } else {
+//           res.status(401).send("Unauthorized access");
+//         }
+//       })
+//       .catch((err) => {
+//         console.error(err);
+//         res.status(500).send("Failed to read user data");
+//       });
+//   } else {
+//     res.status(401).send("Unauthorized access");
+//   }
+// });
+
+app.set("view engine", "ejs");
+
+const uniqueIdentifiers = ["receiptNo", "voucherNo", "subgroup"];
 
 const getDbfData = (path) => {
-    return new Promise((resolve, reject) => {
-        const process = spawn('python', ['dbfJS.py', path]);
-        let data = '';
-        process.stdout.on('data', (chunk) => {
-            data += chunk;
-        });
-        process.on('close', (code) => {
-            if (code === 0) {
-                resolve(JSON.parse(data));
-            } else {
-                reject(`Process exited with code ${code}`);
-            }
-        });
+  return new Promise((resolve, reject) => {
+    const process = spawn("python", ["dbfJS.py", path]);
+    let data = "";
+    process.stdout.on("data", (chunk) => {
+      data += chunk;
     });
-}
-
-const getCmplData = async (req, res) => {
-    const dbfFilePath = path.join(__dirname, "..",'d01-2324/data', 'CMPL.dbf');
-    console.log(dbfFilePath);
-    try {
-        const jsonData = await getDbfData(dbfFilePath);
-        if (req === "99") return jsonData; else res.json(jsonData);
-    } catch (error) {
-        res.status(500).send(error);
-    }
+    process.on("close", (code) => {
+      if (code === 0) {
+        resolve(JSON.parse(data));
+      } else {
+        reject(`Process exited with code ${code}`);
+      }
+    });
+  });
 };
 
-
+const getCmplData = async (req, res) => {
+  const dbfFilePath = path.join(__dirname, "..", "d01-2324/data", "CMPL.dbf");
+  console.log(dbfFilePath);
+  try {
+    const jsonData = await getDbfData(dbfFilePath);
+    if (req === "99") return jsonData;
+    else res.json(jsonData);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
 
 // Endpoint to get data from CMPL.DBF and return as JSON
-app.get('/cmpl', getCmplData);
+app.get("/cmpl", getCmplData);
+
 
 app.get("/", (req, res) => {res.redirect("/account-master")});
 
-app.get('/json/:file', async (req, res) => {
-    const { file } = req.params;
-    try {
-        let data = await fs.readFile(`./db/${file}.json`, 'utf8') || '[]';
-        res.json(JSON.parse(data));
-    }
-    catch (error) {
-        console.error(`Failed to read or parse ${file}.json:`, error);
-        res.status(500).send('Server error');
-    }
+
+app.get("/json/:file", async (req, res) => {
+  const { file } = req.params;
+  try {
+    let data = (await fs.readFile(`./db/${file}.json`, "utf8")) || "[]";
+    res.json(JSON.parse(data));
+  } catch (error) {
+    console.error(`Failed to read or parse ${file}.json:`, error);
+    res.status(500).send("Server error");
+  }
 });
 
-app.get('/dbf/:file', async (req, res) => {
-    let { file } = req.params;
-    
-    try {
-        // let dbfFiles = await getDbfData(path.join(__dirname,"..",'d01-2324','data', file));
-        let dbfFiles = await fs.readFile(path.join(__dirname,"..",'d01-2324','data', "json",file.replace(".dbf",".json").replace(".DBF",".json")), 'utf8').then(data => JSON.parse(data));
-        res.render('pages/db/dbf', { dbfFiles , name: file, file: file});
-        // res.json(dbfFile);
-    } catch (error) {
-        res.status(500).send(error);
-    }
+app.get("/dbf/:file", async (req, res) => {
+  let { file } = req.params;
+
+  try {
+    // let dbfFiles = await getDbfData(path.join(__dirname,"..",'d01-2324','data', file));
+    let dbfFiles = await fs
+      .readFile(
+        path.join(
+          __dirname,
+          "..",
+          "d01-2324",
+          "data",
+          "json",
+          file.replace(".dbf", ".json").replace(".DBF", ".json")
+        ),
+        "utf8"
+      )
+      .then((data) => JSON.parse(data));
+    res.render("pages/db/dbf", { dbfFiles, name: file, file: file });
+    // res.json(dbfFile);
+  } catch (error) {
+    res.status(500).send(error);
+  }
 });
 
-
-app.get('/dbf', async (req, res) => {
-    try {
-        const files = await fs.readdir(path.join("../",'./d01-2324/data'));
-        // Filter out non-DBF files and create index key 1,2,3
-        let dbfFiles = files.filter(file => file.endsWith('.dbf') || file.endsWith('.DBF')).map((file, index) => ({ name: file }));
-        res.render('pages/db/dbf', { dbfFiles , name: 'DBF Files', file: 'dbf-files'});
-    } catch (error) {
-        res.status(500).send(error);
-    }
+app.get("/dbf", async (req, res) => {
+  try {
+    const files = await fs.readdir(path.join("../", "./d01-2324/data"));
+    // Filter out non-DBF files and create index key 1,2,3
+    let dbfFiles = files
+      .filter((file) => file.endsWith(".dbf") || file.endsWith(".DBF"))
+      .map((file, index) => ({ name: file }));
+    res.render("pages/db/dbf", {
+      dbfFiles,
+      name: "DBF Files",
+      file: "dbf-files",
+    });
+  } catch (error) {
+    res.status(500).send(error);
+  }
 });
-
-
 
 // Function to ensure directory exists
 const ensureDirectoryExistence = async (filePath) => {
-    const dirname = path.dirname(filePath);
-    try {
-        await fs.access(dirname);
-    } catch (error) {
-        if (error.code === 'ENOENT') {
-            await fs.mkdir(dirname, { recursive: true });
-        } else {
-            throw error; // Rethrow unexpected errors
-        }
+  const dirname = path.dirname(filePath);
+  try {
+    await fs.access(dirname);
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      await fs.mkdir(dirname, { recursive: true });
+    } else {
+      throw error; // Rethrow unexpected errors
     }
+  }
 };
-
 
 // Function to save data to JSON file
 const saveDataToJsonFile = async (filePath, data) => {
-    await ensureDirectoryExistence(filePath);
+  await ensureDirectoryExistence(filePath);
 
-    let existingData = [];
-    try {
-        const fileContent = await fs.readFile(filePath, 'utf8').catch(error => {
-            if (error.code !== 'ENOENT') throw error; // Ignore file not found errors
-        });
-        existingData = fileContent ? JSON.parse(fileContent) : [];
-    } catch (error) {
-        console.error('Error parsing existing file content:', error);
-    }
+  let existingData = [];
+  try {
+    const fileContent = await fs.readFile(filePath, "utf8").catch((error) => {
+      if (error.code !== "ENOENT") throw error; // Ignore file not found errors
+    });
+    existingData = fileContent ? JSON.parse(fileContent) : [];
+  } catch (error) {
+    console.error("Error parsing existing file content:", error);
+  }
 
-    existingData.push(data);
-    await fs.writeFile(filePath, JSON.stringify(existingData, null, 4));
+  existingData.push(data);
+  await fs.writeFile(filePath, JSON.stringify(existingData, null, 4));
 };
-
-
-
 
 // Dynamic route to handle form submission based on the form action
 
@@ -190,281 +269,290 @@ const saveDataToJsonFile = async (filePath, data) => {
 
 // Dynamic route to handle form submission based on the form action
 
+app.post("/:formType", async (req, res) => {
+  const { formType } = req.params;
+  const formData = req.body;
+  const ogform = JSON.parse(JSON.stringify(formData));
+  if (formData.party && typeof formData.party === "string") {
+    formData.party = JSON.parse(formData.party)[0].value;
+  }
+  if (formData.subgroup && typeof formData.subgroup === "string") {
+    formData.subgroup = JSON.parse(formData.subgroup)[0].value;
+  }
 
-app.post('/:formType', async (req, res) => {
-    const { formType } = req.params;
-    const formData = req.body;
-    const ogform = JSON.parse(JSON.stringify(formData));
-    if (formData.party && typeof formData.party === 'string') {
-        formData.party = JSON.parse(formData.party)[0].value;
-    }
-    if (formData.subgroup && typeof formData.subgroup === 'string') {
-        formData.subgroup = JSON.parse(formData.subgroup)[0].value;
-    }
-    
-    const filePath = path.join(__dirname, 'db', `${formType}.json`);
-    
+  const filePath = path.join(__dirname, "db", `${formType}.json`);
+
+  try {
+    let dbData = [];
     try {
-        let dbData = [];
-        try {
-            const data = await fs.readFile(filePath, 'utf8');
-            dbData = JSON.parse(data);
-        } catch (err) {
-            console.log('No existing file, creating a new one.');
-        }
-        
-        // const entryExists = dbData.some(entry => entry.receiptNo === formData.receiptNo);
-        // entry key can be voucherNo or receiptNo
-
-        // const entryExists = dbData.some(entry => uniqueIdentifiers.some(key => entry[key] === formData[key]));
-        const validKEY = uniqueIdentifiers.find(key => formData[key]);
-        const entryExists = dbData.some(entry => entry[validKEY] === formData[validKEY]);
-        
-        if (entryExists) {
-            return res.status(400).send('Error: Entry with this receiptNo already exists. ' + validKEY +" | "+ JSON.stringify(ogform));
-        } else {
-            dbData.push(formData);
-            await fs.writeFile(filePath, JSON.stringify(dbData, null, 2), 'utf8');
-            res.status(200).send('Entry added successfully.'+ redirect(`/db/${formType}`, 500));
-        }
+      const data = await fs.readFile(filePath, "utf8");
+      dbData = JSON.parse(data);
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Failed to add data.');
-    }
-});
-
-app.post('/edit/:formType', async (req, res) => {
-    const { formType } = req.params;
-    const formData = req.body;
-
-    if (formData.party && typeof formData.party === 'string') {
-        console.log(formData)
-        formData.party = JSON.parse(formData.party)[0].value;
-    }
-    
-    const filePath = path.join(__dirname, 'db', `${formType}.json`);
-    
-    try {
-        let dbData = await fs.readFile(filePath, 'utf8').then(data => JSON.parse(data)).catch(() => {
-            throw new Error('Database file read error or file does not exist.');
-        });
-        
-        const entryIndex = dbData.findIndex(entry => entry.receiptNo === formData.receiptNo);
-
-        if (entryIndex > -1) {
-            dbData[entryIndex] = { ...dbData[entryIndex], ...formData };
-            await fs.writeFile(filePath, JSON.stringify(dbData, null, 2), 'utf8');
-            res.status(200).send('Entry updated successfully. ' + redirect(`/db/${formType}`, 500));
-        } else {
-            res.status(404).send(`Error: Entry with specified receiptNo does not exist. <br> ${JSON.stringify(formData)} <br> ${entryIndex} <br> ${dbData.length}`);
-        }
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Failed to edit data.');
-    }
-});
-
-
-
-
-
-
-
-app.get('/cash-receipts', async (req, res) => {
-    const filePath = path.join(__dirname, 'db', 'cash-receipts.json');
-    let nextReceiptNo = 1;
-
-    try {
-        const data = await fs.readFile(filePath, 'utf8').then(data => JSON.parse(data), error => {
-            if (error.code !== 'ENOENT') throw error; // Ignore file not found errors
-        });
-        if (data && data.length) {
-            const lastEntry = data[data.length - 1];
-            nextReceiptNo = Number(lastEntry.receiptNo) + 1;
-        }
-    } catch (error) {
-        console.error('Failed to read or parse cash-receipts.json:', error);
-        res.status(500).send('Server error');
-        return;
+      console.log("No existing file, creating a new one.");
     }
 
-    res.render('pages/cash-receipts', { nextReceiptNo });
+    // const entryExists = dbData.some(entry => entry.receiptNo === formData.receiptNo);
+    // entry key can be voucherNo or receiptNo
+
+    // const entryExists = dbData.some(entry => uniqueIdentifiers.some(key => entry[key] === formData[key]));
+    const validKEY = uniqueIdentifiers.find((key) => formData[key]);
+    const entryExists = dbData.some(
+      (entry) => entry[validKEY] === formData[validKEY]
+    );
+
+    if (entryExists) {
+      return res
+        .status(400)
+        .send(
+          "Error: Entry with this receiptNo already exists. " +
+            validKEY +
+            " | " +
+            JSON.stringify(ogform)
+        );
+    } else {
+      dbData.push(formData);
+      await fs.writeFile(filePath, JSON.stringify(dbData, null, 2), "utf8");
+      res
+        .status(200)
+        .send("Entry added successfully." + redirect(`/db/${formType}`, 500));
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Failed to add data.");
+  }
 });
 
+app.post("/edit/:formType", async (req, res) => {
+  const { formType } = req.params;
+  const formData = req.body;
 
-app.get('/:page', (req, res) => {
-    const { page } = req.params;
-    res.render(`pages/${page}`);
+  if (formData.party && typeof formData.party === "string") {
+    console.log(formData);
+    formData.party = JSON.parse(formData.party)[0].value;
+  }
+
+  const filePath = path.join(__dirname, "db", `${formType}.json`);
+
+  try {
+    let dbData = await fs
+      .readFile(filePath, "utf8")
+      .then((data) => JSON.parse(data))
+      .catch(() => {
+        throw new Error("Database file read error or file does not exist.");
+      });
+
+    const entryIndex = dbData.findIndex(
+      (entry) => entry.receiptNo === formData.receiptNo
+    );
+
+    if (entryIndex > -1) {
+      dbData[entryIndex] = { ...dbData[entryIndex], ...formData };
+      await fs.writeFile(filePath, JSON.stringify(dbData, null, 2), "utf8");
+      res
+        .status(200)
+        .send(
+          "Entry updated successfully. " + redirect(`/db/${formType}`, 500)
+        );
+    } else {
+      res
+        .status(404)
+        .send(
+          `Error: Entry with specified receiptNo does not exist. <br> ${JSON.stringify(
+            formData
+          )} <br> ${entryIndex} <br> ${dbData.length}`
+        );
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Failed to edit data.");
+  }
 });
 
-// create a redirect function after 2 seconds to a url 
+app.get("/cash-receipts", async (req, res) => {
+  const filePath = path.join(__dirname, "db", "cash-receipts.json");
+  let nextReceiptNo = 1;
+
+  try {
+    const data = await fs.readFile(filePath, "utf8").then(
+      (data) => JSON.parse(data),
+      (error) => {
+        if (error.code !== "ENOENT") throw error; // Ignore file not found errors
+      }
+    );
+    if (data && data.length) {
+      const lastEntry = data[data.length - 1];
+      nextReceiptNo = Number(lastEntry.receiptNo) + 1;
+    }
+  } catch (error) {
+    console.error("Failed to read or parse cash-receipts.json:", error);
+    res.status(500).send("Server error");
+    return;
+  }
+
+  res.render("pages/cash-receipts", { nextReceiptNo });
+});
+
+app.get("/:page", (req, res) => {
+  const { page } = req.params;
+  res.render(`pages/${page}`);
+});
+
+// create a redirect function after 2 seconds to a url
 let redirect = (url, time) => {
-    return `<script>
+  return `<script>
     setTimeout(function(){
         window.location.href = "${url}";
     }, ${time});
     </script>`;
-}
+};
 
-app.get('/edit/:page/:id', async (req, res) => {
-    const { page , id } = req.params;
-        let data = await fs.readFile(`./db/${page}.json`, 'utf8') || '[]';
-        data = JSON.parse(data);
+app.get("/edit/:page/:id", async (req, res) => {
+  const { page, id } = req.params;
+  let data = (await fs.readFile(`./db/${page}.json`, "utf8")) || "[]";
+  data = JSON.parse(data);
 
-        // find the entry with the specified receiptNo or voucherNo or any unique identifier
-        let keys = Object.keys(data[0]);
-        let validKey = keys.find(key => uniqueIdentifiers.includes(key));
-        console.log("validKEY",validKey)
-        let receipt = data.find(entry => entry[validKey] === id);
-        
-        if (!receipt) {
-            res.status(404).send('Receipt not found ' + redirect(`/db/${page}`, 2000));
-            return;
-        }
+  // find the entry with the specified receiptNo or voucherNo or any unique identifier
+  let keys = Object.keys(data[0]);
+  let validKey = keys.find((key) => uniqueIdentifiers.includes(key));
+  console.log("validKEY", validKey);
+  let receipt = data.find((entry) => entry[validKey] === id);
 
-        res.render(`pages/edit/${page}`, { receipt });
+  if (!receipt) {
+    res.status(404).send("Receipt not found " + redirect(`/db/${page}`, 2000));
+    return;
+  }
 
-        return;
+  res.render(`pages/edit/${page}`, { receipt });
+
+  return;
 });
 
-
-
-app.get('/db/:file', async (req, res) => {
-    const { file } = req.params;
-    // captialize the first letter of every word
-    let name = file.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-    try {
-        let data = await fs.readFile(`./db/${file}.json`, 'utf8') || '[]';
-        data = JSON.parse(data);
-        res.render(`pages/db/${file}`, { data , file , name });
-    } catch (error) {
-        console.error(`Failed to read or parse ${file}.json:`, error);
-        res.status(500).send('Server error');
-    }
+app.get("/db/:file", async (req, res) => {
+  const { file } = req.params;
+  // captialize the first letter of every word
+  let name = file
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+  try {
+    let data = (await fs.readFile(`./db/${file}.json`, "utf8")) || "[]";
+    data = JSON.parse(data);
+    res.render(`pages/db/${file}`, { data, file, name });
+  } catch (error) {
+    console.error(`Failed to read or parse ${file}.json:`, error);
+    res.status(500).send("Server error");
+  }
 });
-
-
-
-
-
-
 
 // Initialize server
 const initServer = () => {
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-    });
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
 };
-
 
 initServer();
 
-
-
-
-
-
 // ignore errors
-process.env.NODE_ENV==='production';
+process.env.NODE_ENV === "production";
 
-process.on('unhandledRejection', (reason, promise) => {
-    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
 });
 
-
-
-process.on('uncaughtException', (err) => {
-    if (err.code === 'MODULE_NOT_FOUND' && err.message.includes('io')) {
-        // Do nothing: Hide this error
-        console.log('Suppressed "Cannot find module \'io\'" error'); // Log the suppression
-    } else {
-        console.error("--------------",err); // Log other errors
-    }
+process.on("uncaughtException", (err) => {
+  if (err.code === "MODULE_NOT_FOUND" && err.message.includes("io")) {
+    // Do nothing: Hide this error
+    console.log("Suppressed \"Cannot find module 'io'\" error"); // Log the suppression
+  } else {
+    console.error("--------------", err); // Log other errors
+  }
 });
-
-
 
 const processData = async (dbData) => {
-    let data = dbData;
-  
-    // Find unique party codes
-    const uniquePartyCodes = [...new Set(data.map(item => item.C_CODE))];
-  
-    // Array to store results
-    const partyResults = [];
-  
-    // Calculate results for each party code
-    uniquePartyCodes.forEach(partycode => {
-        const partyData = data.filter(item => item.C_CODE === partycode);
-        let cr = 0, dr = 0;
-  
-        partyData.forEach(item => {
-            cr += item.CR;
-            dr += item.DR;
-        });
-  
-        let result = cr - dr;
-        if (result < 0) {
-            result = Math.abs(result) + " DR";
-        } else {
-            result = result + " CR";
-        }
-  
-        partyResults.push({ partycode: partycode, result: result });
+  let data = dbData;
+
+  // Find unique party codes
+  const uniquePartyCodes = [...new Set(data.map((item) => item.C_CODE))];
+
+  // Array to store results
+  const partyResults = [];
+
+  // Calculate results for each party code
+  uniquePartyCodes.forEach((partycode) => {
+    const partyData = data.filter((item) => item.C_CODE === partycode);
+    let cr = 0,
+      dr = 0;
+
+    partyData.forEach((item) => {
+      cr += item.CR;
+      dr += item.DR;
     });
-  
-    const results = {
-      lastModifiedTime: new Date().toISOString(),
-      data: partyResults 
+
+    let result = cr - dr;
+    if (result < 0) {
+      result = Math.abs(result) + " DR";
+    } else {
+      result = result + " CR";
+    }
+
+    partyResults.push({ partycode: partycode, result: result });
+  });
+
+  const results = {
+    lastModifiedTime: new Date().toISOString(),
+    data: partyResults,
   };
   return results;
 };
-  
 
 async function watchFile() {
-const dbfFilePath = path.join(__dirname, "..",'d01-2324/data', 'CASH.dbf');
-let lastModifiedTime = null;
+  const dbfFilePath = path.join(__dirname, "..", "d01-2324/data", "CASH.dbf");
+  let lastModifiedTime = null;
 
-setInterval(async () => {
+  setInterval(async () => {
     try {
-        // if (fs.existsSync(dbfFilePath)) {
-        // fs.existsSync equivalent
-        try {
-        
-            if (fs.access(dbfFilePath)) {
-            lastModifiedTime = await fs.readFile('./db/balance.json', 'utf8').then(data => {
-                return JSON.parse(data).lastModifiedTime;
+      // if (fs.existsSync(dbfFilePath)) {
+      // fs.existsSync equivalent
+      try {
+        if (fs.access(dbfFilePath)) {
+          lastModifiedTime = await fs
+            .readFile("./db/balance.json", "utf8")
+            .then((data) => {
+              return JSON.parse(data).lastModifiedTime;
             });
-            }
-        } catch (error) {
         }
+      } catch (error) {}
 
-        const stats = await fs.stat(dbfFilePath);
-        const currentModifiedTime = stats.mtimeMs;
-        // console.log('Current Modified Time:', currentModifiedTime);
-        // console.log('Last Modified Time:', lastModifiedTime);
-        if (!lastModifiedTime || currentModifiedTime > lastModifiedTime) {
-            lastModifiedTime = currentModifiedTime;
-            console.log('File updated - processing...');
+      const stats = await fs.stat(dbfFilePath);
+      const currentModifiedTime = stats.mtimeMs;
+      // console.log('Current Modified Time:', currentModifiedTime);
+      // console.log('Last Modified Time:', lastModifiedTime);
+      if (!lastModifiedTime || currentModifiedTime > lastModifiedTime) {
+        lastModifiedTime = currentModifiedTime;
+        console.log("File updated - processing...");
 
-            const dbData = await getDbfData(dbfFilePath);
-            let results = await processData(dbData);
-            results.lastModifiedTime = currentModifiedTime;
-            await fs.writeFile('./db/balance.json', JSON.stringify(results, null, 2));
+        const dbData = await getDbfData(dbfFilePath);
+        let results = await processData(dbData);
+        results.lastModifiedTime = currentModifiedTime;
+        await fs.writeFile(
+          "./db/balance.json",
+          JSON.stringify(results, null, 2)
+        );
 
-            console.log('Results updated');
-        }
+        console.log("Results updated");
+      }
     } catch (error) {
-        console.error('Error checking file:', error);
+      console.error("Error checking file:", error);
     }
-}, 60 * 1000); // Check every 5 minutes
+  }, 60 * 1000); // Check every 5 minutes
 }
-  
-watchFile(); 
 
-const dbfDir = path.join(__dirname, "..",'d01-2324/data');
-const jsonDir = path.join(dbfDir, 'json');
-const indexFilePath = path.join(__dirname, 'db', 'index.json');
+watchFile();
+
+const dbfDir = path.join(__dirname, "..", "d01-2324/data");
+const jsonDir = path.join(dbfDir, "json");
+const indexFilePath = path.join(__dirname, "db", "index.json");
 
 async function convertDbfToJson() {
   try {
@@ -474,24 +562,33 @@ async function convertDbfToJson() {
 
     let index = {};
     try {
-      index = JSON.parse(await fs.readFile(indexFilePath, 'utf-8')) || {};
+      index = JSON.parse(await fs.readFile(indexFilePath, "utf-8")) || {};
     } catch (error) {
       // Index file likely doesn't exist, that's okay
     }
 
     const files = await fs.readdir(dbfDir);
     // filet .dbf / .DBF files
-    const dbfFiles = files.filter(file => path.extname(file).toLowerCase() === '.dbf' || path.extname(file).toLowerCase() === '.DBF');
+    const dbfFiles = files.filter(
+      (file) =>
+        path.extname(file).toLowerCase() === ".dbf" ||
+        path.extname(file).toLowerCase() === ".DBF"
+    );
 
     for (const dbfFile of dbfFiles) {
       const dbfFilePath = path.join(dbfDir, dbfFile);
-      const jsonFilePath = path.join(jsonDir, `${path.basename(path.basename(dbfFile, '.dbf'),".DBF")}.json`);
+      const jsonFilePath = path.join(
+        jsonDir,
+        `${path.basename(path.basename(dbfFile, ".dbf"), ".DBF")}.json`
+      );
 
       const fileStats = await fs.stat(dbfFilePath);
       const lastModifiedTime = fileStats.mtimeMs;
 
       if (!(index[dbfFile] && index[dbfFile] == lastModifiedTime)) {
-        console.log(`File ${dbfFile} has been modified since last conversion. Processing...`);
+        console.log(
+          `File ${dbfFile} has been modified since last conversion. Processing...`
+        );
         const dbData = await getDbfData(dbfFilePath);
         await fs.writeFile(jsonFilePath, JSON.stringify(dbData, null, 2));
         index[dbfFile] = lastModifiedTime;
@@ -501,13 +598,11 @@ async function convertDbfToJson() {
 
     await fs.writeFile(indexFilePath, JSON.stringify(index, null, 2));
   } catch (error) {
-    console.error('Error converting DBF to JSON or handling index:', error);
+    console.error("Error converting DBF to JSON or handling index:", error);
   }
 }
 
 setInterval(async () => {
-    convertDbfToJson();
-}, 60 * 1000); 
+  convertDbfToJson();
+}, 60 * 1000);
 convertDbfToJson();
-  
-  
