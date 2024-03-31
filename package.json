@@ -5,10 +5,10 @@
     "dbffile": "^1.9.3",
     "ejs": "^3.1.9",
     "express": "^4.18.3",
+    "html-template-02": "github:udayps-dev/html-template-02",
     "io": "^1.5.0",
     "node-dbf": "^0.4.0",
     "node-xlsx": "^0.23.0",
-    "public": "github:udayps-dev/html-template-01",
     "shapefile": "^0.6.6",
     "socket.io": "^4.7.5",
     "xlsx": "^0.19.3"

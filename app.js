@@ -7,8 +7,8 @@ const PORT = 80;
 const io = require('socket.io');
 
 const spawn = require('child_process').spawn;
-// app.use(express.static('./node_modules/public'));
-app.use(express.static('./public'));
+app.use(express.static('./node_modules/html-template-02'));
+// app.use(express.static('./public'));
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use((err, req, res, next) => {
