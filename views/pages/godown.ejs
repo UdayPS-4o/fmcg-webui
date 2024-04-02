@@ -27,10 +27,21 @@
                   <label for="receipt-no">Receipt No.</label>
                 </div>
               </div>
-              
-              <div class="col-md-12" >
-                <div class="accordion" id="itemContainer" >
-                  
+              <div class="col-md-6">
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="from-godown" name="from-godown" placeholder="From-godown." required value="" min="1">
+                  <label for="from-godown">From godown.</label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="to-godown" name="to-godown" placeholder="To-godown." required value="" min="1">
+                  <label for="to-godown">From godown.</label>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="accordion" id="itemContainer">
+
 
 
                 </div>
@@ -95,7 +106,7 @@
       avatar: "/assets/img/avatars/3.png"
     }));
 
-    
+
 
     usersList = usersList.filter(user => user.name && user.email);
     // usersList = usersList.slice(2);
@@ -105,146 +116,183 @@
 
     // tagifyElement("#party", usersList);
 
-    addItem()
-
-    function addItem() {
-      itemCounter++;
-      let item = document.createElement("div");
-      // set the div to <div class="accordion-item" id="item${itemCounter}">
-      item.classList.add("accordion-item");
-      item.id = `item${itemCounter}`;
-         
-      item.innerHTML = `
-         <h2 class="accordion-header" id="itemHeader${itemCounter}">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-               Add a new item
-            </button>
-         </h2>
-         <div id="item${itemCounter}" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample" style="">
-            <div class="accordion-body">
-               <div class="row">
-                  <div class="col-md-6">
-                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="item-name-${itemCounter}" name="item-name" placeholder="Item Name" required>
-                        <label for="item-name">Item Name</label>
-                     </div>
-                  </div>
-                  
-
-               </div>
-                  
-            </div>
-         </div>
-      `;
-
-      itemContainer.appendChild(item);
-
-      tagifyElement(`#item-name-${itemCounter}`, usersList);
+    addItem(usersList)
 
 
-    }
-
-
-
-    function tagifyElement(tagSEL, usersList) {
-
-
-
-      const TagifyUserListEl = document.querySelector(tagSEL);
-
-
-      function tagTemplate(tagData) {
-        return `
-            <tag title="${tagData.title || tagData.email}"
-            contenteditable='false'
-            spellcheck='false'
-            tabIndex="-1"
-            class="${this.settings.classNames.tag} ${tagData.class ? tagData.class : ''}"
-            ${this.getAttributes(tagData)}
-            >
-            <x title='' class='tagify__tag__removeBtn' role='button' aria-label='remove tag'></x>
-            <div>
-               <div class='tagify__tag__avatar-wrap'>
-                  <img onerror="this.style.visibility='hidden'" src="${tagData.avatar}">
-               </div>
-               <span class='tagify__tag-text'>${tagData.name}</span>
-            </div>
-            </tag>
-            `;
-      }
-
-      function suggestionItemTemplate(tagData) {
-        return `
-            <div ${this.getAttributes(tagData)}
-            class='tagify__dropdown__item align-items-center ${tagData.class ? tagData.class : ''}'
-            tabindex="0"
-            role="option"
-            >
-            ${tagData.avatar ?
-                     `<div class='tagify__dropdown__item__avatar-wrap'>
-                  <img onerror="this.style.visibility='hidden'" src="${tagData.avatar}">
-               </div>`
-                     : ''
-                  }
-            <strong>${tagData.name}</strong>
-            <span>${tagData.email}</span>
-            </div>
-            `;
-      }
-
-      // initialize Tagify on the above input node reference
-      let TagifyUserList = new Tagify(TagifyUserListEl, {
-        // mode:"select",
-        tagTextProp: "name", // very important since a custom template is used with this property as text. allows typing a "value" or a "name" to match input with whitelist
-        enforceWhitelist: true,
-        maxTags: 1,
-        skipInvalid: true, // do not remporarily add invalid tags
-        maxTags: 1,
-        dropdown: {
-          closeOnSelect: true,
-          enabled: 0,
-          classname: "users-list",
-          searchKeys: ["name", "email"] // very important to set by which keys to search for suggesttions when typing
-        },
-        templates: {
-          tag: tagTemplate,
-          dropdownItem: suggestionItemTemplate
-        },
-        whitelist: usersList
-      });
-
-      TagifyUserList.on("dropdown:show dropdown:updated", onDropdownShow);
-      TagifyUserList.on("dropdown:select", onSelectSuggestion);
-
-      let addAllSuggestionsEl;
-
-      function onDropdownShow(e) {
-        let dropdownContentEl = e.detail.tagify.DOM.dropdown.content;
-
-        if (TagifyUserList.suggestedListItems.length > 1) {
-          // addAllSuggestionsEl = getAddAllSuggestionsEl();
-
-          // insert "addAllSuggestionsEl" as the first element in the suggestions list
-          // dropdownContentEl.insertBefore(addAllSuggestionsEl, dropdownContentEl.firstChild);
-        }
-      }
-
-      function onSelectSuggestion(e) {
-        if (e.detail.elm == addAllSuggestionsEl) TagifyUserList.dropdown.selectAll.call(TagifyUserList);
-      }
-
-      function submit() {
-        TagifyUserList.value.forEach(element => {
-          changepassword(element.value);
-        });
-      }
-
-
-    }
 
 
 
   })()
+
+  function addItem(usersList) {
+    itemCounter++;
+    let item = document.createElement("div");
+    // set the div to <div class="accordion-item" id="item${itemCounter}">
+    item.classList.add("accordion-item");
+    item.id = `item${itemCounter}`;
+
+    item.innerHTML = `
+      <h2 class="accordion-header" id="heading${itemCounter}"> 
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${itemCounter}" aria-expanded="true" aria-controls="collapse${itemCounter}">
+        Add a new Item
+      </button>
+    </h2>
+    <div id="collapse${itemCounter}" class="accordion-collapse collapse show" aria-labelledby="heading${itemCounter}" data-bs-parent="#accordionExample"> 
+     <div class="accordion-body">
+           <div class="row">
+              <div class="col-md-3">
+                 <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="item-name-${itemCounter}" name="item-name" placeholder="" required>
+                    <label for="item-name">Item Name</label>
+                 </div>
+              </div>
+              
+            <div class="col-md-3">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="item-gst-${itemCounter}" name="item-gst" placeholder="GST" required>
+                    <label for="item-gst">GST</label>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="item-mrp-${itemCounter}" name="item-mrp" placeholder="MRP" required>
+                    <label for="item-mrp">MRP</label>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="item-rate-${itemCounter}" name="item-rate" placeholder="Rate" required>
+                    <label for="item-rate">Rate</label>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="item-qty-${itemCounter}" name="item-qty" placeholder="Quantity" required>
+                    <label for="item-qty">Quantity</label>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="item-amount-${itemCounter}" name="item-amount" placeholder="Amount" required>
+                    <label for="item-amount">Amount</label>
+                </div>
+            </div>
+              
+
+           </div>
+              
+        </div>
+  </div>
+      `;
+
+    itemContainer.appendChild(item);
+
+    tagifyElement(`#item-name-${itemCounter}`, usersList);
+
+
+  }
+
+
+  function tagifyElement(tagSEL, usersList) {
+
+
+
+const TagifyUserListEl = document.querySelector(tagSEL);
+
+
+function tagTemplate(tagData) {
+  return `
+      <tag title="${tagData.title || tagData.email}"
+      contenteditable='false'
+      spellcheck='false'
+      tabIndex="-1"
+      class="${this.settings.classNames.tag} ${tagData.class ? tagData.class : ''}"
+      ${this.getAttributes(tagData)}
+      >
+      <x title='' class='tagify__tag__removeBtn' role='button' aria-label='remove tag'></x>
+      <div>
+         <div class='tagify__tag__avatar-wrap'>
+            <img onerror="this.style.visibility='hidden'" src="${tagData.avatar}">
+         </div>
+         <span class='tagify__tag-text'>${tagData.name}</span>
+      </div>
+      </tag>
+      `;
+}
+
+function suggestionItemTemplate(tagData) {
+  return `
+      <div ${this.getAttributes(tagData)}
+      class='tagify__dropdown__item align-items-center ${tagData.class ? tagData.class : ''}'
+      tabindex="0"
+      role="option"
+      >
+      ${tagData.avatar ?
+               `<div class='tagify__dropdown__item__avatar-wrap'>
+            <img onerror="this.style.visibility='hidden'" src="${tagData.avatar}">
+         </div>`
+               : ''
+            }
+      <strong>${tagData.name}</strong>
+      <span>${tagData.email}</span>
+      </div>
+      `;
+}
+
+// initialize Tagify on the above input node reference
+let TagifyUserList = new Tagify(TagifyUserListEl, {
+  // mode:"select",
+  tagTextProp: "name", // very important since a custom template is used with this property as text. allows typing a "value" or a "name" to match input with whitelist
+  enforceWhitelist: true,
+  maxTags: 1,
+  skipInvalid: true, // do not remporarily add invalid tags
+  maxTags: 1,
+  dropdown: {
+    closeOnSelect: true,
+    enabled: 0,
+    classname: "users-list",
+    searchKeys: ["name", "email"] // very important to set by which keys to search for suggesttions when typing
+  },
+  templates: {
+    tag: tagTemplate,
+    dropdownItem: suggestionItemTemplate
+  },
+  whitelist: usersList
+});
+
+TagifyUserList.on("dropdown:show dropdown:updated", onDropdownShow);
+TagifyUserList.on("dropdown:select", onSelectSuggestion);
+
+let addAllSuggestionsEl;
+
+function onDropdownShow(e) {
+  let dropdownContentEl = e.detail.tagify.DOM.dropdown.content;
+
+  if (TagifyUserList.suggestedListItems.length > 1) {
+    // addAllSuggestionsEl = getAddAllSuggestionsEl();
+
+    // insert "addAllSuggestionsEl" as the first element in the suggestions list
+    // dropdownContentEl.insertBefore(addAllSuggestionsEl, dropdownContentEl.firstChild);
+  }
+}
+
+function onSelectSuggestion(e) {
+  if (e.detail.elm == addAllSuggestionsEl) TagifyUserList.dropdown.selectAll.call(TagifyUserList);
+}
+
+function submit() {
+  TagifyUserList.value.forEach(element => {
+    changepassword(element.value);
+  });
+}
+
+
+}
+
 </script>
 
 
