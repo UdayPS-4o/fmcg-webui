@@ -29,7 +29,7 @@ const getDbfData = (path) => {
   };
   
   const getCmplData = async (req, res) => {
-    const dbfFilePath = path.join(__dirname, "..", "d01-2324/data", "CMPL.dbf");
+    const dbfFilePath = path.join(__dirname, "..", "..", "d01-2324/data", "CMPL.dbf");
     console.log(dbfFilePath);
     try {
       const jsonData = await getDbfData(dbfFilePath);

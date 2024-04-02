@@ -25,6 +25,8 @@ app.get("/dbf/:file", async (req, res) => {
         path.join(
           __dirname,
           "..",
+          "..",
+          "..",
           "d01-2324",
           "data",
           "json",
@@ -34,6 +36,33 @@ app.get("/dbf/:file", async (req, res) => {
       )
       .then((data) => JSON.parse(data));
     res.render("pages/db/dbf", { dbfFiles, name: file, file: file });
+    // res.json(dbfFile);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+app.get("/api/dbf/:file", async (req, res) => {
+  let { file } = req.params;
+
+  try {
+    // let dbfFiles = await getDbfData(path.join(__dirname,"..",'d01-2324','data', file));
+    let dbfFiles = await fs
+      .readFile(
+        path.join(
+          __dirname,
+          "..",
+          "..",
+          "..",
+          "d01-2324",
+          "data",
+          "json",
+          file.replace(".dbf", ".json").replace(".DBF", ".json")
+        ),
+        "utf8"
+      )
+      // .then((data) => JSON.parse(data));
+    res.send(dbfFiles);
     // res.json(dbfFile);
   } catch (error) {
     res.status(500).send(error);
