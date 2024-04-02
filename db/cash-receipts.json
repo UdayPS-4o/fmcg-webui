@@ -32,11 +32,27 @@
     "discount": "85"
   },
   {
-    "date": "2024-03-31",
+    "date": "2024-04-03",
     "receiptNo": "42",
     "party": "CT000",
     "series": "ABCD",
     "amount": "12334",
+    "discount": ""
+  },
+  {
+    "date": "2024-04-03",
+    "receiptNo": "43",
+    "party": "AA001",
+    "series": "X",
+    "amount": "250",
+    "discount": ""
+  },
+  {
+    "date": "2024-04-03",
+    "series": "",
+    "receiptNo": "44",
+    "party": "BG006",
+    "amount": "1000",
     "discount": ""
   }
 ]

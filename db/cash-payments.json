@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "date": "2024-04-03",
+    "voucherNo": "123",
+    "party": "CT000",
+    "series": "S",
+    "amount": "1234",
+    "discount": ""
+  }
+]

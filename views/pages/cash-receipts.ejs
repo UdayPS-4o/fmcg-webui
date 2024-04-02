@@ -21,7 +21,13 @@
                               <label for="date">Date</label>
                            </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
+                           <div class="form-floating mb-3">
+                              <input type="text" class="form-control" id="series" name="series" placeholder="Series" min="0" step="0.01">
+                              <label for="series">Series</label>
+                           </div>
+                        </div>
+                        <div class="col-md-3">
                            <div class="form-floating mb-3">
                               <input type="number" class="form-control" id="receipt-no" name="receiptNo" placeholder="Receipt No." required  value="<%- nextReceiptNo %>" min="1">
                               <label for="receipt-no">Receipt No.</label>
@@ -33,19 +39,14 @@
                               <label for="party">Party</label>
                            </div>
                         </div>
-                        <div class="col-md-6">
-                           <div class="form-floating mb-3">
-                              <input type="text" class="form-control" id="series" name="series" placeholder="Series" min="0" step="0.01">
-                              <label for="series">Series</label>
-                           </div>
-                        </div>
-                        <div class="col-md-6">
+                        
+                        <div class="col-md-3">
                            <div class="form-floating mb-3">
                               <input type="number" class="form-control" id="amount" name="amount" placeholder="Amount" required min="0" step="0.01">
                               <label for="amount">Amount</label>
                            </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                            <div class="form-floating mb-3">
                               <input type="number" class="form-control" id="discount" name="discount" placeholder="Discount" min="0" step="0.01">
                               <label for="discount">Discount</label>
@@ -92,17 +93,25 @@
          const url = "/cmpl";
          const response = await fetch(url);
          const json = await response.json();
+         let balance = await fetch("/json/balance")
+         balance = await balance.json();
+         balance = balance.data;
+
+         function balanceOfUser(C_CODE){
+            let user = balance.find(user => user.partycode == C_CODE);
+            return user ? user.result : 0;
+         }
+
          // for each object in json array, take out C_NAME as name and C_CODE as email
          let usersList = json.map(user => ({
             name: user.C_NAME,
             title: user.C_NAME,
-            email: user.C_CODE,
-            Email: user.C_CODE,
+            email: `${user.C_CODE} | ${balanceOfUser(user.C_CODE)}`,
             value: user.C_CODE,
             avatar: "/assets/img/avatars/3.png"
          }));
 
-
+            
 
 
          usersList = usersList.filter(user => user.name && user.email);

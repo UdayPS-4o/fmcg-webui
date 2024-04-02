@@ -152,6 +152,6 @@ process.on("unhandledRejection", (reason, promise) => {
   
   setInterval(async () => {
     convertDbfToJson();
-  }, 60 * 1000);
+  }, 60 * 100);
   convertDbfToJson();
   

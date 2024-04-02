@@ -23,7 +23,7 @@
               </div>
               <div class="col-md-6">
                 <div class="form-floating mb-3">
-                  <input type="number" class="form-control" id="series" name="series" placeholder="Series" required value="" min="1">
+                  <input type="text" class="form-control" value="T" disabled id="series" name="series" required value="" min="1">
                   <label for="series">Series</label>
                 </div>
               </div>
@@ -204,10 +204,11 @@
             </div>
             <div class="col-md-3">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="amount-${itemCounter}" name="amount" placeholder="" required>
-                <label for="amount">Amount</label>
+                <input type="text" class="form-control" id="qty-${itemCounter}" name="qty" placeholder="" required>
+                <label for="qty">QTY</label>
               </div>
             </div>
+           
 
            </div>
               
@@ -333,7 +334,6 @@
       const pcBxInput = document.getElementById(`pc-bx-${itemCounter}`);
       const mrpInput = document.getElementById(`mrp-${itemCounter}`);
       const rateInput = document.getElementById(`rate-${itemCounter}`);
-      const amountInput = document.getElementById(`amount-${itemCounter}`);
 
       // Fill the form fields
       itemNameInput.value = selectedData.PRODUCT;
@@ -343,7 +343,6 @@
       pcBxInput.value = selectedData.MULT_F; // Or another field name if applicable
       mrpInput.value = selectedData.MRP1;
       rateInput.value = selectedData.PL_RATE; // Or a similar rate field
-      amountInput.value = ""; // Assuming the amount might need calculation
 
       addItem(); 
   }
