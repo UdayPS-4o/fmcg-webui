@@ -39,16 +39,15 @@ app.post("/login", async (req, res) => {
 });
   
 app.get("/login", (req, res) => {
-res.render("pages/login/login");
+  res.render("pages/login/login");
 });
 
 app.get("/logout", (req, res) => {
 res
-    .status(200)
-    .clearCookie("token")
-    .redirect("/login");
-    // .send("Logout successful." + redirect("/login", 2000));
-
+  .status(200)
+  .clearCookie("token")
+  .redirect("/login");
+  // .send("Logout successful." + redirect("/login", 2000));
 });
 
 module.exports = app;

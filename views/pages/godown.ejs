@@ -4,7 +4,7 @@
 <div class="container-xxl flex-grow-1 container-p-y">
   <h4 class="fw-bold py-3 mb-4">
     <!-- <span class="text-muted fw-light">Account Settings /</span> -->
-    GODOWN TRANSFER
+    <!-- GODOWN TRANSFER -->
   </h4>
 
   <div class="row">
@@ -93,8 +93,11 @@
   let items = {};
   let global_usersList = [];
   let pmplJSON = [];
-  (async () => {
+  let tagifyFrom, tagifyTo;
+  let godownList = [];
+  let STEP = 1;
 
+  (async () => {
     const url = "/api/dbf/pmpl.json";
     const response = await fetch(url);
     let json = await response.json();
@@ -113,7 +116,20 @@
     const resGodown = await fetch("/api/dbf/godown.json");
     const jsonGodown = await resGodown.json();
 
-    let godownList = jsonGodown.map(user => ({
+    const billDTL = await fetch("/api/dbf/billdtl.json");
+    const jsonBill = await billDTL.json();
+
+    const purdtl = await fetch("/api/dbf/purdtl.json")
+    const jsonPur = await purdtl.json();
+
+
+    
+    
+    
+    
+
+
+    godownList = jsonGodown.map(user => ({
       name: user.GDN_NAME,
       title: user.GDN_NAME,
       email: `${user.GDN_CODE}`,
@@ -127,15 +143,20 @@
     godownList = godownList.filter(user => user.name && user.email);
 
     global_usersList = usersList;
-    addItem()
     
     console.log(godownList)
-    tagifyElement("#from-godown", godownList);
-    tagifyElement("#to-godown", godownList);
-
-
-
+    // tagifyElement("#from-godown", godownList);
+    // tagifyElement("#to-godown", godownList);
+    // also send element id to tagifyElement function in godownList json
+    godownList = godownList.map(user => ({
+      ...user,
+      element: "#from-godown"
+    }));
+    tagifyFrom = tagifyElement("#from-godown", godownList);
+ 
   })()
+
+  
 
   function addItem() {
     let usersList = global_usersList;
@@ -159,50 +180,50 @@
     <div id="collapse${itemCounter}" class="accordion-collapse collapse show" aria-labelledby="heading${itemCounter}" data-bs-parent="#accordionExample"> 
      <div class="accordion-body">
            <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-4">
                  <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="item-name-${itemCounter}" name="item-name" placeholder="" required>
+                    <input type="text" class="form-control" disabled id="item-name-${itemCounter}" name="item-name" placeholder="" required>
                     <label for="item-name">Item Name</label>
                  </div>
               </div>
               
-            <div class="col-md-3">
+            <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="pack-${itemCounter}" name="pack" placeholder="" required>
+                <input type="text" class="form-control" disabled id="pack-${itemCounter}" name="pack" placeholder="" required>
                 <label for="pack">Pack</label>
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="gst-${itemCounter}" name="gst" placeholder="" required>
+                <input type="text" class="form-control" disabled id="gst-${itemCounter}" name="gst" placeholder="" required>
                 <label for="gst">GST%</label>
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="unit-${itemCounter}" name="unit" placeholder="" required>
                 <label for="unit">Unit</label>
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="pc-bx-${itemCounter}" name="pc-bx" placeholder="" required>
+                <input type="text" class="form-control" disabled id="pc-bx-${itemCounter}" name="pc-bx" placeholder="" required>
                 <label for="pc-bx">Pc/Bx</label>
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="mrp-${itemCounter}" name="mrp" placeholder="" required>
+                <input type="text" class="form-control" disabled id="mrp-${itemCounter}" name="mrp" placeholder="" required>
                 <label for="mrp">M.R.P.</label>
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="rate-${itemCounter}" name="rate" placeholder="" required>
+                <input type="text" class="form-control" disabled id="rate-${itemCounter}" name="rate" placeholder="" required>
                 <label for="rate">Rate</label>
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="qty-${itemCounter}" name="qty" placeholder="" required>
                 <label for="qty">QTY</label>
@@ -313,49 +334,109 @@
       });
     }
 
-
+    return TagifyUserList;
   }
 
 
   function onSelectSuggestion(e) {
-  if(!e?.detail?.data?.itemCounter) return; // Check for valid data
-  console.log("Item Selected", e.detail.data);
-  items[itemCounter] = e.detail.data;
+    console.log(e);
 
-  if(itemCounter == e.detail.data.itemCounter){
+    if(STEP < 3){
+      let stp = STEP == 1 ? "from" : "to";
+      setTimeout(() => {
+        document.querySelector(`.tagify [element="#${stp}-godown"] x`).style.visibility = "hidden";
+      }, 10);
+
+      STEP++;
+
+      if (STEP == 2) {
+        
+        godownList = godownList.map(user => ({
+          ...user,
+          element: "#to-godown"
+        }));
+        godownList = godownList.filter(user => user.value != e?.detail?.data?.value);
+        tagifyTo   = tagifyElement("#to-godown", godownList);
+      }
+    
+      if (STEP == 3) {
+        addItem()
+      }
+    }
+
+    if(!e?.detail?.data?.itemCounter) return; // Check for valid data
+    console.log("Item Selected", e.detail.data);
+    items[itemCounter] = e.detail.data;
+    itemCounter = e.detail.data.itemCounter;
+    controlAccordion('collapse', itemCounter-1);
+    if(itemCounter == e.detail.data.itemCounter){
       // Access the selected data
       const selectedData = e.detail.data.value;
 
       // Get references to the form elements
       const itemNameInput = document.getElementById(`item-name-${itemCounter}`);
-      const packInput = document.getElementById(`pack-${itemCounter}`);
-      const gstInput = document.getElementById(`gst-${itemCounter}`);
-      const unitInput = document.getElementById(`unit-${itemCounter}`);
-      const pcBxInput = document.getElementById(`pc-bx-${itemCounter}`);
-      const mrpInput = document.getElementById(`mrp-${itemCounter}`);
-      const rateInput = document.getElementById(`rate-${itemCounter}`);
+      const packInput     = document.getElementById(`pack-${itemCounter}`);
+      const gstInput      = document.getElementById(`gst-${itemCounter}`);
+      const unitInput     = document.getElementById(`unit-${itemCounter}`);
+      const pcBxInput     = document.getElementById(`pc-bx-${itemCounter}`);
+      const mrpInput      = document.getElementById(`mrp-${itemCounter}`);
+      const rateInput     = document.getElementById(`rate-${itemCounter}`);
 
       // Fill the form fields
       itemNameInput.value = selectedData.PRODUCT;
       packInput.value = selectedData.PACK;
       gstInput.value = selectedData.GST;
-      unitInput.value = selectedData.UNIT_1; // Or another unit field if applicable
-      pcBxInput.value = selectedData.MULT_F; // Or another field name if applicable
+      unitInput.value = selectedData.UNIT_1; 
+      pcBxInput.value = selectedData.MULT_F; 
       mrpInput.value = selectedData.MRP1;
-      rateInput.value = selectedData.PL_RATE; // Or a similar rate field
+      rateInput.value = selectedData.PL_RATE;
 
       addItem(); 
-  }
+    }
 }
 
   function onRemoveTag(e) {
+    console.log(e?.detail?.data)
     if(!e?.detail?.data?.itemCounter) return;
     console.log("Item Removed", e.detail.data);
     items[e.detail.data.itemCounter] = null;
-    
+    itemCounter = e.detail.data.itemCounter;
+    // Get references to the form elements
+      const packInput     = document.getElementById(`pack-${itemCounter}`);
+      const gstInput      = document.getElementById(`gst-${itemCounter}`);
+      const unitInput     = document.getElementById(`unit-${itemCounter}`);
+      const pcBxInput     = document.getElementById(`pc-bx-${itemCounter}`);
+      const mrpInput      = document.getElementById(`mrp-${itemCounter}`);
+      const rateInput     = document.getElementById(`rate-${itemCounter}`);
+
+      packInput.value     = "";
+      gstInput.value      = "";
+      unitInput.value     = "";
+      pcBxInput.value     = "";
+      mrpInput.value      = "";
+      rateInput.value     = "";
   }
 
-  
+  function controlAccordion(action, index) {
+    // Using 1-based indexing for user-friendliness
+    let collapseId = "#collapse" + index; 
+    let collapseElement = $(collapseId);
+
+    if (action === 'expand') {
+      collapseElement.collapse('show');
+    } else if (action === 'collapse') {
+      collapseElement.collapse('hide');
+      setTimeout(() => {
+        // let currentScrollPosition = window.scrollY;
+        // let newScrollPosition = currentScrollPosition + 100;
+        // window.scrollTo(0, newScrollPosition);
+      }, 100);
+    } else {
+      console.error('Invalid action:', action);
+    }
+  }
+
+
 </script>
 
 
