@@ -54,5 +54,13 @@
     "party": "BG006",
     "amount": "1000",
     "discount": ""
+  },
+  {
+    "date": "2024-04-06",
+    "series": "A",
+    "receiptNo": "45",
+    "party": "CT000",
+    "amount": "123",
+    "discount": ""
   }
 ]

@@ -367,7 +367,6 @@
     if(!e?.detail?.data?.itemCounter) return; // Check for valid data
     console.log("Item Selected", e.detail.data);
     items[itemCounter] = e.detail.data;
-    itemCounter = e.detail.data.itemCounter;
     controlAccordion('collapse', itemCounter-1);
     if(itemCounter == e.detail.data.itemCounter){
       // Access the selected data
@@ -390,8 +389,10 @@
       pcBxInput.value = selectedData.MULT_F; 
       mrpInput.value = selectedData.MRP1;
       rateInput.value = selectedData.PL_RATE;
-
-      addItem(); 
+      console.log("itemCounter", itemCounter, e.detail.data.itemCounter, itemCounter == e.detail.data.itemCounter)
+      if(itemCounter == e.detail.data.itemCounter){
+        addItem(); 
+      }
     }
 }
 
@@ -400,7 +401,6 @@
     if(!e?.detail?.data?.itemCounter) return;
     console.log("Item Removed", e.detail.data);
     items[e.detail.data.itemCounter] = null;
-    itemCounter = e.detail.data.itemCounter;
     // Get references to the form elements
       const packInput     = document.getElementById(`pack-${itemCounter}`);
       const gstInput      = document.getElementById(`gst-${itemCounter}`);
@@ -418,6 +418,7 @@
   }
 
   function controlAccordion(action, index) {
+    return;
     // Using 1-based indexing for user-friendliness
     let collapseId = "#collapse" + index; 
     let collapseElement = $(collapseId);

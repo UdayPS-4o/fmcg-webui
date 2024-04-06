@@ -5,7 +5,7 @@ const path = require("path");
 const {redirect} = require("./utilities");
 
 
-app.post("/login", async (req, res) => {
+app.post("/api/login", async (req, res) => {
   const formData = req.body;
   console.log(formData);
   const { username, password } = formData;
