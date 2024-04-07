@@ -1,13 +1,13 @@
 {
-  "lastModifiedTime": 1712092181841.18,
+  "lastModifiedTime": 1712445271094.2256,
   "data": [
     {
       "partycode": "GG010",
-      "result": "672434.6699997187 DR"
+      "result": "137388.5499996841 DR"
     },
     {
       "partycode": "VG010",
-      "result": "2627716.0699999603 CR"
+      "result": "2654468.4099999648 CR"
     },
     {
       "partycode": "GK015",
@@ -15,11 +15,11 @@
     },
     {
       "partycode": "GG027",
-      "result": "15871.429999999847 CR"
+      "result": "15674.829999999842 CR"
     },
     {
       "partycode": "VG027",
-      "result": "57221.65999999999 DR"
+      "result": "57257.05999999999 DR"
     },
     {
       "partycode": "MA011",
@@ -27,35 +27,35 @@
     },
     {
       "partycode": "GG014",
-      "result": "214726.47000006214 DR"
+      "result": "108230.65000006184 DR"
     },
     {
       "partycode": "GG015",
-      "result": "184890.73999999883 DR"
+      "result": "159973.58999999845 DR"
     },
     {
       "partycode": "GG016",
-      "result": "3031347.030000083 DR"
+      "result": "2208533.810000062 DR"
     },
     {
       "partycode": "GG020",
-      "result": "1307527.020000007 DR"
+      "result": "729159.3700000104 DR"
     },
     {
       "partycode": "VG014",
-      "result": "686259.8900000012 CR"
+      "result": "684162.1800000011 CR"
     },
     {
       "partycode": "VG015",
-      "result": "228828.55999999962 CR"
+      "result": "228603.88999999964 CR"
     },
     {
       "partycode": "VG016",
-      "result": "9913497.30999998 CR"
+      "result": "9885721.48999998 CR"
     },
     {
       "partycode": "VG020",
-      "result": "2815155.179999986 CR"
+      "result": "2809176.399999987 CR"
     },
     {
       "partycode": "GK016",
@@ -63,7 +63,7 @@
     },
     {
       "partycode": "EE001",
-      "result": "1029.9300000000017 DR"
+      "result": "3.2299999999970623 CR"
     },
     {
       "partycode": "SN010",
@@ -91,7 +91,7 @@
     },
     {
       "partycode": "BU069",
-      "result": "108396 DR"
+      "result": "62963 DR"
     },
     {
       "partycode": "BK015",
@@ -99,7 +99,7 @@
     },
     {
       "partycode": "CS001",
-      "result": "155294 DR"
+      "result": "166934 DR"
     },
     {
       "partycode": "BG005",
@@ -107,11 +107,11 @@
     },
     {
       "partycode": "GG023",
-      "result": "145130.21000000462 CR"
+      "result": "132831.83000000473 CR"
     },
     {
       "partycode": "VG023",
-      "result": "40484.510000000475 CR"
+      "result": "38270.7900000005 CR"
     },
     {
       "partycode": "BP112",
@@ -123,11 +123,11 @@
     },
     {
       "partycode": "GG026",
-      "result": "234724.24999996647 CR"
+      "result": "193346.56999996863 CR"
     },
     {
       "partycode": "VG026",
-      "result": "1650434.5799999945 CR"
+      "result": "1645469.259999995 CR"
     },
     {
       "partycode": "BU207",
@@ -139,7 +139,7 @@
     },
     {
       "partycode": "BG002",
-      "result": "0 CR"
+      "result": "2681 DR"
     },
     {
       "partycode": "MA090",
@@ -147,7 +147,7 @@
     },
     {
       "partycode": "BD036",
-      "result": "61496 DR"
+      "result": "71496 DR"
     },
     {
       "partycode": "BK011",
@@ -159,7 +159,7 @@
     },
     {
       "partycode": "BU010",
-      "result": "0 CR"
+      "result": "20 DR"
     },
     {
       "partycode": "SN049",
@@ -175,7 +175,7 @@
     },
     {
       "partycode": "BU264",
-      "result": "27950 DR"
+      "result": "10 DR"
     },
     {
       "partycode": "BC082",
@@ -187,11 +187,11 @@
     },
     {
       "partycode": "BC029",
-      "result": "0 CR"
+      "result": "100 DR"
     },
     {
       "partycode": "BG009",
-      "result": "19871 DR"
+      "result": "9894 DR"
     },
     {
       "partycode": "MA171",
@@ -203,7 +203,7 @@
     },
     {
       "partycode": "BR010",
-      "result": "0 CR"
+      "result": "62486 DR"
     },
     {
       "partycode": "BP002",
@@ -211,7 +211,7 @@
     },
     {
       "partycode": "MA088",
-      "result": "25340 DR"
+      "result": "74364 DR"
     },
     {
       "partycode": "BC004",
@@ -223,7 +223,7 @@
     },
     {
       "partycode": "BD001",
-      "result": "0 CR"
+      "result": "10000 DR"
     },
     {
       "partycode": "BC235",
@@ -247,11 +247,11 @@
     },
     {
       "partycode": "BU019",
-      "result": "29372 DR"
+      "result": "57578 DR"
     },
     {
       "partycode": "BU080",
-      "result": "8544 DR"
+      "result": "0 CR"
     },
     {
       "partycode": "BU173",
@@ -263,7 +263,7 @@
     },
     {
       "partycode": "CX002",
-      "result": "28196.65999999999 CR"
+      "result": "28157.88999999999 CR"
     },
     {
       "partycode": "GK147",
@@ -291,7 +291,7 @@
     },
     {
       "partycode": "BC230",
-      "result": "36454 DR"
+      "result": "74325 DR"
     },
     {
       "partycode": "BP001",
@@ -299,7 +299,7 @@
     },
     {
       "partycode": "BP042",
-      "result": "0 CR"
+      "result": "1 DR"
     },
     {
       "partycode": "BD011",
@@ -307,7 +307,7 @@
     },
     {
       "partycode": "LD009",
-      "result": "82570 DR"
+      "result": "87280 DR"
     },
     {
       "partycode": "LD013",
@@ -315,7 +315,7 @@
     },
     {
       "partycode": "CT205",
-      "result": "2021816.480000019 CR"
+      "result": "1000113.4800000191 CR"
     },
     {
       "partycode": "CT188",
@@ -323,7 +323,7 @@
     },
     {
       "partycode": "EE024",
-      "result": "3230152 DR"
+      "result": "3206152 DR"
     },
     {
       "partycode": "MA173",
@@ -335,7 +335,7 @@
     },
     {
       "partycode": "LD047",
-      "result": "246425 DR"
+      "result": "282031 DR"
     },
     {
       "partycode": "BG004",
@@ -343,7 +343,7 @@
     },
     {
       "partycode": "BK190",
-      "result": "9.313225746154785e-10 DR"
+      "result": "0.31000000052154064 DR"
     },
     {
       "partycode": "BK265",
@@ -367,7 +367,7 @@
     },
     {
       "partycode": "BK268",
-      "result": "24520 DR"
+      "result": "0 CR"
     },
     {
       "partycode": "BK269",
@@ -375,11 +375,11 @@
     },
     {
       "partycode": "BK197",
-      "result": "62990 DR"
+      "result": "22370 DR"
     },
     {
       "partycode": "BK020",
-      "result": "130749 DR"
+      "result": "55709 DR"
     },
     {
       "partycode": "BK152",
@@ -391,15 +391,15 @@
     },
     {
       "partycode": "BB009",
-      "result": "36347598.84999895 CR"
+      "result": "36578831.02999896 CR"
     },
     {
       "partycode": "BK191",
-      "result": "422299 DR"
+      "result": "332139 DR"
     },
     {
       "partycode": "BB016",
-      "result": "768510 CR"
+      "result": "754802 CR"
     },
     {
       "partycode": "LD004",
@@ -459,11 +459,11 @@
     },
     {
       "partycode": "BC003",
-      "result": "152814 DR"
+      "result": "95726 DR"
     },
     {
       "partycode": "MA111",
-      "result": "0 CR"
+      "result": "1 CR"
     },
     {
       "partycode": "MA125",
@@ -479,7 +479,7 @@
     },
     {
       "partycode": "BU194",
-      "result": "340937 DR"
+      "result": "302128 DR"
     },
     {
       "partycode": "BK073",
@@ -487,7 +487,7 @@
     },
     {
       "partycode": "GK136",
-      "result": "0 CR"
+      "result": "33515 DR"
     },
     {
       "partycode": "LD074",
@@ -507,11 +507,11 @@
     },
     {
       "partycode": "LD204",
-      "result": "0 CR"
+      "result": "45 DR"
     },
     {
       "partycode": "EE003",
-      "result": "166319.83000000106 DR"
+      "result": "166303.01000000106 DR"
     },
     {
       "partycode": "EE016",
@@ -535,11 +535,11 @@
     },
     {
       "partycode": "EE093",
-      "result": "97568.5 DR"
+      "result": "96053.5 DR"
     },
     {
       "partycode": "MA143",
-      "result": "178408 DR"
+      "result": "176335 DR"
     },
     {
       "partycode": "BU118",
@@ -547,11 +547,11 @@
     },
     {
       "partycode": "BK084",
-      "result": "43136 DR"
+      "result": "18374 DR"
     },
     {
       "partycode": "BK258",
-      "result": "0 CR"
+      "result": "40 CR"
     },
     {
       "partycode": "BK270",
@@ -559,7 +559,7 @@
     },
     {
       "partycode": "MA009",
-      "result": "0 CR"
+      "result": "45 DR"
     },
     {
       "partycode": "BK271",
@@ -579,7 +579,7 @@
     },
     {
       "partycode": "BR012",
-      "result": "0 CR"
+      "result": "10260 DR"
     },
     {
       "partycode": "BG058",
@@ -587,7 +587,7 @@
     },
     {
       "partycode": "BU105",
-      "result": "0 CR"
+      "result": "9015 DR"
     },
     {
       "partycode": "BU030",
@@ -595,7 +595,7 @@
     },
     {
       "partycode": "MA177",
-      "result": "0 CR"
+      "result": "3 DR"
     },
     {
       "partycode": "BU035",
@@ -603,7 +603,7 @@
     },
     {
       "partycode": "BU008",
-      "result": "0 CR"
+      "result": "2005 DR"
     },
     {
       "partycode": "BU132",
@@ -631,7 +631,7 @@
     },
     {
       "partycode": "BC218",
-      "result": "0 CR"
+      "result": "15292 DR"
     },
     {
       "partycode": "LD014",
@@ -643,7 +643,7 @@
     },
     {
       "partycode": "BC186",
-      "result": "11300 DR"
+      "result": "28140 DR"
     },
     {
       "partycode": "BU226",
@@ -703,7 +703,7 @@
     },
     {
       "partycode": "LD066",
-      "result": "0 CR"
+      "result": "100 DR"
     },
     {
       "partycode": "LD012",
@@ -735,7 +735,7 @@
     },
     {
       "partycode": "BR104",
-      "result": "0 CR"
+      "result": "55077 DR"
     },
     {
       "partycode": "BK210",
@@ -751,11 +751,11 @@
     },
     {
       "partycode": "EE034",
-      "result": "142623 DR"
+      "result": "142389 DR"
     },
     {
       "partycode": "BG039",
-      "result": "0 CR"
+      "result": "24 DR"
     },
     {
       "partycode": "BK227",
@@ -795,7 +795,7 @@
     },
     {
       "partycode": "LD135",
-      "result": "2285 DR"
+      "result": "30646 DR"
     },
     {
       "partycode": "BU155",
@@ -807,11 +807,11 @@
     },
     {
       "partycode": "MA153",
-      "result": "70973 DR"
+      "result": "60505 DR"
     },
     {
       "partycode": "LD040",
-      "result": "28472 DR"
+      "result": "33472 DR"
     },
     {
       "partycode": "BU020",
@@ -827,7 +827,7 @@
     },
     {
       "partycode": "LD041",
-      "result": "36276 DR"
+      "result": "43260 DR"
     },
     {
       "partycode": "BC203",
@@ -835,11 +835,11 @@
     },
     {
       "partycode": "BC016",
-      "result": "2300 DR"
+      "result": "9925 DR"
     },
     {
       "partycode": "BP177",
-      "result": "493919.1200000001 DR"
+      "result": "563919.1200000001 DR"
     },
     {
       "partycode": "BS017",
@@ -863,7 +863,7 @@
     },
     {
       "partycode": "MA167",
-      "result": "0 CR"
+      "result": "1 CR"
     },
     {
       "partycode": "BP019",
@@ -879,7 +879,7 @@
     },
     {
       "partycode": "OT056",
-      "result": "0 CR"
+      "result": "96 DR"
     },
     {
       "partycode": "GK137",
@@ -911,7 +911,7 @@
     },
     {
       "partycode": "BU045",
-      "result": "8236 DR"
+      "result": "6205 DR"
     },
     {
       "partycode": "BU126",
@@ -927,19 +927,19 @@
     },
     {
       "partycode": "VI015",
-      "result": "214517.83000000002 DR"
+      "result": "211303.11000000004 DR"
     },
     {
       "partycode": "VI016",
-      "result": "9845507.669999998 DR"
+      "result": "9669625.4 DR"
     },
     {
       "partycode": "CT113",
-      "result": "218401.99000017345 DR"
+      "result": "1556132.0000001788 DR"
     },
     {
       "partycode": "VI014",
-      "result": "661356.91 DR"
+      "result": "653934.41 DR"
     },
     {
       "partycode": "BU031",
@@ -955,7 +955,7 @@
     },
     {
       "partycode": "MA003",
-      "result": "45639 DR"
+      "result": "86011 DR"
     },
     {
       "partycode": "MK026",
@@ -971,11 +971,11 @@
     },
     {
       "partycode": "AG028",
-      "result": "19670 DR"
+      "result": "46432 CR"
     },
     {
       "partycode": "BK005",
-      "result": "15970 DR"
+      "result": "22820 DR"
     },
     {
       "partycode": "BG049",
@@ -991,7 +991,7 @@
     },
     {
       "partycode": "BC089",
-      "result": "0 CR"
+      "result": "153724 DR"
     },
     {
       "partycode": "LD160",
@@ -1003,7 +1003,7 @@
     },
     {
       "partycode": "BC221",
-      "result": "0 CR"
+      "result": "89480 DR"
     },
     {
       "partycode": "SN061",
@@ -1011,7 +1011,7 @@
     },
     {
       "partycode": "EE108",
-      "result": "341081.29999999993 DR"
+      "result": "332731.29999999993 DR"
     },
     {
       "partycode": "EE027",
@@ -1043,7 +1043,7 @@
     },
     {
       "partycode": "BR103",
-      "result": "10416 DR"
+      "result": "60739 DR"
     },
     {
       "partycode": "BU009",
@@ -1051,7 +1051,7 @@
     },
     {
       "partycode": "CT229",
-      "result": "46.599999997764826 CR"
+      "result": "661591.8999999985 DR"
     },
     {
       "partycode": "BD002",
@@ -1111,11 +1111,11 @@
     },
     {
       "partycode": "VI020",
-      "result": "2872098.0500000007 DR"
+      "result": "2762013.1800000006 DR"
     },
     {
       "partycode": "SH090",
-      "result": "0 CR"
+      "result": "1 DR"
     },
     {
       "partycode": "BP041",
@@ -1151,7 +1151,7 @@
     },
     {
       "partycode": "BC068",
-      "result": "0 CR"
+      "result": "4940 DR"
     },
     {
       "partycode": "BU218",
@@ -1207,7 +1207,7 @@
     },
     {
       "partycode": "BK139",
-      "result": "9584 DR"
+      "result": "104 DR"
     },
     {
       "partycode": "BK263",
@@ -1247,7 +1247,7 @@
     },
     {
       "partycode": "BK275",
-      "result": "0 CR"
+      "result": "20 DR"
     },
     {
       "partycode": "BK280",
@@ -1279,7 +1279,7 @@
     },
     {
       "partycode": "GK131",
-      "result": "308404 DR"
+      "result": "222154 DR"
     },
     {
       "partycode": "MA021",
@@ -1315,7 +1315,7 @@
     },
     {
       "partycode": "CT175",
-      "result": "8105 DR"
+      "result": "122157 DR"
     },
     {
       "partycode": "BU041",
@@ -1363,11 +1363,11 @@
     },
     {
       "partycode": "BC001",
-      "result": "0 CR"
+      "result": "8884 DR"
     },
     {
       "partycode": "LD108",
-      "result": "20018 DR"
+      "result": "72941 DR"
     },
     {
       "partycode": "LD042",
@@ -1475,7 +1475,7 @@
     },
     {
       "partycode": "BC116",
-      "result": "0 CR"
+      "result": "13050 DR"
     },
     {
       "partycode": "BK214",
@@ -1491,7 +1491,7 @@
     },
     {
       "partycode": "BK252",
-      "result": "0 CR"
+      "result": "1 DR"
     },
     {
       "partycode": "BK174",
@@ -1519,7 +1519,7 @@
     },
     {
       "partycode": "BK055",
-      "result": "0 CR"
+      "result": "1 DR"
     },
     {
       "partycode": "KG007",
@@ -1559,7 +1559,7 @@
     },
     {
       "partycode": "LD193",
-      "result": "0 CR"
+      "result": "11180 DR"
     },
     {
       "partycode": "LD115",
@@ -1599,7 +1599,7 @@
     },
     {
       "partycode": "BP043",
-      "result": "0 CR"
+      "result": "100 DR"
     },
     {
       "partycode": "BP139",
@@ -1611,7 +1611,7 @@
     },
     {
       "partycode": "BC208",
-      "result": "43228 DR"
+      "result": "65938 DR"
     },
     {
       "partycode": "BU159",
@@ -1623,7 +1623,7 @@
     },
     {
       "partycode": "EE007",
-      "result": "3915652 DR"
+      "result": "3948081 DR"
     },
     {
       "partycode": "LD111",
@@ -1643,11 +1643,11 @@
     },
     {
       "partycode": "BK264",
-      "result": "0 CR"
+      "result": "100 DR"
     },
     {
       "partycode": "BK222",
-      "result": "0 CR"
+      "result": "61990 DR"
     },
     {
       "partycode": "LD179",
@@ -1747,7 +1747,7 @@
     },
     {
       "partycode": "CT023",
-      "result": "0 CR"
+      "result": "0.10999999986961484 DR"
     },
     {
       "partycode": "BP151",
@@ -1759,7 +1759,7 @@
     },
     {
       "partycode": "LD129",
-      "result": "0 CR"
+      "result": "85 DR"
     },
     {
       "partycode": "LD143",
@@ -1835,7 +1835,7 @@
     },
     {
       "partycode": "BC039",
-      "result": "10100 DR"
+      "result": "28772 DR"
     },
     {
       "partycode": "BC008",
@@ -1879,7 +1879,7 @@
     },
     {
       "partycode": "EE105",
-      "result": "59236.33 DR"
+      "result": "56066.33 DR"
     },
     {
       "partycode": "BR118",
@@ -1903,7 +1903,7 @@
     },
     {
       "partycode": "LD101",
-      "result": "50250 DR"
+      "result": "56765 DR"
     },
     {
       "partycode": "BC005",
@@ -1915,7 +1915,7 @@
     },
     {
       "partycode": "BR120",
-      "result": "0 CR"
+      "result": "1227 DR"
     },
     {
       "partycode": "BK281",
@@ -1927,7 +1927,7 @@
     },
     {
       "partycode": "BU216",
-      "result": "0 CR"
+      "result": "10 CR"
     },
     {
       "partycode": "AD008",
@@ -1967,7 +1967,7 @@
     },
     {
       "partycode": "BC030",
-      "result": "55224 DR"
+      "result": "58031 DR"
     },
     {
       "partycode": "BC056",
@@ -1991,7 +1991,7 @@
     },
     {
       "partycode": "GK044",
-      "result": "0 CR"
+      "result": "200 DR"
     },
     {
       "partycode": "LD096",
@@ -2019,7 +2019,7 @@
     },
     {
       "partycode": "SN038",
-      "result": "26340 DR"
+      "result": "90 DR"
     },
     {
       "partycode": "LD046",
@@ -2091,7 +2091,7 @@
     },
     {
       "partycode": "BK287",
-      "result": "0 CR"
+      "result": "50 DR"
     },
     {
       "partycode": "BK218",
@@ -2159,7 +2159,7 @@
     },
     {
       "partycode": "BK284",
-      "result": "47400 DR"
+      "result": "0 CR"
     },
     {
       "partycode": "EE110",
@@ -2175,11 +2175,11 @@
     },
     {
       "partycode": "SH006",
-      "result": "8771 DR"
+      "result": "0 CR"
     },
     {
       "partycode": "SB008",
-      "result": "1037101.7499999981 DR"
+      "result": "437101.74999999814 DR"
     },
     {
       "partycode": "BK126",
@@ -2187,7 +2187,7 @@
     },
     {
       "partycode": "BB012",
-      "result": "0 CR"
+      "result": "2600 DR"
     },
     {
       "partycode": "BB015",
@@ -2199,7 +2199,7 @@
     },
     {
       "partycode": "BC213",
-      "result": "0 CR"
+      "result": "2 CR"
     },
     {
       "partycode": "KG011",
@@ -2211,7 +2211,7 @@
     },
     {
       "partycode": "BC002",
-      "result": "0 CR"
+      "result": "18040 DR"
     },
     {
       "partycode": "GK130",
@@ -2239,7 +2239,7 @@
     },
     {
       "partycode": "BK289",
-      "result": "0 CR"
+      "result": "100 DR"
     },
     {
       "partycode": "GK154",
@@ -2255,7 +2255,7 @@
     },
     {
       "partycode": "AG024",
-      "result": "0 CR"
+      "result": "2 CR"
     },
     {
       "partycode": "BP116",
@@ -2263,7 +2263,7 @@
     },
     {
       "partycode": "CT154",
-      "result": "0 CR"
+      "result": "95500 CR"
     },
     {
       "partycode": "BC118",
@@ -2271,7 +2271,7 @@
     },
     {
       "partycode": "EE030",
-      "result": "181373 DR"
+      "result": "122287 DR"
     },
     {
       "partycode": "MA166",
@@ -2311,11 +2311,11 @@
     },
     {
       "partycode": "BR098",
-      "result": "20000 DR"
+      "result": "40000 DR"
     },
     {
       "partycode": "BR005",
-      "result": "6779.719999999972 DR"
+      "result": "31879.719999999972 DR"
     },
     {
       "partycode": "BR109",
@@ -2327,7 +2327,7 @@
     },
     {
       "partycode": "BR110",
-      "result": "0 CR"
+      "result": "8143 DR"
     },
     {
       "partycode": "BR090",
@@ -2335,7 +2335,7 @@
     },
     {
       "partycode": "DZ005",
-      "result": "86840.93999999994 CR"
+      "result": "80392.07999999999 CR"
     },
     {
       "partycode": "BG062",
@@ -2387,7 +2387,7 @@
     },
     {
       "partycode": "BK291",
-      "result": "0 CR"
+      "result": "1 CR"
     },
     {
       "partycode": "BK295",
@@ -2419,7 +2419,7 @@
     },
     {
       "partycode": "DL003",
-      "result": "200000 DR"
+      "result": "164000 DR"
     },
     {
       "partycode": "LD196",
@@ -2427,7 +2427,7 @@
     },
     {
       "partycode": "AA001",
-      "result": "11513681.959999999 CR"
+      "result": "10891886.299999999 CR"
     },
     {
       "partycode": "CT197",
@@ -2519,7 +2519,7 @@
     },
     {
       "partycode": "BD010",
-      "result": "0 CR"
+      "result": "134 DR"
     },
     {
       "partycode": "BK034",
@@ -2543,7 +2543,7 @@
     },
     {
       "partycode": "EE098",
-      "result": "657875.51 CR"
+      "result": "603142.51 CR"
     },
     {
       "partycode": "MA042",
@@ -2559,11 +2559,11 @@
     },
     {
       "partycode": "LD104",
-      "result": "0 CR"
+      "result": "100 DR"
     },
     {
       "partycode": "BC027",
-      "result": "22010 DR"
+      "result": "25330 DR"
     },
     {
       "partycode": "BU204",
@@ -2631,11 +2631,11 @@
     },
     {
       "partycode": "BC034",
-      "result": "0 CR"
+      "result": "58 DR"
     },
     {
       "partycode": "BR001",
-      "result": "0 CR"
+      "result": "2300 DR"
     },
     {
       "partycode": "GK138",
@@ -2675,7 +2675,7 @@
     },
     {
       "partycode": "LD020",
-      "result": "0 CR"
+      "result": "13758 DR"
     },
     {
       "partycode": "BP180",
@@ -2743,7 +2743,7 @@
     },
     {
       "partycode": "LD182",
-      "result": "5304 CR"
+      "result": "1056 DR"
     },
     {
       "partycode": "LD175",
@@ -2791,7 +2791,7 @@
     },
     {
       "partycode": "LD149",
-      "result": "3041 DR"
+      "result": "23041 DR"
     },
     {
       "partycode": "BC182",
@@ -2831,7 +2831,7 @@
     },
     {
       "partycode": "KG033",
-      "result": "0 CR"
+      "result": "20 DR"
     },
     {
       "partycode": "KG050",
@@ -2931,7 +2931,7 @@
     },
     {
       "partycode": "KG100",
-      "result": "0 CR"
+      "result": "80 DR"
     },
     {
       "partycode": "GK073",
@@ -2995,7 +2995,7 @@
     },
     {
       "partycode": "BK310",
-      "result": "0 CR"
+      "result": "50 CR"
     },
     {
       "partycode": "CL023",
@@ -3003,7 +3003,7 @@
     },
     {
       "partycode": "BU272",
-      "result": "6778 DR"
+      "result": "0 CR"
     },
     {
       "partycode": "GK022",
@@ -3027,11 +3027,11 @@
     },
     {
       "partycode": "AG005",
-      "result": "120 DR"
+      "result": "30120 DR"
     },
     {
       "partycode": "DT010",
-      "result": "31416.999999999996 CR"
+      "result": "32643.999999999996 CR"
     },
     {
       "partycode": "CT236",
@@ -3091,7 +3091,7 @@
     },
     {
       "partycode": "CT239",
-      "result": "0 CR"
+      "result": "2 CR"
     },
     {
       "partycode": "BR030",
@@ -3215,7 +3215,7 @@
     },
     {
       "partycode": "DT001",
-      "result": "0 CR"
+      "result": "92471 DR"
     },
     {
       "partycode": "DT005",
@@ -3295,7 +3295,7 @@
     },
     {
       "partycode": "FA006",
-      "result": "0 CR"
+      "result": "7505.89 DR"
     },
     {
       "partycode": "CC014",
@@ -3303,7 +3303,7 @@
     },
     {
       "partycode": "FA007",
-      "result": "0 CR"
+      "result": "88691.17 CR"
     },
     {
       "partycode": "FA008",
@@ -3391,11 +3391,11 @@
     },
     {
       "partycode": "FC014",
-      "result": "499627 DR"
+      "result": "472488 DR"
     },
     {
       "partycode": "FA020",
-      "result": "0 CR"
+      "result": "25291.2 DR"
     },
     {
       "partycode": "GG022",
@@ -3459,7 +3459,7 @@
     },
     {
       "partycode": "CT167",
-      "result": "0 CR"
+      "result": "0.47999999998137355 CR"
     },
     {
       "partycode": "FA023",
@@ -3487,7 +3487,7 @@
     },
     {
       "partycode": "FC023",
-      "result": "728635 DR"
+      "result": "696131 DR"
     },
     {
       "partycode": "SN138",
@@ -3571,11 +3571,11 @@
     },
     {
       "partycode": "SN139",
-      "result": "0 CR"
+      "result": "1 CR"
     },
     {
       "partycode": "BC111",
-      "result": "0 CR"
+      "result": "1 CR"
     },
     {
       "partycode": "GK157",
@@ -3595,11 +3595,11 @@
     },
     {
       "partycode": "BR116",
-      "result": "22620 DR"
+      "result": "9050 DR"
     },
     {
       "partycode": "CT203",
-      "result": "0 CR"
+      "result": "4 CR"
     },
     {
       "partycode": "EE021",
@@ -3611,7 +3611,7 @@
     },
     {
       "partycode": "MA183",
-      "result": "0 CR"
+      "result": "0.33999999999650754 CR"
     },
     {
       "partycode": "CT193",
@@ -3631,7 +3631,7 @@
     },
     {
       "partycode": "EE047",
-      "result": "2580 DR"
+      "result": "1300 DR"
     },
     {
       "partycode": "BU076",
@@ -3639,7 +3639,7 @@
     },
     {
       "partycode": "BK228",
-      "result": "0 CR"
+      "result": "90 DR"
     },
     {
       "partycode": "CH008",
@@ -3651,7 +3651,7 @@
     },
     {
       "partycode": "BU001",
-      "result": "0 CR"
+      "result": "1 CR"
     },
     {
       "partycode": "BK321",
@@ -3691,7 +3691,7 @@
     },
     {
       "partycode": "BR023",
-      "result": "0 CR"
+      "result": "4600 DR"
     },
     {
       "partycode": "SN149",
@@ -3719,7 +3719,7 @@
     },
     {
       "partycode": "MA184",
-      "result": "0 CR"
+      "result": "9223 DR"
     },
     {
       "partycode": "BK319",
@@ -3747,7 +3747,7 @@
     },
     {
       "partycode": "GK162",
-      "result": "0 CR"
+      "result": "5 DR"
     },
     {
       "partycode": "EE040",
@@ -3771,11 +3771,11 @@
     },
     {
       "partycode": "EE052",
-      "result": "15350 DR"
+      "result": "10850 DR"
     },
     {
       "partycode": "CT242",
-      "result": "4500 CR"
+      "result": "0 CR"
     },
     {
       "partycode": "GK011",
@@ -4207,7 +4207,7 @@
     },
     {
       "partycode": "BU175",
-      "result": "0 CR"
+      "result": "7439 DR"
     },
     {
       "partycode": "BP085",
@@ -4351,7 +4351,7 @@
     },
     {
       "partycode": "BU275",
-      "result": "0 CR"
+      "result": "2 CR"
     },
     {
       "partycode": "LD022",
@@ -4575,7 +4575,7 @@
     },
     {
       "partycode": "MA149",
-      "result": "37038 DR"
+      "result": "20123 DR"
     },
     {
       "partycode": "MA188",
@@ -4611,11 +4611,11 @@
     },
     {
       "partycode": "MA022",
-      "result": "0 CR"
+      "result": "10 DR"
     },
     {
       "partycode": "BS060",
-      "result": "0 CR"
+      "result": "3969 DR"
     },
     {
       "partycode": "BU082",
@@ -4635,7 +4635,7 @@
     },
     {
       "partycode": "BU185",
-      "result": "116884 DR"
+      "result": "79278 DR"
     },
     {
       "partycode": "BU115",
@@ -4671,7 +4671,7 @@
     },
     {
       "partycode": "BC248",
-      "result": "0 CR"
+      "result": "5000 DR"
     },
     {
       "partycode": "SK017",
@@ -4734,6 +4734,10 @@
       "result": "0 CR"
     },
     {
+      "partycode": "AG007",
+      "result": "66102 DR"
+    },
+    {
       "partycode": "SH062",
       "result": "0 CR"
     },
@@ -4779,7 +4783,7 @@
     },
     {
       "partycode": "BK163",
-      "result": "0 CR"
+      "result": "100 DR"
     },
     {
       "partycode": "OT068",
@@ -4803,7 +4807,7 @@
     },
     {
       "partycode": "BK340",
-      "result": "7850 DR"
+      "result": "0 CR"
     },
     {
       "partycode": "LD052",
@@ -4815,7 +4819,7 @@
     },
     {
       "partycode": "LD218",
-      "result": "163863 CR"
+      "result": "178563 CR"
     },
     {
       "partycode": "BU287",
@@ -4834,6 +4838,10 @@
       "result": "0 CR"
     },
     {
+      "partycode": "PL001",
+      "result": "587456.61 DR"
+    },
+    {
       "partycode": "MA189",
       "result": "168440 DR"
     },
@@ -4843,7 +4851,7 @@
     },
     {
       "partycode": "EE081",
-      "result": "319502 DR"
+      "result": "20600 DR"
     },
     {
       "partycode": "EE019",
@@ -4854,20 +4862,8 @@
       "result": "2500 DR"
     },
     {
-      "partycode": "EE083",
-      "result": "66271 CR"
-    },
-    {
-      "partycode": "MA110",
-      "result": "0 CR"
-    },
-    {
-      "partycode": "EE087",
-      "result": "105894.08 CR"
-    },
-    {
-      "partycode": "PL001",
-      "result": "615880.27 DR"
+      "partycode": "OT069",
+      "result": "2800 DR"
     }
   ]
 }
