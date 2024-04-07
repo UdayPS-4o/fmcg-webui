@@ -2,207 +2,576 @@
 
 
 <div class="container-xxl flex-grow-1 container-p-y">
-   <h4 class="fw-bold py-3 mb-4">
-      <!-- <span class="text-muted fw-light">Account Settings /</span> -->
-      INVOICING
-   </h4>
+  <h4 class="fw-bold py-3 mb-4">
+    <!-- <span class="text-muted fw-light">Account Settings /</span> -->
+    <!-- GODOWN TRANSFER -->
+  </h4>
 
-   <div class="row">
-      <div class="col-md-12">
+  <div class="row">
+    <div class="col-md-12">
 
-         <!-- Change Password -->
-         <div class="card mb-4">
-            <div class="card-body">
-               <form  autocomplete="off" action="/cash-receipts" method="post">
-                  <div class="row">
-                        <div class="col-md-6">
-                           <div class="form-floating mb-3">
-                              <input type="date" class="form-control" id="date" name="date" required>
-                              <label for="date">Date</label>
-                           </div>
-                        </div>
-                        <div class="col-md-6">
-                           <div class="form-floating mb-3">
-                              <input type="number" class="form-control" id="receipt-no" name="receiptNo" placeholder="Receipt No." required  value="" min="1">
-                              <label for="receipt-no">Receipt No.</label>
-                           </div>
-                        </div>
-                        <div class="col-md-6">
-                           <div class="form-floating mb-3">
-                              <input type="text" id="party" name="party" class="form-control" required>
-                              <label for="party">Party</label>
-                           </div>
-                        </div>
-                        <div class="col-md-6">
-                           <div class="form-floating mb-3">
-                              <input type="number" class="form-control" id="amount" name="amount" placeholder="Amount" required min="0" step="0.01">
-                              <label for="amount">Amount</label>
-                           </div>
-                        </div>
-                        <div class="col-md-6">
-                           <div class="form-floating mb-3">
-                              <input type="number" class="form-control" id="discount" name="discount" placeholder="Discount" required min="0" step="0.01">
-                              <label for="discount">Discount</label>
-                           </div>
-                        </div>
-                  </div>
-                  <div class="col-12 mt-1" style="display: flex; justify-content: end;">
-                     <button type="reset" class="btn btn-label-secondary" style="margin-right:20px">Cancel</button>
-                     <button type="submit" class="btn btn-primary me-2">Save changes</button>
-                  </div>
-               </form>
-               
-               <script>
-                  // Set today's date as the default value for the date input
-                  document.addEventListener('DOMContentLoaded', (event) => {
-                     //  const today = new Date().toISOString().split('T')[0];
-                        // timezone india
-                     const today = new Date().toLocaleString('en-CA').split(',')[0];
-                        document.getElementById("date").value = today;
-
-                     const time = new Date().toLocaleString('en-CA').split(',')[1];
-                  });
-               </script>
-               
-               
+      <!-- Change Password -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <form autocomplete="off" action="/godown" method="post">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-floating mb-3">
+                  <input type="date" class="form-control" id="date" name="date" required>
+                  <label for="date">Date</label>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="series" name="series" required value="" min="1" max="1">
+                  <label for="series">Series</label>
+                </div>
+              </div>
+              
+              <div class="col-md-3">
+               <div class="form-floating mb-3">
+                 <input type="text" class="form-control" id="cash" name="cash" required value="" min="1" max="1">
+                 <label for="cash">Cash</label>
+               </div>
+             </div>
+              <div class="col-md-6">
+               <div class="form-floating mb-3">
+                 <input type="text" class="form-control" id="party-dropdown" name="party-dropdown" placeholder="" required value="" min="1">
+                 <label for="party-dropdown">party</label>
+               </div>
+             </div>
+             <div class="col-md-6">
+               <div class="form-floating mb-3">
+                 <input type="text" class="form-control" id="SM-dropdown" name="SM-dropdown" placeholder="" required value="" min="1">
+                 <label for="SM-dropdown">S/M</label>
+               </div>
+             </div>
+             <div class="col-md-3">
+               <div class="form-floating mb-3">
+                 <input type="number" class="form-control" id="due-days" name="due-days" required value="" min="1" max="1">
+                 <label for="due-days">Due-days</label>
+               </div>
+             </div>
+             <div class="col-md-3">
+               <div class="form-floating mb-3">
+                 <input type="text" class="form-control" id="ref" name="ref"  value="" >
+                 <label for="ref">Ref</label>
+               </div>
+             </div>
+              <div class="col-md-12">
+                <div class="accordion" id="itemContainer">
+                </div>
+              </div>
             </div>
-         </div>
+
+            <br>
+            <br>
+            <br>
+            <br>
+
+
+            <div class="col-12 mt-1" style="display: flex; justify-content: end;">
+              <button type="reset" class="btn btn-label-secondary" style="margin-right:20px">Cancel</button>
+              <button type="submit" class="btn btn-primary me-2">Save changes</button>
+            </div>
+          </form>
+
+          <script>
+            // Set today's date as the default value for the date input
+            document.addEventListener('DOMContentLoaded', (event) => {
+              //  const today = new Date().toISOString().split('T')[0];
+              // timezone india
+              const today = new Date().toLocaleString('en-CA').split(',')[0];
+              document.getElementById("date").value = today;
+
+              const time = new Date().toLocaleString('en-CA').split(',')[1];
+            });
+          </script>
+
+
+        </div>
       </div>
-      <!--/ Change Password -->
+    </div>
+    <!--/ Change Password -->
 
 
 
 
-   </div>
+  </div>
 </div>
 
 
 <%- include('../partials/bottom') %>
 
-   <script>
-      (async () => {
+<script>
+  let itemCounter = 0;
+  let itemContainer = document.getElementById("itemContainer");
+  let items = {};
+  let global_usersList = [];
+  let pmplJSON = [];
+  let tagifyFrom, tagifyTo;
+  let godownList = [];
+  let STEP = 1;
+   let balance = [];
 
-         const url = "http://localhost/cmpl";
-         const response = await fetch(url);
-         const json = await response.json();
-         // for each object in json array, take out C_NAME as name and C_CODE as email
-         let usersList = json.map(user => ({
-            name: user.C_NAME,
-            title: user.C_NAME,
-            email: user.C_CODE,
-            Email: user.C_CODE,
-            value: user.C_CODE,
-            avatar: "/assets/img/avatars/3.png"
-         }));
+  (async () => {
+   balance = await fetch("/json/balance")
+         balance = await balance.json();
+         balance = balance.data;
+
+         
+   
+   // GODOWN
+    const url = "/api/dbf/pmpl.json";
+    const response = await fetch(url);
+    let json = await response.json();
+    // FILTER -> .STK IS > 0
+    json = json.filter(item => item.STK > 0);
+    pmplJSON = json;
+
+    // for each object in json array, take out C_NAME as name and C_CODE as email
+    let usersList = json.map(user => ({
+      name: user.PRODUCT,
+      title: user.PRODUCT,
+      email: `${user.C_CODE} | ${user.MRP1}`,
+      value: user,
+      avatar: "/assets/img/avatars/3.png"
+    }));
 
 
+   //  CMPL
+   const CMPLurl = "/cmpl"
+   const CMPLresponse = await fetch(CMPLurl);
+   let CMPLjson = await CMPLresponse.json();
+
+    let CMPLList = CMPLjson.map(user => ({
+      name: user.C_NAME,
+      title: user.C_NAME,
+      email: `${user.C_CODE} | ${balanceOfUser(user.C_CODE)}`,     
+      C_CODE: user.C_CODE, 
+      value: user,
+      avatar: "/assets/img/avatars/3.png"
+    }));
+   //  sort by name
+   CMPLList = CMPLList.sort((a, b) => a.name.localeCompare(b.name));
+    tagifyElement("#party-dropdown", CMPLList);
+  
+   //  seperate SM list and CM list, if their value starts with SM or CM
+   let SM = CMPLList.filter(user => user.value.C_CODE.startsWith("SM"));
+   tagifyElement("#SM-dropdown", SM);
+   //  Balance
+
+  
+
+   console.log( )
+    const resGodown = await fetch("/api/dbf/godown.json");
+    const jsonGodown = await resGodown.json();
+
+    const billDTL = await fetch("/api/dbf/billdtl.json");
+    const jsonBill = await billDTL.json();
+
+    const purdtl = await fetch("/api/dbf/purdtl.json")
+    const jsonPur = await purdtl.json();
 
 
-         usersList = usersList.filter(user => user.name && user.email);
-         usersList = usersList.slice(2);
-
-         // just keep the keys name,title,email,Email,avatar from each obj in userlist
-
-
-         const TagifyUserListEl = document.querySelector("#party");
+    
+    
+    
+    
 
 
-         function tagTemplate(tagData) {
-            return `
-         <tag title="${tagData.title || tagData.email}"
-         contenteditable='false'
-         spellcheck='false'
-         tabIndex="-1"
-         class="${this.settings.classNames.tag} ${tagData.class ? tagData.class : ''}"
-         ${this.getAttributes(tagData)}
-         >
-         <x title='' class='tagify__tag__removeBtn' role='button' aria-label='remove tag'></x>
-         <div>
-            <div class='tagify__tag__avatar-wrap'>
-               <img onerror="this.style.visibility='hidden'" src="${tagData.avatar}">
+    godownList = jsonGodown.map(user => ({
+      name: user.GDN_NAME,
+      title: user.GDN_NAME,
+      email: `${user.GDN_CODE}`,
+      value: user.GDN_CODE,
+      avatar: "/assets/img/avatars/3.png"
+    }));
+
+    usersList = usersList.filter(user => user.name && user.email);
+    usersList = usersList.sort((a, b) => a.name.localeCompare(b.name));
+    
+    godownList = godownList.filter(user => user.name && user.email);
+
+    global_usersList = usersList;
+    
+    console.log(godownList)
+    // tagifyElement("#from-godown", godownList);
+    // tagifyElement("#to-godown", godownList);
+    // also send element id to tagifyElement function in godownList json
+    godownList = godownList.map(user => ({
+      ...user,
+      element: "#from-godown"
+    }));
+    tagifyFrom = tagifyElement("#from-godown", godownList);
+ 
+  })()
+
+  
+  function balanceOfUser(C_CODE){
+            let user = balance.find(user => user.partycode == C_CODE);
+            return user ? user.result : 0;
+         }
+  function addItem() {
+    let usersList = global_usersList;
+    itemCounter++;
+    usersList = usersList.map(user => ({
+      ...user,
+      itemCounter
+    }));
+
+    let item = document.createElement("div");
+    // set the div to <div class="accordion-item" id="item${itemCounter}">
+    item.classList.add("accordion-item");
+    item.id = `item${itemCounter}`;
+
+    item.innerHTML = `
+      <h2 class="accordion-header" id="heading${itemCounter}"> 
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${itemCounter}" aria-expanded="true" aria-controls="collapse${itemCounter}">
+        Add a new Item
+      </button>
+    </h2>
+    <div id="collapse${itemCounter}" class="accordion-collapse collapse show" aria-labelledby="heading${itemCounter}" data-bs-parent="#accordionExample"> 
+     <div class="accordion-body">
+           <div class="row">
+              <div class="col-md-4">
+                 <div class="form-floating mb-3">
+                    <input type="text" class="form-control" disabled id="item-name-${itemCounter}" name="item-name" placeholder="" required>
+                    <label for="item-name">Item Name</label>
+                 </div>
+              </div>
+             
+               
+            <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" disabled id="code-${itemCounter}" name="code" placeholder="" required>
+                <label for="code">Code</label>
+              </div>
             </div>
-            <span class='tagify__tag-text'>${tagData.name}</span>
-         </div>
-         </tag>
-         `;
-         }
+             
+            <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" disabled id="product-${itemCounter}" name="product" placeholder="" required>
+                <label for="product">Product</label>
+              </div>
+            </div>
+              
+             
+            
+          
+            <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" disabled id="pack-${itemCounter}" name="pack" placeholder="" required>
+                <label for="pack">Pack</label>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" disabled id="gst-${itemCounter}" name="gst" placeholder="" required>
+                <label for="gst">GST%</label>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="gdn-${itemCounter}" name="gdn" placeholder="" required>
+                <label for="gdn">Gdn</label>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="cess-${itemCounter}" disabled name="cess" placeholder="" required>
+                <label for="cess">Cess</label>
+              </div>
+            </div>
+            
+            <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="unit-${itemCounter}" name="unit" disabled placeholder="" required>
+                <label for="unit">Unit</label>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" disabled id="pc-bx-${itemCounter}" disabled name="pc-bx" placeholder="" required>
+                <label for="pc-bx">Pc/Bx</label>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" disabled id="mrp-${itemCounter}" disabled name="mrp" placeholder="" required>
+                <label for="mrp">M.R.P.</label>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" disabled id="rate-${itemCounter}" name="rate" placeholder="" required>
+                <label for="rate">Rate</label>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="qty-${itemCounter}" name="qty" placeholder="" required>
+                <label for="qty">QTY</label>
+              </div>
+            </div>
+           <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="free-${itemCounter}" name="free" placeholder="" required>
+                <label for="free">FREE</label>
+              </div>
+            </div>
+           
+            <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="sch-${itemCounter}" name="sch" placeholder="" required>
+                <label for="sch">SCH</label>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="cd-${itemCounter}" name="cd" placeholder="" required>
+                <label for="cd">CD</label>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="amount-${itemCounter}" name="amount" placeholder="" required>
+                <label for="amount">AMOUNT</label>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="ok-${itemCounter}" name="ok" placeholder="" required>
+                <label for="ok">OK</label>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="amount-${itemCounter}" name="amount" placeholder="" required>
+                <label for="amount">AMOUNT</label>
+              </div>
+            </div>
 
-         function suggestionItemTemplate(tagData) {
-            return `
-         <div ${this.getAttributes(tagData)}
-         class='tagify__dropdown__item align-items-center ${tagData.class ? tagData.class : ''}'
-         tabindex="0"
-         role="option"
-         >
-         ${tagData.avatar ?
-                  `<div class='tagify__dropdown__item__avatar-wrap'>
-               <img onerror="this.style.visibility='hidden'" src="${tagData.avatar}">
-            </div>`
-                  : ''
-               }
-         <strong>${tagData.name}</strong>
-         <span>${tagData.email}</span>
-         </div>
-         `;
-         }
-
-         // initialize Tagify on the above input node reference
-         let TagifyUserList = new Tagify(TagifyUserListEl, {
-            // mode:"select",
-            tagTextProp: "name", // very important since a custom template is used with this property as text. allows typing a "value" or a "name" to match input with whitelist
-            enforceWhitelist: true,
-            maxTags: 1,
-            skipInvalid: true, // do not remporarily add invalid tags
-            maxTags: 1,
-            dropdown: {
-               closeOnSelect: true,
-               enabled: 0,
-               classname: "users-list",
-               searchKeys: ["name", "email"] // very important to set by which keys to search for suggesttions when typing
-            },
-            templates: {
-               tag: tagTemplate,
-               dropdownItem: suggestionItemTemplate
-            },
-            whitelist: usersList
-         });
-
-         TagifyUserList.on("dropdown:show dropdown:updated", onDropdownShow);
-         TagifyUserList.on("dropdown:select", onSelectSuggestion);
-
-         let addAllSuggestionsEl;
-
-         function onDropdownShow(e) {
-            let dropdownContentEl = e.detail.tagify.DOM.dropdown.content;
-
-            if (TagifyUserList.suggestedListItems.length > 1) {
-               addAllSuggestionsEl = getAddAllSuggestionsEl();
-
-               // insert "addAllSuggestionsEl" as the first element in the suggestions list
-               dropdownContentEl.insertBefore(addAllSuggestionsEl, dropdownContentEl.firstChild);
-            }
-         }
-
-         function onSelectSuggestion(e) {
-            if (e.detail.elm == addAllSuggestionsEl) TagifyUserList.dropdown.selectAll.call(TagifyUserList);
-         }
-
-        
-
-         function submit() {
-            TagifyUserList.value.forEach(element => {
-               changepassword(element.value);
-            });
-         }
-
+            
      
 
+          <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="net-amount-${itemCounter}" name="net-amount" placeholder="" required>
+                <label for="net-amount">net-AMOUNT</label>
+              </div>
+            </div>
+              
+        </div>
+  </div>
+      `;
 
-      })()
+    itemContainer.appendChild(item);
+
+    tagifyElement(`#item-name-${itemCounter}`, usersList);
+
+
+  }
+
+
+  function tagifyElement(tagSEL, usersList) {
 
 
 
-   </script>
+    const TagifyUserListEl = document.querySelector(tagSEL);
+
+
+    function tagTemplate(tagData) {
+      return `
+      <tag title="${tagData.title || tagData.email}"
+      contenteditable='false'
+      spellcheck='false'
+      tabIndex="-1"
+      class="${this.settings.classNames.tag} ${tagData.class ? tagData.class : ''}"
+      ${this.getAttributes(tagData)}
+      >
+      <x title='' class='tagify__tag__removeBtn' role='button' aria-label='remove tag'></x>
+      <div>
+         <div class='tagify__tag__avatar-wrap'>
+            <img onerror="this.style.visibility='hidden'" src="${tagData.avatar}">
+         </div>   
+         
+
+         <span class='tagify__tag-text'>${tagData.name } | ${balanceOfUser( tagData.C_CODE)}</span>
+            </span>
+         
+         
+      </div>
+      </tag>
+      `;
+    }
+
+    function suggestionItemTemplate(tagData) {
+      return `
+      <div ${this.getAttributes(tagData)}
+      class='tagify__dropdown__item align-items-center ${tagData.class ? tagData.class : ''}'
+      tabindex="0"
+      role="option"
+      >
+      ${tagData.avatar ?
+               `<div class='tagify__dropdown__item__avatar-wrap'>
+            <img onerror="this.style.visibility='hidden'" src="${tagData.avatar}">
+         </div>`
+               : ''
+            }
+      <strong>${tagData.name}</strong>
+      <span>${tagData.email}</span>
+      </div>
+      `;
+    }
+
+    // initialize Tagify on the above input node reference
+    let TagifyUserList = new Tagify(TagifyUserListEl, {
+      // mode:"select",
+      tagTextProp: "name", // very important since a custom template is used with this property as text. allows typing a "value" or a "name" to match input with whitelist
+      enforceWhitelist: true,
+      maxTags: 1,
+      skipInvalid: true, // do not remporarily add invalid tags
+      maxTags: 1,
+      dropdown: {
+        closeOnSelect: true,
+        enabled: 0,
+        classname: "users-list",
+        searchKeys: ["name", "email"] // very important to set by which keys to search for suggesttions when typing
+      },
+      templates: {
+        tag: tagTemplate,
+        dropdownItem: suggestionItemTemplate
+      },
+      whitelist: usersList
+    });
+
+    TagifyUserList.on("dropdown:show dropdown:updated", onDropdownShow);
+    TagifyUserList.on("dropdown:select", onSelectSuggestion);
+    TagifyUserList.on("remove", onRemoveTag);
+    let addAllSuggestionsEl;
+
+    function onDropdownShow(e) {
+      let dropdownContentEl = e.detail.tagify.DOM.dropdown.content;
+
+      if (TagifyUserList.suggestedListItems.length > 1) {
+        // addAllSuggestionsEl = getAddAllSuggestionsEl();
+
+        // insert "addAllSuggestionsEl" as the first element in the suggestions list
+        // dropdownContentEl.insertBefore(addAllSuggestionsEl, dropdownContentEl.firstChild);
+      }
+    }
+
+    function submit() {
+      TagifyUserList.value.forEach(element => {
+        changepassword(element.value);
+      });
+    }
+
+    return TagifyUserList;
+  }
+
+
+  function onSelectSuggestion(e) {
+    console.log(e);
+
+    if(STEP < 3){
+      let stp = STEP == 1 ? "from" : "to";
+      setTimeout(() => {
+        document.querySelector(`.tagify [element="#${stp}-godown"] x`).style.visibility = "hidden";
+      }, 10);
+
+      STEP++;
+
+      if (STEP == 2) {
+        
+        godownList = godownList.map(user => ({
+          ...user,
+          element: "#to-godown"
+        }));
+        godownList = godownList.filter(user => user.value != e?.detail?.data?.value);
+        tagifyTo   = tagifyElement("#to-godown", godownList);
+      }
+    
+      if (STEP == 3) {
+        addItem()
+      }
+    }
+
+    if(!e?.detail?.data?.itemCounter) return; // Check for valid data
+    console.log("Item Selected", e.detail.data);
+    items[itemCounter] = e.detail.data;
+    itemCounter = e.detail.data.itemCounter;
+    controlAccordion('collapse', itemCounter-1);
+    if(itemCounter == e.detail.data.itemCounter){
+      // Access the selected data
+      const selectedData = e.detail.data.value;
+
+      // Get references to the form elements
+      const itemNameInput = document.getElementById(`item-name-${itemCounter}`);
+      const packInput     = document.getElementById(`pack-${itemCounter}`);
+      const gstInput      = document.getElementById(`gst-${itemCounter}`);
+      const unitInput     = document.getElementById(`unit-${itemCounter}`);
+      const pcBxInput     = document.getElementById(`pc-bx-${itemCounter}`);
+      const mrpInput      = document.getElementById(`mrp-${itemCounter}`);
+      const rateInput     = document.getElementById(`rate-${itemCounter}`);
+
+      // Fill the form fields
+      itemNameInput.value = selectedData.PRODUCT;
+      packInput.value = selectedData.PACK;
+      gstInput.value = selectedData.GST;
+      unitInput.value = selectedData.UNIT_1; 
+      pcBxInput.value = selectedData.MULT_F; 
+      mrpInput.value = selectedData.MRP1;
+      rateInput.value = selectedData.PL_RATE;
+
+      addItem(); 
+    }
+}
+
+  function onRemoveTag(e) {
+    console.log(e?.detail?.data)
+    if(!e?.detail?.data?.itemCounter) return;
+    console.log("Item Removed", e.detail.data);
+    items[e.detail.data.itemCounter] = null;
+    itemCounter = e.detail.data.itemCounter;
+    // Get references to the form elements
+      const packInput     = document.getElementById(`pack-${itemCounter}`);
+      const gstInput      = document.getElementById(`gst-${itemCounter}`);
+      const unitInput     = document.getElementById(`unit-${itemCounter}`);
+      const pcBxInput     = document.getElementById(`pc-bx-${itemCounter}`);
+      const mrpInput      = document.getElementById(`mrp-${itemCounter}`);
+      const rateInput     = document.getElementById(`rate-${itemCounter}`);
+
+      packInput.value     = "";
+      gstInput.value      = "";
+      unitInput.value     = "";
+      pcBxInput.value     = "";
+      mrpInput.value      = "";
+      rateInput.value     = "";
+  }
+
+  function controlAccordion(action, index) {
+    // Using 1-based indexing for user-friendliness
+    let collapseId = "#collapse" + index; 
+    let collapseElement = $(collapseId);
+
+    if (action === 'expand') {
+      collapseElement.collapse('show');
+    } else if (action === 'collapse') {
+      collapseElement.collapse('hide');
+      setTimeout(() => {
+        // let currentScrollPosition = window.scrollY;
+        // let newScrollPosition = currentScrollPosition + 100;
+        // window.scrollTo(0, newScrollPosition);
+      }, 100);
+    } else {
+      console.error('Invalid action:', action);
+    }
+  }
+
+
+</script>
 
 
 
