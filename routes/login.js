@@ -2,8 +2,13 @@ const express = require('express');
 const app = express.Router();
 const fs = require("fs").promises;
 const path = require("path");
-const {redirect} = require("./utilities");
-
+const {
+  redirect,
+  getDbfData,
+  getCmplData,
+  ensureDirectoryExistence,
+  saveDataToJsonFile,
+} = require("./utilities");
 
 app.post("/api/login", async (req, res) => {
   const formData = req.body;
@@ -38,8 +43,9 @@ app.post("/api/login", async (req, res) => {
   }
 });
   
-app.get("/login", (req, res) => {
-  res.render("pages/login/login");
+app.get("/login", async (req, res) => {
+  let firms = await getDbfData(path.join(__dirname, "..", "..", "FIRM", "FIRM.DBF")); 
+  res.render("pages/login/login", { firm: firms });
 });
 
 app.get("/logout", (req, res) => {

@@ -45,7 +45,12 @@
 <%- include('../../partials/bottom') %>
 
    <script>
-    
+    let json;
+    (async ()=>{
+      const url = "/cmpl";
+      const response = await fetch(url);
+      json = await response.json();
+    })()
       // Construct the URL based on the parameters
       function convertAmountToWords(amount) {
         const oneToTwenty = [
@@ -103,32 +108,37 @@
       
         function convert(amount) {
           let words = "";
-          for (let i = 0; i < scales.length; i++) {
-            if (amount % 1000 !== 0) {
-              words =
-                convertLessThanOneThousand(amount % 1000) +
-                " " +
-                scales[i] +
-                " " +
-                words;
-            }
-            amount = Math.floor(amount / 1000);
-          }
-          return words.trim();
+                for (let i = 0; i < scales.length; i++) {
+                  if (amount % 1000 !== 0) {
+                    words =
+                      convertLessThanOneThousand(amount % 1000) +
+                      " " +
+                      scales[i] +
+                      " " +
+                      words;
+                  }
+                  amount = Math.floor(amount / 1000);
+                }
+                return words.trim();
+              }
+
+              const words = convert(amount);
+              return words ? words + " Only" : "Zero Only";
         }
 
-        const words = convert(amount);
-        return words ? words + " Only" : "Zero Only";
-  }
-
       function printReceipt(date, receiptNo, amount, inWords, party, series, discount) {
+
+        // find json -> C_CODE = party
+        const partyDetails = json.find(item => item.C_CODE === party);
+
         // Construct the URL based on the parameters
         var url = "/print?date=" + encodeURIComponent(date) +
                   "&receiptNo=" + encodeURIComponent(receiptNo) +
                   "&amount=" + encodeURIComponent(amount) +
-                  "&inWords=" + encodeURIComponent(inWords) +
+                  "&inWords=" + encodeURIComponent(convertAmountToWords(amount)) +
                   "&party=" + encodeURIComponent(party) +
-                  "&series=" + encodeURIComponent(series) +
+                  "&series=" + encodeURIComponent(series.charAt(0)) +
+                  "&name=" + encodeURIComponent(partyDetails.C_NAME) +
                   "&discount=" + encodeURIComponent(discount);
         
         // Redirect to the constructed URL

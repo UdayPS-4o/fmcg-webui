@@ -369,7 +369,7 @@
           <span style="font-family: Roboto">In Words</span
           ><strong><span style="font-family: Roboto">&nbsp;:</span></strong
           ><span style="font-family: Roboto">&nbsp;</span
-          ><span style="font-family: Roboto">One Hundred Only</span>
+          ><span style="font-family: Roboto; position: absolute;"></span>
         </p>
       </td>
       <td
@@ -454,6 +454,11 @@
 
 <script>
   function fillForm(data) {
+
+    function ddMMYYYY(date) {
+      return date.split("-").reverse().join(".");
+    }
+
     // Update elements with the provided data
     document.querySelector("p strong span").textContent =
       data.companyName || "Ekta Enterprises";
@@ -461,31 +466,31 @@
       data.address || "Budhwari Bazar, Gn Road Seoni, Seoni";
     document.querySelector(
       "table > thead > tr:nth-child(1) > td:nth-child(1) > p > strong:nth-child(4) > span"
-    ).textContent = data.date || "08.03.2024";
+    ).textContent = ddMMYYYY(data.date) || "--";
     document.querySelector(
       "table > thead > tr:nth-child(1) > td:nth-child(3) > p > strong:nth-child(4) > span"
-    ).textContent = data.receiptNo || "5810";
+    ).textContent = data.receiptNo || "---";
 
     // Update the elements for "Naresh Ahuja Seoni,seoni"and "BU216"specifically
     document.querySelector(
       "table > tbody:nth-child(2) > tr:nth-child(1) > td:nth-child(1) > p:nth-child(2) > span:nth-child(2)"
-    ).textContent = data.name || "Naresh Ahuja Seoni,seoni";
+    ).textContent = data.name || "-----";
     document.querySelector(
       "table > tbody:nth-child(2) > tr:nth-child(1) > td:nth-child(2) > p > span:nth-child(4)"
-    ).textContent = data.code || "BU216";
+    ).textContent = data.party || "----";
     document.querySelector(
       "table > tbody:nth-child(2) > tr:nth-child(1) > td:nth-child(3) > p > span:nth-child(4)"
-    ).textContent = data.amount || "100.00";
+    ).textContent = data.amount || "---";
 
     // Update the element for "By R/no S.-5810"
     document.querySelector(
       "table > tbody:nth-child(2) > tr:nth-child(2) > td:nth-child(1) > p:nth-child(1) > span:nth-child(4)"
-    ).textContent = "By R/no S.-"+ (data.receiptNo || "5810");
+    ).textContent = "By R/no "+ data.series +".-"+ (data.receiptNo || "---");
 
     // Update other elements as needed
     // ...
-
-    // Dummy data
+    document.querySelector("section > table > tbody:nth-child(2) > tr:nth-child(4) > td:nth-child(1) > p > span:nth-child(4)")
+    .textContent = data.inWords || "----";
   }
   function parseQueryString(queryString) {
     // Split the query string into key-value pairs

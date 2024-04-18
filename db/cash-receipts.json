@@ -19,7 +19,7 @@
     "date": "2015-08-15",
     "receiptNo": "38",
     "party": "CT000",
-    "series": "Illo beatae voluptat",
+    "series": "I",
     "amount": "27",
     "discount": "22"
   },
@@ -61,6 +61,14 @@
     "receiptNo": "45",
     "party": "CT000",
     "amount": "123",
+    "discount": ""
+  },
+  {
+    "date": "2024-04-13",
+    "series": "Q",
+    "receiptNo": "46",
+    "party": "AA001",
+    "amount": "1200",
     "discount": ""
   }
 ]

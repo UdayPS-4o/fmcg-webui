@@ -5,17 +5,17 @@ const {redirect, getDbfData, getCmplData, ensureDirectoryExistence, saveDataToJs
 
 
 process.on("unhandledRejection", (reason, promise) => {
-    console.error("Unhandled Rejection at:", promise, "reason:", reason);
-  });
-  
-  process.on("uncaughtException", (err) => {
-    if (err.code === "MODULE_NOT_FOUND" && err.message.includes("io")) {
-      // Do nothing: Hide this error
-      console.log("Suppressed \"Cannot find module 'io'\" error"); // Log the suppression
-    } else {
-      console.error("--------------", err); // Log other errors
-    }
-  });
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+});
+
+process.on("uncaughtException", (err) => {
+  if (err.code === "MODULE_NOT_FOUND" && err.message.includes("io")) {
+    // Do nothing: Hide this error
+    console.log("Suppressed \"Cannot find module 'io'\" error"); // Log the suppression
+  } else {
+    console.error("--------------", err); // Log other errors
+  }
+});
   
   const processData = async (dbData) => {
     let data = dbData;

@@ -96,8 +96,12 @@
   let tagifyFrom, tagifyTo;
   let godownList = [];
   let STEP = 1;
+  let STOCKS;
+  let fromGodown;
+  let toGodown;
 
   (async () => {
+    STOCKS = await calculateCurrentStock();
     const url = "/api/dbf/pmpl.json";
     const response = await fetch(url);
     let json = await response.json();
@@ -108,7 +112,7 @@
     let usersList = json.map(user => ({
       name: user.PRODUCT,
       title: user.PRODUCT,
-      email: `${user.C_CODE} | ${user.MRP1}`,
+      email: `${user.CODE} | ${user.MRP1}`,
       value: user,
       avatar: "/assets/img/avatars/3.png"
     }));
@@ -126,7 +130,6 @@
     
     
 
-    
 
 
     godownList = jsonGodown.map(user => ({
@@ -157,14 +160,19 @@
   })()
 
   
+  
 
   function addItem() {
-    let usersList = global_usersList;
+    let usersList = JSON.parse(JSON.stringify(global_usersList));    
     itemCounter++;
     usersList = usersList.map(user => ({
       ...user,
       itemCounter
     }));
+    fromGodown = document.getElementById("from-godown");
+    fromGodown = JSON.parse(fromGodown.value)[0].value;
+    // FOR EACH ITEM IF STOCKS -> GDN_CODE = 0 or not available delete it
+    usersList = usersList.filter(user => STOCKS[user.value.CODE] && STOCKS[user.value.CODE][fromGodown] && STOCKS[user.value.CODE][fromGodown] > 0);
 
     let item = document.createElement("div");
     // set the div to <div class="accordion-item" id="item${itemCounter}">
@@ -189,6 +197,12 @@
               
             <div class="col-md-2">
               <div class="form-floating mb-3">
+                <input type="text" class="form-control" disabled id="current-stock-${itemCounter}" name="current-stock" placeholder="" required>
+                <label for="current-stock">Stock</label>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-floating mb-3">
                 <input type="text" class="form-control" disabled id="pack-${itemCounter}" name="pack" placeholder="" required>
                 <label for="pack">Pack</label>
               </div>
@@ -201,7 +215,8 @@
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="unit-${itemCounter}" name="unit" placeholder="" required>
+                <select class="form-select" id="SELECTOR-${itemCounter}">
+                </select>
                 <label for="unit">Unit</label>
               </div>
             </div>
@@ -338,9 +353,15 @@
   }
 
 
+
   function onSelectSuggestion(e) {
     console.log(e);
-
+    if (STEP > 2) {
+      fromGodown = document.getElementById("from-godown");
+      toGodown = document.getElementById("to-godown");
+      fromGodown = JSON.parse(fromGodown.value)[0].value;
+      toGodown = JSON.parse(toGodown.value)[0].value;
+    }
     if(STEP < 3){
       let stp = STEP == 1 ? "from" : "to";
       setTimeout(() => {
@@ -376,20 +397,31 @@
       const itemNameInput = document.getElementById(`item-name-${itemCounter}`);
       const packInput     = document.getElementById(`pack-${itemCounter}`);
       const gstInput      = document.getElementById(`gst-${itemCounter}`);
-      const unitInput     = document.getElementById(`unit-${itemCounter}`);
       const pcBxInput     = document.getElementById(`pc-bx-${itemCounter}`);
       const mrpInput      = document.getElementById(`mrp-${itemCounter}`);
       const rateInput     = document.getElementById(`rate-${itemCounter}`);
-
-      // Fill the form fields
+      const current_stock = document.getElementById(`current-stock-${itemCounter}`);
+      const selector      = document.getElementById(`SELECTOR-${itemCounter}`);
+        // Fill the form fields
+      console.log(STOCKS[selectedData.CODE], e.detail.data.value, [fromGodown] )
+      current_stock.value = STOCKS[selectedData.CODE] ? STOCKS[selectedData.CODE][fromGodown] : 0;
       itemNameInput.value = selectedData.PRODUCT;
       packInput.value = selectedData.PACK;
       gstInput.value = selectedData.GST;
-      unitInput.value = selectedData.UNIT_1; 
       pcBxInput.value = selectedData.MULT_F; 
       mrpInput.value = selectedData.MRP1;
       rateInput.value = selectedData.PL_RATE;
       console.log("itemCounter", itemCounter, e.detail.data.itemCounter, itemCounter == e.detail.data.itemCounter)
+      
+      selector.innerHTML = `
+        <option value="01">${selectedData.UNIT_1}</option>
+        <option value="02">${selectedData.UNIT_2}</option>
+      `;
+      console.log(`
+        <option value="01">${selectedData.UNIT_1}</option>
+        <option value="02">${selectedData.UNIT_2}</option>
+      `)
+      
       if(itemCounter == e.detail.data.itemCounter){
         addItem(); 
       }
@@ -400,21 +432,24 @@
     console.log(e?.detail?.data)
     if(!e?.detail?.data?.itemCounter) return;
     console.log("Item Removed", e.detail.data);
-    items[e.detail.data.itemCounter] = null;
+    const itemCounter = e.detail.data.itemCounter;
     // Get references to the form elements
       const packInput     = document.getElementById(`pack-${itemCounter}`);
       const gstInput      = document.getElementById(`gst-${itemCounter}`);
-      const unitInput     = document.getElementById(`unit-${itemCounter}`);
       const pcBxInput     = document.getElementById(`pc-bx-${itemCounter}`);
       const mrpInput      = document.getElementById(`mrp-${itemCounter}`);
       const rateInput     = document.getElementById(`rate-${itemCounter}`);
+      const stockInput     = document.getElementById(`current-stock-${itemCounter}`);
+      const selector      = document.getElementById(`SELECTOR-${itemCounter}`);
 
       packInput.value     = "";
       gstInput.value      = "";
-      unitInput.value     = "";
       pcBxInput.value     = "";
       mrpInput.value      = "";
       rateInput.value     = "";
+      stockInput.value    = "";
+      selector.innerHTML  = "";
+
   }
 
   function controlAccordion(action, index) {
@@ -436,6 +471,70 @@
       console.error('Invalid action:', action);
     }
   }
+
+
+  async function calculateCurrentStock() {
+  // Fetch the sales, purchases, and transfers data
+  const salesResponse = await fetch("/api/dbf/billdtl.json");
+  const salesData = await salesResponse.json();
+
+  const purchaseResponse = await fetch("/api/dbf/purdtl.json");
+  const purchaseData = await purchaseResponse.json();
+
+  const transferResponse = await fetch("/api/dbf/transfer.json");
+  const transferData = await transferResponse.json();
+
+  // Initialize a dictionary to track the stock
+  let stock = {};
+
+  // Process purchases to increment stock
+  purchaseData.forEach(purchase => {
+    const { CODE: code, GDN_CODE: gdn_code, QTY: qty, MULT_F: multF, UNIT: unit } = purchase;
+    const qtyInPieces = unit === "BOX" ? qty * multF : qty;
+
+    if (!stock[code]) {
+      stock[code] = {};
+    }
+    if (!stock[code][gdn_code]) {
+      stock[code][gdn_code] = 0;
+    }
+    stock[code][gdn_code] += qtyInPieces;
+  });
+
+  // Process sales to decrement stock
+  salesData.forEach(sale => {
+    const { CODE: code, GDN_CODE: gdn_code, QTY: qty, MULT_F: multF, UNIT: unit } = sale;
+    const qtyInPieces = unit === "BOX" ? qty * multF : qty;
+
+    if (stock[code] && stock[code][gdn_code]) {
+      stock[code][gdn_code] -= qtyInPieces;
+    }
+  });
+
+  // Process transfers
+  transferData.forEach(transfer => {
+    const { CODE: code, GDN_CODE: from_gdn, TRF_TO: to_gdn, QTY: qty, MULT_F: multF, UNIT: unit } = transfer;
+    const qtyInPieces = unit === "BOX" ? qty * multF : qty;
+
+    // Handle outgoing transfers
+    if (stock[code] && stock[code][from_gdn]) {
+      stock[code][from_gdn] -= Math.abs(qtyInPieces); // Ensure qty is subtracted
+    }
+
+    // Handle incoming transfers
+    if (!stock[code]) {
+      stock[code] = {};
+    }
+    if (!stock[code][to_gdn]) {
+      stock[code][to_gdn] = 0;
+    }
+    stock[code][to_gdn] += Math.abs(qtyInPieces); // Ensure qty is added
+  });
+
+  return stock;
+}
+
+calculateCurrentStock();
 
 
 </script>

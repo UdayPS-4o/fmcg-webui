@@ -61,37 +61,39 @@
                      </div>
                      <div class="col-md-6">
                         <div class="form-floating mb-3">
-                           <input type="text" class="form-control" id="aadhar" name="aadhar" placeholder="AADHAR" required>
+                           <input type="text" class="form-control" id="aadhar" name="aadhar" placeholder="AADHAR">
                            <label for="aadhar">AADHAR</label>
                         </div>
                      </div>
                      <div class="col-md-6">
                         <div class="form-floating mb-3">
-                           <input type="text" class="form-control" id="gst" name="gst" placeholder="GSTN" required>
+                           <input type="text" class="form-control" id="gst" name="gst" placeholder="GSTN" >
                            <label for="gst">GSTN</label>
                         </div>
                      </div>
                      <div class="col-md-6">
                         <div class="form-floating mb-3">
-                           <input type="text" class="form-control" id="dl-no" name="dlno" placeholder="DL NO." required>
+                           <input type="text" class="form-control" id="dl-no" name="dlno" placeholder="DL NO.">
                            <label for="dl-no">DL NO.</label>
                         </div>
                      </div>
                      <div class="col-md-6">
                         <div class="form-floating mb-3">
-                           <input type="text" class="form-control" id="fssai-no" name="fssaino" placeholder="FSSAI NO." required>
+                           <input type="text" class="form-control" id="fssai-no" name="fssaino" placeholder="FSSAI NO.">
                            <label for="fssai-no">FSSAI NO.</label>
                         </div>
                      </div>
                      <div class="col-md-6">
                         <div class="form-floating mb-3">
-                           <input type="email" class="form-control" id="email" name="email" placeholder="EMAIL ID" required>
+                           <input type="email" class="form-control" id="email" name="email" placeholder="EMAIL ID">
                            <label for="email">EMAIL ID</label>
                         </div>
                      </div>
                      <div class="col-md-6">
                         <div class="form-floating mb-3">
-                           <input type="text" class="form-control" id="state-code" name="statecode" placeholder="STATE CODE" required>
+                           <select class="form-select" id="state-code" >
+                              <option value="" selected disabled>STATE CODE...</option> 
+                            </select>
                            <label for="state-code">STATE CODE</label>
                         </div>
                      </div>
@@ -114,14 +116,27 @@
 <%- include('../partials/bottom') %>
 
    <script>
+ 
+      
       (async () => {
-
          const url = "/cmpl";
          const response = await fetch(url);
          const localurl = "/json/account-master";
          const local = await fetch(localurl);
          const localjson = await local.json();
-         const json = await response.json();
+         let json = await response.json();
+ 
+         const state = await fetch("/api/dbf/state.json");
+         const statejson = await state.json();
+         console.log(statejson);
+
+         statejson.forEach(element => {
+            document.querySelector("#state-code").innerHTML += `<option value="${element.ST_CODE}">${element.ST_NAME}</option>`;
+         });
+
+         // filter json M_GROUP == "DT"
+         json = json.filter(item => item.M_GROUP == "DT");
+
          // for each object in json array, take out C_NAME as name and C_CODE as email
          let usersList = json.map(user => ({
             name: user.C_NAME,
