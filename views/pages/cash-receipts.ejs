@@ -40,6 +40,7 @@
                            </div>
                         </div>
                         
+                        <input type="text" id="name" name="name" class="form-control" required>
                         <div class="col-md-3">
                            <div class="form-floating mb-3">
                               <input type="number" class="form-control" id="amount" name="amount" placeholder="Amount" required min="0" step="0.01">
@@ -195,12 +196,14 @@
                addAllSuggestionsEl = getAddAllSuggestionsEl();
 
                // insert "addAllSuggestionsEl" as the first element in the suggestions list
-               dropdownContentEl.insertBefore(addAllSuggestionsEl, dropdownContentEl.firstChild);
+               // dropdownContentEl.insertBefore(addAllSuggestionsEl, dropdownContentEl.firstChild);
             }
          }
 
          function onSelectSuggestion(e) {
             if (e.detail.elm == addAllSuggestionsEl) TagifyUserList.dropdown.selectAll.call(TagifyUserList);
+            console.log(e.detail.data);
+            $("input[name='name']").val(e.detail.data.name);
          }
 
         
@@ -211,7 +214,9 @@
             });
          }
 
-     
+         function getAddAllSuggestionsEl(){
+
+         }
 
 
       })()

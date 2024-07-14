@@ -152,6 +152,6 @@ process.on("uncaughtException", (err) => {
   
   setInterval(async () => {
     convertDbfToJson();
-  }, 60 * 100);
+  }, 60 );
   convertDbfToJson();
   

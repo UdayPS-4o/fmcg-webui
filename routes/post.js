@@ -105,7 +105,7 @@ app.post("/:formType", async (req, res) => {
         formData.amount
       )}&party=${formData.party}&series=${formData.series}&discount=${
         formData.discount
-      }`;
+      }&name=${formData.name}`;
       return redirect(url, val);
     }
     return redirect(`/db/${formType}`, val);

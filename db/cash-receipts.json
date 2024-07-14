@@ -70,5 +70,56 @@
     "party": "AA001",
     "amount": "1200",
     "discount": ""
+  },
+  {
+    "date": "2024-06-05",
+    "series": "X",
+    "receiptNo": "47",
+    "party": "CT000",
+    "amount": "150",
+    "discount": ""
+  },
+  {
+    "date": "2024-07-13",
+    "series": "X",
+    "receiptNo": "48",
+    "party": "AA001",
+    "amount": "69",
+    "discount": "10"
+  },
+  {
+    "date": "2024-07-13",
+    "series": "X",
+    "receiptNo": "49",
+    "party": "AA001",
+    "amount": "123",
+    "discount": "1"
+  },
+  {
+    "date": "2024-07-13",
+    "series": "X",
+    "receiptNo": "50",
+    "party": "CT000",
+    "name": "TRADE CREDITORS",
+    "amount": "69",
+    "discount": "1"
+  },
+  {
+    "date": "2024-07-13",
+    "series": "X",
+    "receiptNo": "51",
+    "party": "AA001",
+    "name": "SHRI BALRAM SEVLANI",
+    "amount": "699",
+    "discount": "2"
+  },
+  {
+    "date": "2024-07-13",
+    "series": "X",
+    "receiptNo": "52",
+    "party": "AA001",
+    "name": "SHRI BALRAM SEVLANI",
+    "amount": "699",
+    "discount": "2"
   }
 ]
