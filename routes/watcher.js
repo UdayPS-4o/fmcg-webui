@@ -133,13 +133,14 @@ process.on("uncaughtException", (err) => {
         const fileStats = await fs.stat(dbfFilePath);
         const lastModifiedTime = fileStats.mtimeMs;
   
-        if (!(index[dbfFile] && index[dbfFile] == lastModifiedTime)) {
+        if (!index[dbfFile] || index[dbfFile] != lastModifiedTime) {
           console.log(
-            `File ${dbfFile} has been modified since last conversion. Processing...`
+            `File ${dbfFile} has been modified since last conversion. Processing... :: ${lastModifiedTime} :: ${index[dbfFile]}`
           );
           const dbData = await getDbfData(dbfFilePath);
           await fs.writeFile(jsonFilePath, JSON.stringify(dbData, null, 2));
           index[dbfFile] = lastModifiedTime;
+          await fs.writeFile(indexFilePath, JSON.stringify(index, null, 2));
           console.log(`Converted ${dbfFile} to ${path.basename(jsonFilePath)}`);
         }
       }
@@ -152,6 +153,6 @@ process.on("uncaughtException", (err) => {
   
   setInterval(async () => {
     convertDbfToJson();
-  }, 60 );
+  }, 60 * 1000 );
   convertDbfToJson();
   
