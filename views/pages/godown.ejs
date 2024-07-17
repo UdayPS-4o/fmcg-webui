@@ -3,8 +3,6 @@
 
 <div class="container-xxl flex-grow-1 container-p-y">
   <h4 class="fw-bold py-3 mb-4">
-    <!-- <span class="text-muted fw-light">Account Settings /</span> -->
-    <!-- GODOWN TRANSFER -->
   </h4>
 
   <div class="row">
@@ -385,23 +383,24 @@
       }
     }
 
-    if(!e?.detail?.data?.itemCounter) return; // Check for valid data
+    if(!e?.detail?.data?.itemCounter) return; 
+    const currentITM = e.detail.data.itemCounter;
     console.log("Item Selected", e.detail.data);
-    items[itemCounter] = e.detail.data;
-    controlAccordion('collapse', itemCounter-1);
-    if(itemCounter == e.detail.data.itemCounter){
+    items[currentITM] = e.detail.data;
+    controlAccordion('collapse', currentITM-1);
+    if(currentITM == e.detail.data.itemCounter){
       // Access the selected data
       const selectedData = e.detail.data.value;
 
       // Get references to the form elements
-      const itemNameInput = document.getElementById(`item-name-${itemCounter}`);
-      const packInput     = document.getElementById(`pack-${itemCounter}`);
-      const gstInput      = document.getElementById(`gst-${itemCounter}`);
-      const pcBxInput     = document.getElementById(`pc-bx-${itemCounter}`);
-      const mrpInput      = document.getElementById(`mrp-${itemCounter}`);
-      const rateInput     = document.getElementById(`rate-${itemCounter}`);
-      const current_stock = document.getElementById(`current-stock-${itemCounter}`);
-      const selector      = document.getElementById(`SELECTOR-${itemCounter}`);
+      const itemNameInput = document.getElementById(`item-name-${currentITM}`);
+      const packInput     = document.getElementById(`pack-${currentITM}`);
+      const gstInput      = document.getElementById(`gst-${currentITM}`);
+      const pcBxInput     = document.getElementById(`pc-bx-${currentITM}`);
+      const mrpInput      = document.getElementById(`mrp-${currentITM}`);
+      const rateInput     = document.getElementById(`rate-${currentITM}`);
+      const current_stock = document.getElementById(`current-stock-${currentITM}`);
+      const selector      = document.getElementById(`SELECTOR-${currentITM}`);
         // Fill the form fields
       console.log(STOCKS[selectedData.CODE], e.detail.data.value, [fromGodown] )
       current_stock.value = STOCKS[selectedData.CODE] ? STOCKS[selectedData.CODE][fromGodown] : 0;
@@ -411,7 +410,7 @@
       pcBxInput.value = selectedData.MULT_F; 
       mrpInput.value = selectedData.MRP1;
       rateInput.value = selectedData.PL_RATE;
-      console.log("itemCounter", itemCounter, e.detail.data.itemCounter, itemCounter == e.detail.data.itemCounter)
+      console.log("currentITM", itemCounter, e.detail.data.itemCounter, itemCounter == e.detail.data.itemCounter)
       
       selector.innerHTML = `
         <option value="01">${selectedData.UNIT_1}</option>
@@ -433,6 +432,7 @@
     if(!e?.detail?.data?.itemCounter) return;
     console.log("Item Removed", e.detail.data);
     const itemCounter = e.detail.data.itemCounter;
+    delete items[itemCounter];
     // Get references to the form elements
       const packInput     = document.getElementById(`pack-${itemCounter}`);
       const gstInput      = document.getElementById(`gst-${itemCounter}`);
@@ -473,7 +473,7 @@
   }
 
 
-  async function calculateCurrentStock() {
+async function calculateCurrentStock() {
   // Fetch the sales, purchases, and transfers data
   const salesResponse = await fetch("/api/dbf/billdtl.json");
   const salesData = await salesResponse.json();
@@ -543,4 +543,4 @@ calculateCurrentStock();
 
 </body>
 
-</html>
+</html> 
