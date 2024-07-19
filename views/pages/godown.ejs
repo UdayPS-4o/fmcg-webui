@@ -51,12 +51,13 @@
             <br>
             <br>
 
+            <button type="submit" class="btn btn-primary me-2" style="display: none;">Save changes</button>
 
-            <div class="col-12 mt-1" style="display: flex; justify-content: end;">
-              <button type="reset" class="btn btn-label-secondary" style="margin-right:20px">Cancel</button>
-              <button type="submit" class="btn btn-primary me-2">Save changes</button>
-            </div>
           </form>
+            <div class="col-12 mt-1" style="display: flex; justify-content: end;">
+            <button type="button" class="btn btn-label-secondary" style="margin-right:20px">Cancel</button>
+              <button type="button" class="btn btn-primary me-2" onclick="submit()">Save changes</button>
+            </div>
 
           <script>
             // Set today's date as the default value for the date input
@@ -111,6 +112,8 @@
       name: user.PRODUCT,
       title: user.PRODUCT,
       email: `${user.CODE} | ${user.MRP1}`,
+      code: user.CODE,
+      mrp: user.MRP1,
       value: user,
       avatar: "/assets/img/avatars/3.png"
     }));
@@ -146,9 +149,6 @@
     global_usersList = usersList;
     
     console.log(godownList)
-    // tagifyElement("#from-godown", godownList);
-    // tagifyElement("#to-godown", godownList);
-    // also send element id to tagifyElement function in godownList json
     godownList = godownList.map(user => ({
       ...user,
       element: "#from-godown"
@@ -188,57 +188,57 @@
            <div class="row">
               <div class="col-md-4">
                  <div class="form-floating mb-3">
-                    <input type="text" class="form-control" disabled id="item-name-${itemCounter}" name="item-name" placeholder="" required>
+                    <input type="text" class="form-control" disabled id="item-name-${itemCounter}" name="item-name" placeholder="" >
                     <label for="item-name">Item Name</label>
                  </div>
               </div>
               
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" disabled id="current-stock-${itemCounter}" name="current-stock" placeholder="" required>
+                <input type="text" class="form-control" disabled id="current-stock-${itemCounter}" name="current-stock" placeholder="" >
                 <label for="current-stock">Stock</label>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" disabled id="pack-${itemCounter}" name="pack" placeholder="" required>
+                <input type="text" class="form-control" disabled id="pack-${itemCounter}" name="pack" placeholder="" >
                 <label for="pack">Pack</label>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" disabled id="gst-${itemCounter}" name="gst" placeholder="" required>
+                <input type="text" class="form-control" disabled id="gst-${itemCounter}" name="gst" placeholder="" >
                 <label for="gst">GST%</label>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <select class="form-select" id="SELECTOR-${itemCounter}">
+                <select class="form-select" id="SELECTOR-${itemCounter}" onchange="qtyRules(${itemCounter})">
                 </select>
                 <label for="unit">Unit</label>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" disabled id="pc-bx-${itemCounter}" name="pc-bx" placeholder="" required>
+                <input type="text" class="form-control" disabled id="pc-bx-${itemCounter}" name="pc-bx" placeholder="" >
                 <label for="pc-bx">Pc/Bx</label>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" disabled id="mrp-${itemCounter}" name="mrp" placeholder="" required>
+                <input type="text" class="form-control" disabled id="mrp-${itemCounter}" name="mrp" placeholder="" >
                 <label for="mrp">M.R.P.</label>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" disabled id="rate-${itemCounter}" name="rate" placeholder="" required>
+                <input type="text" class="form-control" disabled id="rate-${itemCounter}" name="rate" placeholder="" >
                 <label for="rate">Rate</label>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="qty-${itemCounter}" name="qty" placeholder="" required>
+                <input type="number" class="form-control" id="qty-${itemCounter}" name="qty" placeholder="" step="1" min="1" pattern="^\d+$">
                 <label for="qty">QTY</label>
               </div>
             </div>
@@ -401,7 +401,14 @@
       const rateInput     = document.getElementById(`rate-${currentITM}`);
       const current_stock = document.getElementById(`current-stock-${currentITM}`);
       const selector      = document.getElementById(`SELECTOR-${currentITM}`);
-        // Fill the form fields
+      const qty           = document.getElementById(`qty-${currentITM}`);
+      const heading       = document.querySelector(`#heading${currentITM} > button`);
+      
+      [packInput, gstInput, pcBxInput, mrpInput, rateInput, selector, qty].forEach(input => {
+        input.setAttribute("required", true);
+      });
+
+
       console.log(STOCKS[selectedData.CODE], e.detail.data.value, [fromGodown] )
       current_stock.value = STOCKS[selectedData.CODE] ? STOCKS[selectedData.CODE][fromGodown] : 0;
       itemNameInput.value = selectedData.PRODUCT;
@@ -410,6 +417,7 @@
       pcBxInput.value = selectedData.MULT_F; 
       mrpInput.value = selectedData.MRP1;
       rateInput.value = selectedData.PL_RATE;
+      heading ? heading.innerText = selectedData.PRODUCT : '';
       console.log("currentITM", itemCounter, e.detail.data.itemCounter, itemCounter == e.detail.data.itemCounter)
       
       selector.innerHTML = `
@@ -420,12 +428,28 @@
         <option value="01">${selectedData.UNIT_1}</option>
         <option value="02">${selectedData.UNIT_2}</option>
       `)
+
+      qtyRules(currentITM);
       
       if(itemCounter == e.detail.data.itemCounter){
         addItem(); 
       }
     }
 }
+
+function qtyRules(i) {
+  e = items[i].value;
+  const qty = document.querySelector(`#qty-${i}`);
+  const selector = document.querySelector(`#SELECTOR-${i}`);
+  if(selector.value == "01"){
+    qty.setAttribute("max", STOCKS[e.CODE][fromGodown]);
+    console.log("max", STOCKS[e.CODE][fromGodown]);
+  } else {
+    qty.setAttribute("max", STOCKS[e.CODE][fromGodown] / e.MULT_F);
+    console.log("max", STOCKS[e.CODE][fromGodown] / e.MULT_F);  
+  }
+}
+
 
   function onRemoveTag(e) {
     console.log(e?.detail?.data)
@@ -441,6 +465,14 @@
       const rateInput     = document.getElementById(`rate-${itemCounter}`);
       const stockInput    = document.getElementById(`current-stock-${itemCounter}`);
       const selector      = document.getElementById(`SELECTOR-${itemCounter}`);
+      const qty           = document.getElementById(`qty-${itemCounter}`);
+      const heading       = document.querySelector(`#heading${itemCounter} > button`);
+      
+      [packInput, gstInput, pcBxInput, mrpInput, rateInput, selector, qty].forEach(input => {
+        input.removeAttribute("required");
+      });
+
+      
 
       packInput.value     = "";
       gstInput.value      = "";
@@ -449,6 +481,7 @@
       rateInput.value     = "";
       stockInput.value    = "";
       selector.innerHTML  = "";
+      heading ? heading.innerText   = "Add a new Item" : '';
 
   }
 
@@ -535,6 +568,43 @@ async function calculateCurrentStock() {
 }
 
 calculateCurrentStock();
+
+
+
+
+
+
+function submit(){
+  const form = document.querySelector("form");
+
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+
+  const date = document.querySelector('input[name="date"]');
+  const series = document.querySelector('input[name="series"]');
+
+  let data = {
+    date: date.value,
+    series: series.value,
+    fromGodown: fromGodown,
+    toGodown: toGodown,
+    items: Object.values(items).map(item => ({
+      code: item.code,
+      qty: document.querySelector(`#qty-${item.itemCounter}`).value,
+      unit: document.querySelector(`#SELECTOR-${item.itemCounter}`).value
+    }))
+  };
+
+  data = JSON.stringify(data);
+  data = encodeURIComponent(data);
+
+  // window.location.replace(`/add/godown?data=${data}`);
+  window.location.href = (`/add/godown?data=${data}`);
+  
+
+}
 
 
 </script>

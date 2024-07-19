@@ -1,7 +1,9 @@
 const express = require("express");
 const app = express.Router();
-const fs = require("fs").promises;
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
+
+
 const {
   redirect,
   getDbfData,
@@ -198,5 +200,42 @@ app.post("/edit/:formType", async (req, res) => {
     res.status(500).send("Failed to edit data.");
   }
 });
+
+
+
+
+app.get("/add/godown", async (req, res) => {
+  let { data } = req.query;
+  const filePath = path.join(__dirname, "..", "db", "godown.json");
+
+  data = decodeURIComponent(data);
+  data = JSON.parse(data);
+
+  const getDbfData = async (file) => {
+    let filepath = (path.join(__dirname, "..", "..", "d01-2324", "data", "json", file.replace(/\.dbf$/i, ".json")))
+    const data = fs.readFileSync(filepath, "utf8");
+    return JSON.parse(data);
+  }
+  const jsonGodown = await getDbfData("godown.json");
+  const jsonBill = await getDbfData("billdtl.json");
+  const jsonPur = await getDbfData("purdtl.json");
+  const pmplJSON = (await getDbfData("pmpl.json")).filter(item => item.STK > 0);
+
+
+
+
+  res.send(JSON.stringify(data));
+  
+
+});
+
+
+
+
+
+
+
+
+
 
 module.exports = app;
