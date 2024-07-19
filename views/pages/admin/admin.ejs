@@ -1,102 +1,197 @@
 <%- include('../../partials/top') %>
 
-
-
 <div class="container-xxl flex-grow-1 container-p-y">
-   <h4 class="fw-bold py-3 mb-4">
-      <!-- <span class="text-muted fw-light">Account Settings /</span> -->
-     
-   </h4>
+  <h4 class="fw-bold py-3 mb-4">
+    <!-- <span class="text-muted fw-light">Account Settings /</span> -->
+  </h4>
 
-   <div class="row">
-      <div class="col-md-12">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title mb-3">Create New User</h4>
+              <form for="">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="tb-fname"
+                        placeholder="enter ph."
+                      />
+                      <label for="tb-fname">Number</label>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                      <select
+                        placeholder="Route Access"
+                        class="select2 form-control"
+                        id="role"
+                        multiple="multiple"
+                      >
+                        <option value="Account Master">Account Master</option>
+                        <option value="EDIT">EDIT</option>
+                        <option value="DEL">DEL</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                      <input
+                        type=""
+                        class="form-control"
+                        id="tb-pwd"
+                        placeholder="Password"
+                      />
+                      <label for="tb-pwd">Password</label>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                      <select
+                        placeholder="Powers"
+                        class="select2 form-control"
+                        id="role"
+                        multiple="multiple"
+                      >
+                        <option value="ADD">ADD</option>
+                        <option value="EDIT">EDIT</option>
+                        <option value="DEL">DEL</option>
+                      </select>
+                    </div>
+                  </div>
 
-         <div class="row">
-            <div class="col-12">
-              <!-- start File export -->
-              <div class="card">
-                <div class="card-body">
-                 
-
-                  <div class="table-responsive">
-                    <table id="tabxp" class="table border w-100 table-striped table-bordered display text-nowrap">
-                      <thead>
-                        <!-- start row -->
-                        
-                        <!-- end row -->
-                      </thead>
-
-                      <tbody>
-                      </tbody>
-
-                      
-                    </table>
+                  <!-- Include select2 CSS and JS files -->
+                  <link
+                    rel="stylesheet"
+                    href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css"
+                  />
+                  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+                  <div class="col-12">
+                    <div class="d-md-flex align-items-center">
+                      <div class="ms-auto mt-3 mt-md-0">
+                        <button
+                          type="submit"
+                          class="btn btn-primary hstack gap-6"
+                          id="add-user"
+                        >
+                          <i class="ti ti-send fs-4"></i>
+                          Submit
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div> 
+              </form>
+            </div>
+          </div>
+          <!-- start File export -->
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title mb-3">User Table</h4>
+              <div class="table-responsive">
+                <table
+                  id="tabxp"
+                  class="table border w-100 table-striped table-bordered display text-nowrap"
+                >
+                  <thead>
+                    <th>hello</th>
+                    <th>hello</th>
+                    <th>hello</th>
+                    <th>hello</th>
+                  </thead>
 
+                  <tbody>
+                    <td>world</td>
+                    <td>world</td>
+                    <td>world</td>
+                    <td>world</td>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
+      <%- include('../../partials/bottom') %>
 
+      <script>
+        (async () => {
+          const url = "/json/account-master";
+          const response = await fetch(url);
+          const json = await response.json();
+          const psudoJson = [
+            {
+              user: "orucs",
+              status: "active",
+              role: "user",
+              routes: "account manager - godwon",
+            },
+          ];
+          // const modifiedJson = originalJson.map((item) => ({
+          //   name: item.C_NAME,
+          //   email: item.C_CODE,
+          // }));
 
-   </div>
-</div>
+          // add a last column for action
+          // json.forEach(item => {
+          //   item.action = `
+          //   <a type="button" data-bs-toggle="modal" class="editbutton" onclick="action('edit','${item.voucherNo}')">
+          //     <i class="fa fa-edit"></i>
+          //     </a> &nbsp;
+          //     <a type="button" data-bs-toggle="modal" class="deletebutton" onclick="action('del','${item.subgroup}')" >
+          //       <i class="fa fa-trash"></i>
+          //     </a>
 
+          //     `
+          // })
 
-<%- include('../../partials/bottom') %>
+          renderJsonToDataTable("#tabxp", psudoJson, true);
+          console.log("json", json);
+        })();
 
-   <script>
-      (async () => {
+        // function userTable(selector, data)
+        // {
+        //   const table = document.querySelector(selector);
+        //   const thead = table.querySelector("thead");
+        //   Object.keys(data).map(el=>{
+        //     const th = document.createElement("th");
+        //     th.innerText = el;
+        //     thead.appendChild(th);
+        //   })
 
-         const url = "/json/account-master";
-         const response = await fetch(url);
-         const json = await response.json();
-         const modifiedJson = originalJson.map(item => ({
-            name: item.C_NAME,
-            email: item.C_CODE
-          }));
+        //   const tbody = table.querySelector("tbody");
+        //   Object.keys(data).map(el=>{
+        //     const
+        //     data[el]
+        //   })
+        // }
 
-        // add a last column for action
-        // json.forEach(item => {
-        //   item.action = `
-        //   <a type="button" data-bs-toggle="modal" class="editbutton" onclick="action('edit','${item.voucherNo}')">
-        //     <i class="fa fa-edit"></i>
-        //     </a> &nbsp;             
-        //     <a type="button" data-bs-toggle="modal" class="deletebutton" onclick="action('del','${item.subgroup}')" >
-        //       <i class="fa fa-trash"></i>
-        //     </a>
-            
-        //     `
-        // })
+        function action(action, id) {
+          console.log(action, id);
+          if (action === "edit") {
+            console.log("edit");
+            window.location.href = `/edit/cash-payments/${id}`;
+          } else if (action === "del") {
+            if (confirm("Are you sure you want to delete this record?")) {
+              window.location.href = `/delete/account-master/${id}`;
+              // alert("Record deleted successfully");
+            }
 
-
-
-         renderJsonToDataTable("#tabxp", json, true)
-
-     
-
-
-      })()
-
-      function action(action, id) {
-        console.log(action, id);
-        if (action === "edit") {
-          console.log("edit");
-          window.location.href = `/edit/cash-payments/${id}`;
-        } else if (action === "del") {
-          if (confirm("Are you sure you want to delete this record?")) {
-            window.location.href = `/delete/account-master/${id}`;
-            // alert("Record deleted successfully");
+            // console.log("del");
           }
-
-          // console.log("del");
         }
-      }
-      
-
-   </script>
-
-
-
-</body>
-
-</html>
+      </script>
+      <script>
+        $(document).ready(function () {
+          $(".select2").select2();
+        });
+      </script>
+    </div>
+  </div>
+</div>
