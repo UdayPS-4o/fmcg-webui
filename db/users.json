@@ -5,7 +5,7 @@
     "username": "admin",
     "password": "123456",
     "type": "admin",
-    "token": "u37au"
+    "token": "zs7j6a"
   },
   {
     "id": "2",
@@ -13,5 +13,27 @@
     "username": "salesman",
     "password": "123456",
     "type": "salesman"
+  },
+  {
+    "id": 3,
+    "name": "1234",
+    "username": "1234",
+    "password": "1345",
+    "type": "ADD"
+  },
+  {
+    "id": 4,
+    "name": "orcus",
+    "username": "orcus",
+    "password": "orcusofi",
+    "type": "Account Master"
+  },
+  {
+    "id": 5,
+    "name": "7223969523",
+    "username": "7223969523",
+    "password": "7223969523",
+    "routeAccess": "EDIT",
+    "powers": "DEL"
   }
 ]

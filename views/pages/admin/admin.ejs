@@ -12,7 +12,7 @@
           <div class="card">
             <div class="card-body">
               <h4 class="card-title mb-3">Create New User</h4>
-              <form for="">
+              <form action="http://localhost:80/addUser" method="POST">
                 <div class="row">
                   <div class="col-md-6">
                     <div class="form-floating mb-3">
@@ -20,6 +20,7 @@
                         type="text"
                         class="form-control"
                         id="tb-fname"
+                        name="number"
                         placeholder="enter ph."
                       />
                       <label for="tb-fname">Number</label>
@@ -30,20 +31,25 @@
                       <select
                         placeholder="Route Access"
                         class="select2 form-control"
-                        id="role"
+                        id="routes"
+                        name="perms"
                         multiple="multiple"
                       >
-                        <option value="Account Master">Account Master</option>
+                        <option value="Account Master" selected>
+                          Account Master
+                        </option>
                         <option value="EDIT">EDIT</option>
                         <option value="DEL">DEL</option>
                       </select>
                     </div>
                   </div>
+
                   <div class="col-md-6">
                     <div class="form-floating mb-3">
                       <input
                         type=""
                         class="form-control"
+                        name="password"
                         id="tb-pwd"
                         placeholder="Password"
                       />
@@ -55,7 +61,8 @@
                       <select
                         placeholder="Powers"
                         class="select2 form-control"
-                        id="role"
+                        id="powers"
+                        name="powers"
                         multiple="multiple"
                       >
                         <option value="ADD">ADD</option>
@@ -133,26 +140,10 @@
               routes: "account manager - godwon",
             },
           ];
-          // const modifiedJson = originalJson.map((item) => ({
-          //   name: item.C_NAME,
-          //   email: item.C_CODE,
-          // }));
-
-          // add a last column for action
-          // json.forEach(item => {
-          //   item.action = `
-          //   <a type="button" data-bs-toggle="modal" class="editbutton" onclick="action('edit','${item.voucherNo}')">
-          //     <i class="fa fa-edit"></i>
-          //     </a> &nbsp;
-          //     <a type="button" data-bs-toggle="modal" class="deletebutton" onclick="action('del','${item.subgroup}')" >
-          //       <i class="fa fa-trash"></i>
-          //     </a>
-
-          //     `
-          // })
-
-          renderJsonToDataTable("#tabxp", psudoJson, true);
-          console.log("json", json);
+          const users = await fetch("http://localhost/users");
+          const data = await users.json();
+          renderJsonToDataTable("#tabxp", data, true);
+          console.log("users", data);
         })();
 
         // function userTable(selector, data)
@@ -189,7 +180,12 @@
       </script>
       <script>
         $(document).ready(function () {
-          $(".select2").select2();
+          $(".select2#routes").select2({
+            placeholder: "Select Route Access",
+          });
+          $(".select2#powers").select2({
+            placeholder: "Select Powers",
+          });
         });
       </script>
     </div>
