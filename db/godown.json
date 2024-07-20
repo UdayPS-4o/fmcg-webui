@@ -1,12 +1,177 @@
 [
   {
-    "date": "2024-07-18",
-    "from-godown": "[{\"name\":\"SHOP BUDHWARI\",\"title\":\"SHOP BUDHWARI\",\"email\":\"01\",\"value\":\"01\",\"avatar\":\"/assets/img/avatars/3.png\",\"element\":\"#from-godown\"}]",
-    "to-godown": "[{\"name\":\"KEOLARI GODOWN\",\"title\":\"KEOLARI GODOWN\",\"email\":\"03\",\"value\":\"03\",\"avatar\":\"/assets/img/avatars/3.png\",\"element\":\"#to-godown\"}]",
-    "qty": [
-      "",
-      "",
-      ""
+    "date": "2024-07-20",
+    "series": "T",
+    "fromGodown": "02",
+    "toGodown": "04",
+    "id": "6",
+    "items": [
+      {
+        "code": "GJ820",
+        "qty": "10",
+        "unit": "01"
+      },
+      {
+        "code": "GJ819",
+        "qty": "55",
+        "unit": "01"
+      },
+      {
+        "code": "GJ818",
+        "qty": "27",
+        "unit": "01"
+      }
+    ]
+  },
+  {
+    "date": "2024-07-20",
+    "series": "T",
+    "fromGodown": "02",
+    "toGodown": "01",
+    "id": "4",
+    "items": [
+      {
+        "code": "GJ910",
+        "qty": "5",
+        "unit": "01"
+      },
+      {
+        "code": "GJ819",
+        "qty": "1",
+        "unit": "01"
+      }
+    ]
+  },
+  {
+    "date": "2024-07-20",
+    "series": "T",
+    "fromGodown": "02",
+    "toGodown": "01",
+    "id": "5",
+    "items": [
+      {
+        "code": "DA001",
+        "qty": "20",
+        "unit": "02"
+      },
+      {
+        "code": "DA004",
+        "qty": "10",
+        "unit": "02"
+      },
+      {
+        "code": "GJ819",
+        "qty": "50",
+        "unit": "01"
+      }
+    ]
+  },
+  {
+    "date": "2024-07-20",
+    "series": "T",
+    "fromGodown": "02",
+    "toGodown": "04",
+    "id": "6",
+    "items": [
+      {
+        "code": "GJ820",
+        "qty": "10",
+        "unit": "01"
+      },
+      {
+        "code": "GJ819",
+        "qty": "50",
+        "unit": "01"
+      },
+      {
+        "code": "GJ818",
+        "qty": "25",
+        "unit": "01"
+      }
+    ]
+  },
+  {
+    "date": "2024-07-20",
+    "series": "T",
+    "fromGodown": "02",
+    "toGodown": "03",
+    "id": "7",
+    "items": [
+      {
+        "code": "GJ947",
+        "qty": "1",
+        "unit": "01"
+      },
+      {
+        "code": "GJ847",
+        "qty": "3",
+        "unit": "01"
+      },
+      {
+        "code": "GJ819",
+        "qty": "5",
+        "unit": "01"
+      },
+      {
+        "code": "H3537",
+        "qty": "10",
+        "unit": "01"
+      },
+      {
+        "code": "ME032",
+        "qty": "30",
+        "unit": "01"
+      },
+      {
+        "code": "GJ819",
+        "qty": "10",
+        "unit": "01"
+      },
+      {
+        "code": "GJ819",
+        "qty": "25",
+        "unit": "01"
+      },
+      {
+        "code": "ME006",
+        "qty": "25",
+        "unit": "01"
+      },
+      {
+        "code": "H1977",
+        "qty": "13",
+        "unit": "01"
+      },
+      {
+        "code": "H1977",
+        "qty": "5",
+        "unit": "01"
+      },
+      {
+        "code": "GJ819",
+        "qty": "10",
+        "unit": "01"
+      },
+      {
+        "code": "H2528",
+        "qty": "1",
+        "unit": "02"
+      },
+      {
+        "code": "ME006",
+        "qty": "12",
+        "unit": "01"
+      },
+      {
+        "code": "ME006",
+        "qty": "12",
+        "unit": "01"
+      },
+      {
+        "code": "DA005",
+        "qty": "16",
+        "unit": "01"
+      }
     ]
   }
 ]
