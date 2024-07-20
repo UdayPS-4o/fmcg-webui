@@ -29,7 +29,6 @@ app.use(loginRoutes);
 // set middleware to check if user is logged in
 const middleware = require("./routes/middleware");
 app.use(middleware);
-
 app.set("view engine", "ejs");
 
 // Endpoint to get data from CMPL.DBF and return as JSON
@@ -39,6 +38,36 @@ app.get("/", (req, res) => {
   res.redirect("/account-master");
 });
 
+app.post("/addUser", (req, res) => {
+  const { number, perms, routes, password, powers } = req.body;
+  console.log("Adding user", number, perms, routes, powers, password);
+  const users = require("./db/users.json");
+  if (users.find((user) => user.username === number)) {
+    const user = users.find((user) => user.username === number);
+    user.type = perms;
+    user.password = password;
+    fs.writeFile("./db/users.json", JSON.stringify(users, null, 2));
+    res.send(users);
+    return;
+  } else {
+    const user = {
+      id: users.length + 1,
+      name: number,
+      username: number,
+      password: password,
+      routeAccess: perms,
+      powers: powers,
+    };
+    users.push(user);
+    fs.writeFile("./db/users.json", JSON.stringify(users, null, 2));
+    res.send(users);
+  }
+});
+
+app.get("/users", (req, res) => {
+  const users = require("./db/users.json");
+  res.send(users);
+});
 const dbfRoutes = require("./routes/get/db");
 app.use(dbfRoutes);
 
