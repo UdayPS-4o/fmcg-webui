@@ -12,12 +12,18 @@ const {
   saveDataToJsonFile,
 } = require("./utilities");
 
-const uniqueIdentifiers = ["receiptNo", "voucherNo", "subgroup"];
+const uniqueIdentifiers = ["receiptNo", "voucherNo", "subgroup",'id'];
 
 app.post("/:formType", async (req, res) => {
   const { formType } = req.params;
   const formData = req.body;
+
+  if (formData.items && typeof formData.items === "string") {
+    formData.items = JSON.parse(formData.items);
+  }
+
   const ogform = JSON.parse(JSON.stringify(formData));
+  
   if (formData.party && typeof formData.party === "string") {
     formData.party = JSON.parse(formData.party)[0].value;
   }
@@ -98,34 +104,28 @@ app.post("/:formType", async (req, res) => {
     const words = convert(amount);
     return words ? words + " Only" : "Zero Only";
   }
+
   function ToBeRedirect(formType, val) {
     if (formType === "cash-receipts") {
-      // form data is date: '2024-03-31', receiptNo: '72',party: 'CT000',series: '345',  amount: '23452345',discount: '0.03  url  is  /print?companyName=ABC%20Corporation&address=123%20Main%20Street%2C%20Anytown&date=01.01.2025&mode=Credit%20Card&receiptNo=1234&name=John%20Doe&code=ABC123&amount=500.00&inWords=Five%20Hundred%20Only
-      let url = `/print?date=${formData.date}&receiptNo=${
-        formData.receiptNo
-      }&amount=${formData.amount}&inWords=${convertAmountToWords(
-        formData.amount
-      )}&party=${formData.party}&series=${formData.series}&discount=${
-        formData.discount
-      }&name=${formData.name}`;
-      return redirect(url, val);
+      let url = `/print?date=${formData.date}&receiptNo=${formData.receiptNo}&amount=${formData.amount}&inWords=${convertAmountToWords(formData.amount)}&party=${formData.party}&series=${formData.series}&discount=${formData.discount}&name=${formData.name}`;
+      return res.redirect(url);
     }
-    return redirect(`/db/${formType}`, val);
+    if (formType === "godown") {
+      // convert formData to GET query string and redirect to print page 
+      let url = `/printGODOWN?data=${encodeURIComponent(JSON.stringify(formData))}`;
+      return res.redirect(url);
+    }
+    return res.redirect(`/db/${formType}`);
   }
 
   try {
     let dbData = [];
     try {
-      const data = await fs.readFile(filePath, "utf8");
+      const data = await fs.promises.readFile(filePath, "utf8");
       dbData = JSON.parse(data);
     } catch (err) {
-      console.log("No existing file, creating a new one.");
+      console.log("No existing file, creating a new one." + err);
     }
-
-    // const entryExists = dbData.some(entry => entry.receiptNo === formData.receiptNo);
-    // entry key can be voucherNo or receiptNo
-
-    // const entryExists = dbData.some(entry => uniqueIdentifiers.some(key => entry[key] === formData[key]));
 
     const validKEY = uniqueIdentifiers.find((key) => formData[key]);
     const entryExists = dbData.some(
@@ -143,36 +143,60 @@ app.post("/:formType", async (req, res) => {
         );
     } else {
       dbData.push(formData);
-      await fs.writeFile(filePath, JSON.stringify(dbData, null, 2), "utf8");
+      await fs.promises.writeFile(filePath, JSON.stringify(dbData, null, 2), "utf8");
       res
         .status(200)
         .send("Entry added successfully." + ToBeRedirect(formType, 500));
     }
   } catch (err) {
     console.error(err);
-    console.error(err);
     res.status(500).send("Failed to add data.");
   }
 });
+
+
+
 
 app.post("/edit/:formType", async (req, res) => {
   const { formType } = req.params;
   const formData = req.body;
 
+  if (formData.items && typeof formData.items === "string") {
+    try {
+      formData.items = JSON.parse(formData.items);
+    } catch (error) {
+      console.error("Failed to parse items:", error);
+      return res.status(400).send("Invalid format for items.");
+    }
+  }
+
   if (formData.party && typeof formData.party === "string") {
-    console.log(formData);
-    formData.party = JSON.parse(formData.party)[0].value;
+    try {
+      formData.party = JSON.parse(formData.party)[0].value;
+    } catch (error) {
+      console.error("Failed to parse party:", error);
+      return res.status(400).send("Invalid format for party.");
+    }
   }
 
   const filePath = path.join(__dirname, "..", "db", `${formType}.json`);
 
+  console.log(`Checking if the file exists: ${filePath}`);
+
   try {
-    let dbData = await fs
-      .readFile(filePath, "utf8")
-      .then((data) => JSON.parse(data))
-      .catch(() => {
-        throw new Error("Database file read error or file does not exist.");
-      });
+    let dbData;
+    try {
+      const data = await fs.promises.readFile(filePath, "utf8");
+      dbData = JSON.parse(data);
+    } catch (readError) {
+      if (readError.code === 'ENOENT') {
+        console.error(`File not found: ${filePath}`);
+        return res.status(404).send("Database file does not exist.");
+      } else {
+        console.error("Error reading database file:", readError);
+        return res.status(500).send("Database file read error." + filePath);
+      }
+    }
 
     const entryIndex = dbData.findIndex(
       (entry) => entry.receiptNo === formData.receiptNo
@@ -180,12 +204,17 @@ app.post("/edit/:formType", async (req, res) => {
 
     if (entryIndex > -1) {
       dbData[entryIndex] = { ...dbData[entryIndex], ...formData };
-      await fs.writeFile(filePath, JSON.stringify(dbData, null, 2), "utf8");
-      res
-        .status(200)
-        .send(
-          "Entry updated successfully. " + redirect(`/db/${formType}`, 500)
-        );
+      try {
+        await fs.promises.writeFile(filePath, JSON.stringify(dbData, null, 2), "utf8");
+        res
+          .status(200)
+          .send(
+            "Entry updated successfully. " + redirect(`/db/${formType}`, 500)
+          );
+      } catch (writeError) {
+        console.error("Error writing to database file:", writeError);
+        res.status(500).send("Failed to write updated data.");
+      }
     } else {
       res
         .status(404)
@@ -196,10 +225,11 @@ app.post("/edit/:formType", async (req, res) => {
         );
     }
   } catch (err) {
-    console.error(err);
+    console.error("Unexpected error:", err);
     res.status(500).send("Failed to edit data.");
   }
 });
+
 
 
 
@@ -217,21 +247,58 @@ app.get("/add/godown", async (req, res) => {
     return JSON.parse(data);
   }
   const jsonGodown = await getDbfData("godown.json");
-  const jsonBill = await getDbfData("billdtl.json");
-  const jsonPur = await getDbfData("purdtl.json");
   const pmplJSON = (await getDbfData("pmpl.json")).filter(item => item.STK > 0);
 
+  function findElmPMPL(code) {
+    return pmplJSON.find(item => item.CODE === code);
+  }
 
 
+  let datax = {};
+  datax.voucher = {
+    number: data.series+ " - " + data.id,
+    id: data.id,
+    date: data.date,
+    transfer_from: jsonGodown.find(item => item.GDN_CODE === data.fromGodown).GDN_NAME,
+    transfer_to: jsonGodown.find(item => item.GDN_CODE === data.toGodown).GDN_NAME,
+  }
 
-  res.send(JSON.stringify(data));
-  
+  let i=1;
+  datax.items = data.items.map(item => {
+    const pmplItem = findElmPMPL(item.code);
+    return {
+      "s_n"          : i++,
+      "code"         : item.code,
+      "particular"   : pmplItem.PRODUCT,
+      "pack"         : pmplItem.PACK,
+      "gst_percent"  : parseFloat(pmplItem.GST).toFixed(2),
+      "unit"         : (item.unit == "01" ? pmplItem.UNIT_1 : pmplItem.UNIT_2) + (pmplItem.UNIT_1 == pmplItem.UNIT_2 && pmplItem.MULT_F == 1 ? "" : " - " + pmplItem.MULT_F),
+      "quantity"     : item.qty
+    }
+  });
 
+  res.send(JSON.stringify(datax));
 });
 
 
 
 
+
+
+app.get("/api/TRFLAST", async (req, res) => {
+  const getDbfData = async (file) => {
+    let filepath = (path.join(__dirname, "..", "..", "d01-2324", "data", "json", file.replace(/\.dbf$/i, ".json")))
+    const data = fs.readFileSync(filepath, "utf8");
+    return JSON.parse(data);
+  }
+  const trfJSON = await getDbfData("transfer.json");
+  const TRFLAST = parseInt(trfJSON[trfJSON.length - 1].BILL);
+  const godownJSON = await fs.promises.readFile(path.join(__dirname, "..", "db", "godown.json"), "utf8").then(data => JSON.parse(data));
+  const LOCALLAST = parseInt(godownJSON[godownJSON.length - 1].id);
+
+
+  res.send(`${Math.max(TRFLAST, LOCALLAST) + 1}`);
+});
 
 
 

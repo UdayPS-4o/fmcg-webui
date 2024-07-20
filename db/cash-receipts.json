@@ -121,5 +121,21 @@
     "name": "SHRI BALRAM SEVLANI",
     "amount": "699",
     "discount": "2"
+  },
+  {
+    "date": "2024-07-20",
+    "series": "X",
+    "receiptNo": "53",
+    "party": "AA001",
+    "amount": "12",
+    "discount": ""
+  },
+  {
+    "date": "2024-07-20",
+    "series": "V",
+    "receiptNo": "54",
+    "party": "CT000",
+    "amount": "12",
+    "discount": ""
   }
 ]

@@ -1,4 +1,4 @@
-<%- include('../partials/top') %>
+<%- include('../../partials/top') %>
 
 
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -11,7 +11,7 @@
       <!-- Change Password -->
       <div class="card mb-4">
         <div class="card-body">
-          <form autocomplete="off" action="/godown" method="post">
+          <form autocomplete="off" action="/edit/godown" method="post">
             <div class="row">
               <div class="col-md-6">
                 <div class="form-floating mb-3">
@@ -27,19 +27,19 @@
               </div>
               <div class="col-md-3">
                 <div class="form-floating mb-3">
-                  <input type="text" class="form-control" id="IDD" disabled id="#" name="#" required value="" min="1">
+                  <input type="text" class="form-control" id="IDD" value="<%- receipt.id %>" disabled id="#" name="#" required value="" min="1">
                   <label for="#">#</label>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-floating mb-3">
-                  <input type="text" class="form-control" id="from-godown" name="from-godown" placeholder="" required value="" min="1">
+                  <input type="text" class="form-control" id="from-godown" name="from-godown" placeholder="" required value="<%- receipt.fromGodown %>" min="1">
                   <label for="from-godown">From godown.</label>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-floating mb-3">
-                  <input type="text" class="form-control" id="to-godown" name="to-godown" placeholder="" required value="" min="1">
+                  <input type="text" class="form-control" id="to-godown" name="to-godown" placeholder="" required value="<%- receipt.toGodown %>" min="1">
                   <label for="to-godown">To godown.</label>
                 </div>
               </div>
@@ -90,7 +90,7 @@
 </div>
 
 
-<%- include('../partials/bottom') %>
+<%- include('../../partials/bottom') %>
 
 <script>
   let itemCounter = 0;
@@ -100,15 +100,18 @@
   let pmplJSON = [];
   let tagifyFrom, tagifyTo;
   let godownList = [];
-  let STEP = 1;
+  let STEP = 4;
   let STOCKS;
   let fromGodown;
   let toGodown;
+  let itemsADDED;
+  let itms = `<%- JSON.stringify(receipt.items) %>`;
+    itms = JSON.parse(itms);
 
   (async () => {
     STOCKS = await calculateCurrentStock();
     const lastHASH = await fetch("/api/TRFLAST").then(res => res.text());
-    document.querySelector("#IDD").value = lastHASH;
+    // document.querySelector("#IDD").value = lastHASH;
 
     const url = "/api/dbf/pmpl.json";
     const response = await fetch(url);
@@ -163,13 +166,25 @@
       element: "#from-godown"
     }));
     tagifyFrom = tagifyElement("#from-godown", godownList);
- 
+    tagifyTo   = tagifyElement("#to-godown", godownList);
+    let timer = 0;    
+    itms.forEach(item => {
+      setTimeout(() => {
+        addItem(item.code,item.unit,item.qty);
+      }, timer+=100);
+    });
+
+    setTimeout(() => {
+      itemsADDED = true;
+      addItem();
+    }, 101*itms.length);
+    
   })()
 
   
   
 
-  function addItem() {
+  function addItem(code, unit, qty) {
     let usersList = JSON.parse(JSON.stringify(global_usersList));    
     itemCounter++;
     usersList = usersList.map(user => ({
@@ -197,7 +212,7 @@
            <div class="row">
               <div class="col-md-4">
                  <div class="form-floating mb-3">
-                    <input type="text" class="form-control" disabled id="item-name-${itemCounter}" name="item-name" placeholder="" >
+                    <input type="text" value="${code}" class="form-control" disabled id="item-name-${itemCounter}" name="item-name" placeholder="" >
                     <label for="item-name">Item Name</label>
                  </div>
               </div>
@@ -222,7 +237,7 @@
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <select class="form-select" id="SELECTOR-${itemCounter}" onchange="qtyRules(${itemCounter})">
+                <select class="form-select"  value="${unit}" id="SELECTOR-${itemCounter}" onchange="qtyRules(${itemCounter})">
                 </select>
                 <label for="unit">Unit</label>
               </div>
@@ -247,7 +262,7 @@
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="number" class="form-control" id="qty-${itemCounter}" name="qty" placeholder="" step="1" min="1" pattern="^\d+$">
+                <input type="number" value="${qty}" class="form-control" id="qty-${itemCounter}" name="qty" placeholder="" step="1" min="1" pattern="^\d+$">
                 <label for="qty">QTY</label>
               </div>
             </div>
@@ -261,19 +276,27 @@
 
     itemContainer.appendChild(item);
 
-    tagifyElement(`#item-name-${itemCounter}`, usersList);
-
+    let tagITM = tagifyElement(`#item-name-${itemCounter}`, usersList);
+    // make its value to the code
+    tagsELM[`#item-name-${itemCounter}`].addTags([
+      usersList.find(user => user.value.CODE == code)
+    ]);
+    onSelectSuggestion({
+      detail: {
+        data: usersList.find(user => user.value.CODE == code)
+      }
+    });
 
   }
 
+  const tagsELM = {};
 
   function tagifyElement(tagSEL, usersList) {
 
 
-    console.log(usersList);
 
     const TagifyUserListEl = document.querySelector(tagSEL);
-
+    console.log("TAGGED",tagSEL);
 
     function tagTemplate(tagData) {
       return `
@@ -351,6 +374,8 @@
       }
     }
 
+    tagsELM[tagSEL] = TagifyUserList;
+
     function submit() {
       TagifyUserList.value.forEach(element => {
         changepassword(element.value);
@@ -363,7 +388,7 @@
 
 
   function onSelectSuggestion(e) {
-    console.log(e);
+    console.log('e',e);
     if (STEP > 2) {
       fromGodown = document.getElementById("from-godown");
       toGodown = document.getElementById("to-godown");
@@ -441,13 +466,14 @@
 
       qtyRules(currentITM);
       
-      if(itemCounter == e.detail.data.itemCounter){
+      if(itemCounter == e.detail.data.itemCounter && itemsADDED){
         addItem(); 
       }
     }
 }
 
 function qtyRules(i) {
+  return;
   e = items[i].value;
   const qty = document.querySelector(`#qty-${i}`);
   const selector = document.querySelector(`#SELECTOR-${i}`);
@@ -611,7 +637,6 @@ function qtyRules(i) {
 
 
 
-
 function submit() {
   const form = document.querySelector("form");
   if (!form.checkValidity()) {
@@ -634,7 +659,7 @@ function submit() {
 
   const postForm = document.createElement("form");
   postForm.method = "POST";
-  postForm.action = "/godown";
+  postForm.action = "/edit/godown";
 
   Object.keys(data).forEach(key => {
     const input = document.createElement("input");
@@ -650,8 +675,8 @@ function submit() {
 
 
 
-</script>
 
+</script>
 
 
 </body>

@@ -10,7 +10,7 @@ const {
   saveDataToJsonFile,
 } = require("../utilities");
 
-const uniqueIdentifiers = ["receiptNo", "voucherNo", "subgroup"];
+const uniqueIdentifiers = ["receiptNo", "voucherNo", "subgroup", 'id'];
 
 app.get("/edit/:page/:id", async (req, res) => {
   const { page, id } = req.params;
