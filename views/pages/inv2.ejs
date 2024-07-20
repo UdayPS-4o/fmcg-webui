@@ -21,26 +21,38 @@
               </div>
               <div class="col-md-3">
                 <div class="form-floating mb-3">
-                  <input type="text" class="form-control" value="T" disabled id="series" name="series" required value="" min="1">
+                  <input type="text" class="form-control" value="T" id="series" name="series" required value="" min="1">
                   <label for="series">Series</label>
                 </div>
               </div>
               <div class="col-md-3">
                 <div class="form-floating mb-3">
-                  <input type="text" class="form-control" id="IDD" disabled id="#" name="#" required value="" min="1">
-                  <label for="#">#</label>
+                  <input type="text" class="form-control" id="Cash" name="Cash" required value="" min="1">
+                  <label for="Cash">Cash</label>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-floating mb-3">
-                  <input type="text" class="form-control" id="from-godown" name="from-godown" placeholder="" required value="" min="1">
-                  <label for="from-godown">From godown.</label>
+                  <input type="text" class="form-control" id="party-dropdown" name="party-dropdown" placeholder="" required value="" min="1">
+                  <label for="party-dropdown">party</label>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="form-floating mb-3">
-                  <input type="text" class="form-control" id="to-godown" name="to-godown" placeholder="" required value="" min="1">
-                  <label for="to-godown">To godown.</label>
+                  <input type="text" class="form-control" id="SM-dropdown" name="SM-dropdown" placeholder="" required value="" min="1">
+                  <label for="SM-dropdown">S/M</label>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-floating mb-3">
+                  <input type="number" class="form-control" id="due-days" name="due-days" required value="" min="1" max="1">
+                  <label for="due-days">Due-days</label>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="ref" name="ref"  value="" >
+                  <label for="ref">Ref</label>
                 </div>
               </div>
               <div class="col-md-12">
@@ -108,15 +120,12 @@
   (async () => {
     STOCKS = await calculateCurrentStock();
     const lastHASH = await fetch("/api/TRFLAST").then(res => res.text());
-    document.querySelector("#IDD").value = lastHASH;
 
     const url = "/api/dbf/pmpl.json";
     const response = await fetch(url);
     let json = await response.json();
-    // FILTER -> .STK IS > 0
     json = json.filter(item => item.STK > 0);
     pmplJSON = json;
-    // for each object in json array, take out C_NAME as name and C_CODE as email
     let usersList = json.map(user => ({
       name: user.PRODUCT,
       title: user.PRODUCT,
@@ -136,6 +145,35 @@
     const purdtl = await fetch("/api/dbf/purdtl.json")
     const jsonPur = await purdtl.json();
 
+
+    balance = await fetch("/json/balance")
+         balance = await balance.json();
+         balance = balance.data;
+  
+
+    const CMPLurl = "/cmpl"
+    const CMPLresponse = await fetch(CMPLurl);
+    let CMPLjson = await CMPLresponse.json();
+
+    function balanceOfUser(C_CODE){
+      let user = balance.find(user => user.partycode == C_CODE);
+      return user ? user.result : 0;
+    }
+
+    let CMPLList = CMPLjson.map(user => ({
+      name: user.C_NAME,
+      title: user.C_NAME,
+      email: `${user.C_CODE} | ${balanceOfUser(user.C_CODE)}`,     
+      C_CODE: user.C_CODE, 
+      value: user,
+      avatar: "/assets/img/avatars/3.png"
+    }));
+
+    CMPLList = CMPLList.sort((a, b) => a.name.localeCompare(b.name));
+    tagifyElement("#party-dropdown", CMPLList);
+  
+    let SM = CMPLList.filter(user => user.value.C_CODE.startsWith("SM"));
+    tagifyElement("#SM-dropdown", SM);
 
     
     
@@ -176,10 +214,9 @@
       ...user,
       itemCounter
     }));
-    fromGodown = document.getElementById("from-godown");
-    fromGodown = JSON.parse(fromGodown.value)[0].value;
+   
     // FOR EACH ITEM IF STOCKS -> GDN_CODE = 0 or not available delete it
-    usersList = usersList.filter(user => STOCKS[user.value.CODE] && STOCKS[user.value.CODE][fromGodown] && STOCKS[user.value.CODE][fromGodown] > 0);
+    // usersList = usersList.filter(user => STOCKS[user.value.CODE] && STOCKS[user.value.CODE][fromGodown] && STOCKS[user.value.CODE][fromGodown] > 0);
 
     let item = document.createElement("div");
     // set the div to <div class="accordion-item" id="item${itemCounter}">
@@ -270,7 +307,6 @@
   function tagifyElement(tagSEL, usersList) {
 
 
-    console.log(usersList);
 
     const TagifyUserListEl = document.querySelector(tagSEL);
 

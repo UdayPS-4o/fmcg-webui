@@ -104,6 +104,7 @@
   let STOCKS;
   let fromGodown;
   let toGodown;
+  let itemsADDED;
   let itms = `<%- JSON.stringify(receipt.items) %>`;
     itms = JSON.parse(itms);
 
@@ -172,6 +173,11 @@
         addItem(item.code,item.unit,item.qty);
       }, timer+=100);
     });
+
+    setTimeout(() => {
+      itemsADDED = true;
+      addItem();
+    }, 101*itms.length);
     
   })()
 
@@ -460,8 +466,8 @@
 
       qtyRules(currentITM);
       
-      if(itemCounter == e.detail.data.itemCounter){
-        // addItem(); 
+      if(itemCounter == e.detail.data.itemCounter && itemsADDED){
+        addItem(); 
       }
     }
 }
@@ -536,7 +542,7 @@ function qtyRules(i) {
   }
 
 
-async function calculateCurrentStock() {
+  async function calculateCurrentStock() {
   // Fetch the sales, purchases, and transfers data
   const salesResponse = await fetch("/api/dbf/billdtl.json");
   const salesData = await salesResponse.json();
@@ -546,6 +552,10 @@ async function calculateCurrentStock() {
 
   const transferResponse = await fetch("/api/dbf/transfer.json");
   const transferData = await transferResponse.json();
+
+  // Fetch the local godown transfer data
+  const localTransferResponse = await fetch("http://localhost/json/godown");
+  const localTransferData = await localTransferResponse.json();
 
   // Initialize a dictionary to track the stock
   let stock = {};
@@ -574,7 +584,7 @@ async function calculateCurrentStock() {
     }
   });
 
-  // Process transfers
+  // Process DBF transfers
   transferData.forEach(transfer => {
     const { CODE: code, GDN_CODE: from_gdn, TRF_TO: to_gdn, QTY: qty, MULT_F: multF, UNIT: unit } = transfer;
     const qtyInPieces = unit === "BOX" ? qty * multF : qty;
@@ -594,10 +604,33 @@ async function calculateCurrentStock() {
     stock[code][to_gdn] += Math.abs(qtyInPieces); // Ensure qty is added
   });
 
+  // Process local godown transfers
+  localTransferData.forEach(transfer => {
+    const { fromGodown, toGodown, items } = transfer;
+    items.forEach(item => {
+      const { code, qty, unit } = item;
+      const qtyInPieces = unit === "BOX" ? qty * multF : qty; // Assuming unit "BOX" needs multiplication, else use qty as is
+
+      // Handle outgoing transfers
+      if (stock[code] && stock[code][fromGodown]) {
+        stock[code][fromGodown] -= Math.abs(qtyInPieces); // Ensure qty is subtracted
+      }
+
+      // Handle incoming transfers
+      if (!stock[code]) {
+        stock[code] = {};
+      }
+      if (!stock[code][toGodown]) {
+        stock[code][toGodown] = 0;
+      }
+      stock[code][toGodown] += Math.abs(qtyInPieces); // Ensure qty is added
+    });
+  });
+
   return stock;
 }
 
-calculateCurrentStock();
+// calculateCurrentStock();
 
 
 

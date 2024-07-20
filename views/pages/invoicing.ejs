@@ -127,16 +127,15 @@
     let json = await response.json();
     // FILTER -> .STK IS > 0
     json = json.filter(item => item.STK > 0);
-    pmplJSON = json;
-
-    // for each object in json array, take out C_NAME as name and C_CODE as email
-    let usersList = json.map(user => ({
+    pmplJSON = json.map(user => ({
       name: user.PRODUCT,
       title: user.PRODUCT,
-      email: `${user.C_CODE} | ${user.MRP1}`,
+      email: `${user.CODE} | ${user.MRP1}`,
       value: user,
       avatar: "/assets/img/avatars/3.png"
     }));
+
+    global_usersList = pmplJSON;
 
 
    //  CMPL
@@ -163,47 +162,6 @@
 
   
 
-   console.log( )
-    const resGodown = await fetch("/api/dbf/godown.json");
-    const jsonGodown = await resGodown.json();
-
-    const billDTL = await fetch("/api/dbf/billdtl.json");
-    const jsonBill = await billDTL.json();
-
-    const purdtl = await fetch("/api/dbf/purdtl.json")
-    const jsonPur = await purdtl.json();
-
-
-    
-    
-    
-    
-
-
-    godownList = jsonGodown.map(user => ({
-      name: user.GDN_NAME,
-      title: user.GDN_NAME,
-      email: `${user.GDN_CODE}`,
-      value: user.GDN_CODE,
-      avatar: "/assets/img/avatars/3.png"
-    }));
-
-    usersList = usersList.filter(user => user.name && user.email);
-    usersList = usersList.sort((a, b) => a.name.localeCompare(b.name));
-    
-    godownList = godownList.filter(user => user.name && user.email);
-
-    global_usersList = usersList;
-    
-    console.log(godownList)
-    // tagifyElement("#from-godown", godownList);
-    // tagifyElement("#to-godown", godownList);
-    // also send element id to tagifyElement function in godownList json
-    godownList = godownList.map(user => ({
-      ...user,
-      element: "#from-godown"
-    }));
-    tagifyFrom = tagifyElement("#from-godown", godownList);
  
   })()
 
@@ -376,6 +334,7 @@
 
   function tagifyElement(tagSEL, usersList) {
 
+    console.log(usersList);
 
 
     const TagifyUserListEl = document.querySelector(tagSEL);
@@ -569,6 +528,7 @@
       console.error('Invalid action:', action);
     }
   }
+  s
 
 
 </script>

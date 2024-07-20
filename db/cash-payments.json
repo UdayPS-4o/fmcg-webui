@@ -6,5 +6,13 @@
     "series": "S",
     "amount": "1234",
     "discount": ""
+  },
+  {
+    "date": "2024-07-20",
+    "voucherNo": "2420",
+    "party": "CT000",
+    "series": "X",
+    "amount": "69",
+    "discount": "10"
   }
 ]
