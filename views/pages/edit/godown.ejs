@@ -104,7 +104,7 @@
   let STOCKS;
   let fromGodown;
   let toGodown;
-  let itemsADDED;
+  let itemsADDED=false;
   let itms = `<%- JSON.stringify(receipt.items) %>`;
     itms = JSON.parse(itms);
 
@@ -117,7 +117,7 @@
     const response = await fetch(url);
     let json = await response.json();
     // FILTER -> .STK IS > 0
-    json = json.filter(item => item.STK > 0);
+    // json = json.filter(item => item.STK > 0);
     pmplJSON = json;
     // for each object in json array, take out C_NAME as name and C_CODE as email
     let usersList = json.map(user => ({
@@ -176,7 +176,7 @@
 
     setTimeout(() => {
       itemsADDED = true;
-      addItem();
+      // addItem();
     }, 101*itms.length);
     
   })()
@@ -184,7 +184,7 @@
   
   
 
-  function addItem(code, unit, qty) {
+  function addItem(code="", unit="", qty="") {
     let usersList = JSON.parse(JSON.stringify(global_usersList));    
     itemCounter++;
     usersList = usersList.map(user => ({
@@ -194,7 +194,7 @@
     fromGodown = document.getElementById("from-godown");
     fromGodown = JSON.parse(fromGodown.value)[0].value;
     // FOR EACH ITEM IF STOCKS -> GDN_CODE = 0 or not available delete it
-    usersList = usersList.filter(user => STOCKS[user.value.CODE] && STOCKS[user.value.CODE][fromGodown] && STOCKS[user.value.CODE][fromGodown] > 0);
+    // usersList = usersList.filter(user => STOCKS[user.value.CODE] && STOCKS[user.value.CODE][fromGodown] && STOCKS[user.value.CODE][fromGodown] > 0);
 
     let item = document.createElement("div");
     // set the div to <div class="accordion-item" id="item${itemCounter}">
@@ -467,7 +467,8 @@
       qtyRules(currentITM);
       
       if(itemCounter == e.detail.data.itemCounter && itemsADDED){
-        addItem(); 
+        // addItem(); 
+        // console.log("Item Added");
       }
     }
 }
