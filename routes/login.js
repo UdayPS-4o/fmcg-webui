@@ -57,9 +57,5 @@ res
 });
 
 
-app.get("/admin", async (req, res) => {
-  let firms = await getDbfData(path.join(__dirname, "..", "..", "FIRM", "FIRM.DBF")); 
-  res.render("pages/admin/admin", { firm: firms });
-});
 
 module.exports = app;

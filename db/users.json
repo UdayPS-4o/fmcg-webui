@@ -1,39 +1,42 @@
 [
   {
-    "id": "1",
-    "name": "John Doe",
+    "id": 1,
+    "name": "7223969523",
     "username": "admin",
     "password": "123456",
-    "type": "admin",
-    "token": "zs7j6a"
+    "routeAccess": "EDIT",
+    "powers": "DEL",
+    "token": "8o624"
   },
   {
-    "id": "2",
-    "name": "Jane Doe",
-    "username": "salesman",
-    "password": "123456",
-    "type": "salesman"
-  },
-  {
-    "id": 3,
-    "name": "1234",
-    "username": "1234",
-    "password": "1345",
-    "type": "ADD"
-  },
-  {
-    "id": 4,
-    "name": "orcus",
-    "username": "orcus",
-    "password": "orcusofi",
-    "type": "Account Master"
-  },
-  {
-    "id": 5,
+    "id": 2,
     "name": "7223969523",
     "username": "7223969523",
     "password": "7223969523",
     "routeAccess": "EDIT",
     "powers": "DEL"
+  },
+  {
+    "id": 3,
+    "name": "Uday PS",
+    "username": "Uday PS",
+    "password": "abcd",
+    "routeAccess": [
+      "Account Master",
+      "EDIT"
+    ],
+    "powers": [
+      "EDIT",
+      "DEL"
+    ],
+    "type": "Account Master"
+  },
+  {
+    "id": 4,
+    "name": "1234",
+    "username": "1234",
+    "password": "abcd",
+    "routeAccess": "Account Master",
+    "powers": "EDIT"
   }
 ]

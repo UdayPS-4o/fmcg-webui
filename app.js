@@ -38,21 +38,30 @@ app.get("/", (req, res) => {
   res.redirect("/account-master");
 });
 
-app.post("/addUser", (req, res) => {
-  const { number, perms, routes, password, powers } = req.body;
+
+app.get("/admin", async (req, res) => {
+  let firms = await getDbfData(path.join(__dirname, "..", "..", "FIRM", "FIRM.DBF")); 
+  res.render("pages/admin/admin", { firm: firms });
+});
+
+app.post("/addUser", async (req, res) => {
+  const { name, number, perms, routes, password, powers } = req.body;
   console.log("Adding user", number, perms, routes, powers, password);
-  const users = require("./db/users.json");
+  let users = await fs.readFile("./db/users.json");
+  users = JSON.parse(users);
   if (users.find((user) => user.username === number)) {
     const user = users.find((user) => user.username === number);
     user.type = perms;
+    user.name = name;
+    user.routes = routes;
     user.password = password;
     fs.writeFile("./db/users.json", JSON.stringify(users, null, 2));
-    res.send(users);
+    res.redirect('/admin');
     return;
   } else {
     const user = {
       id: users.length + 1,
-      name: number,
+      name: name,
       username: number,
       password: password,
       routeAccess: perms,
@@ -60,7 +69,7 @@ app.post("/addUser", (req, res) => {
     };
     users.push(user);
     fs.writeFile("./db/users.json", JSON.stringify(users, null, 2));
-    res.send(users);
+    res.redirect('/admin');
   }
 });
 

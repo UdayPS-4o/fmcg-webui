@@ -112,6 +112,7 @@
   let pmplJSON = [];
   let tagifyFrom, tagifyTo;
   let godownList = [];
+  let gdnTAGIFY = {};
   let STEP = 1;
   let STOCKS;
   let fromGodown;
@@ -171,10 +172,12 @@
 
     CMPLList = CMPLList.sort((a, b) => a.name.localeCompare(b.name));
     tagifyElement("#party-dropdown", CMPLList);
-  
+    
     let SM = CMPLList.filter(user => user.value.C_CODE.startsWith("SM"));
     tagifyElement("#SM-dropdown", SM);
 
+    console.log("CMPLList", CMPLList);
+    console.log("SM", SM);
     
     
 
@@ -200,8 +203,7 @@
       ...user,
       element: "#from-godown"
     }));
-    tagifyFrom = tagifyElement("#from-godown", godownList);
- 
+   
   })()
 
   
@@ -244,7 +246,7 @@
             </div>
             <div class="col-md-4">
                <div class="form-floating mb-3">
-                  <input type="text" class="form-control" id="gdn-${itemCounter}" name="item-name" placeholder="" >
+                  <input type="text" class="form-control" id="gdn-${itemCounter}" name="gdn-${itemCounter}" placeholder="" >
                   <label for="gdn">GDN</label>
                </div>
             </div>
@@ -439,14 +441,7 @@
     console.log(e);
     
     if(STEP < 3){
-      let stp = STEP == 1 ? "from" : "to";
-      setTimeout(() => {
-        document.querySelector(`.tagify [element="#${stp}-godown"] x`).style.visibility = "hidden";
-      }, 10);
-
-      STEP++;
-
-
+      let stp = STEP == 1 ? "from" : "to";STEP++;
       if (STEP == 3) {
         addItem()
       }
@@ -506,20 +501,37 @@
       }
 
 
-        
+      
+      console.log("STOCKS",STOCKS, "->", STOCKS[selectedData.CODE])
+      console.log("CODE", selectedData.CODE);
+      console.log("selectedData", selectedData);
 
-      let stockList = STOCKS[selectedData.CODE].map(user => ({
-          name: user.PRODUCT,
-          title: user.PRODUCT,
-          email: `${godownList.find(e=>e.value == "06").name} | ${user.MRP1}`,
-          code: user.CODE,
-          mrp: user.MRP1,
-          value: user,
+      // [{06: 14}] -> convert to [{name: "06", title: "06", email: "06 | 14", code: "06", mrp: 14, value: {…}, avatar: "/assets/img/avatars/3.png"}]
+
+      let data2 = Object.keys(STOCKS[selectedData.CODE]).map(key => {
+        return {
+          name: `${godownList.find(e=>e.value == key).name} | ${STOCKS[selectedData.CODE][key]}`,
+          title: key,
+          email: `${godownList.find(e=>e.value == key).name} | ${STOCKS[selectedData.CODE][key]}`,
+          code: key,
+          mrp: STOCKS[selectedData.CODE][key],
+          value: STOCKS[selectedData.CODE][key],
           avatar: "/assets/img/avatars/3.png"
-        }));
+        }
+      });
 
+      // let stockList = STOCKS[selectedData.CODE].map(user => ({
+      //     name: user.PRODUCT,
+      //     title: user.PRODUCT,
+      //     email: `${godownList.find(e=>e.value == "06").name} | ${user.MRP1}`,
+      //     code: user.CODE,
+      //     mrp: user.MRP1,
+      //     value: user,
+      //     avatar: "/assets/img/avatars/3.png"
+      //   }));
 
-      // tagifyElement(`#gdn-${itemCounter}`, usersList);
+      console.log(`#gdn-${itemCounter-1}`, data2);
+      gdnTAGIFY[`#gdn-${itemCounter-1}`] =  tagifyElement(`#gdn-${itemCounter-1}`, data2);
 
     }
 }
@@ -554,12 +566,13 @@ function qtyRules(i) {
       const selector      = document.getElementById(`SELECTOR-${itemCounter}`);
       const qty           = document.getElementById(`qty-${itemCounter}`);
       const heading       = document.querySelector(`#heading${itemCounter} > button`);
+      const gdn           = document.getElementById(`gdn-${itemCounter}`);
       
-      [packInput, gstInput, pcBxInput, mrpInput, rateInput, selector, qty].forEach(input => {
+      [packInput, gstInput, pcBxInput, mrpInput, rateInput, selector, qty, gdn].forEach(input => {
         input.removeAttribute("required");
       });
 
-      
+      gdnTAGIFY['#gdn-'+itemCounter].destroy()
 
       packInput.value     = "";
       gstInput.value      = "";
@@ -568,6 +581,8 @@ function qtyRules(i) {
       rateInput.value     = "";
       stockInput.value    = "";
       selector.innerHTML  = "";
+      qty.value           = "";
+      gdn.value           = "";
       heading ? heading.innerText   = "Add a new Item" : '';
 
   }
@@ -734,3 +749,5 @@ function submit() {
 </body>
 
 </html> 
+
+
