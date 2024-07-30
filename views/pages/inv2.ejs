@@ -246,7 +246,7 @@
             </div>
             <div class="col-md-4">
                <div class="form-floating mb-3">
-                  <input type="text" class="form-control" id="gdn-${itemCounter}" name="gdn-${itemCounter}" placeholder="" >
+                  <input type="text" class="form-control" id="gdn-${itemCounter}" name="gdn-${itemCounter}" placeholder=""  onchange="qtyRules(${itemCounter})">
                   <label for="gdn">GDN</label>
                </div>
             </div>
@@ -264,7 +264,7 @@
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <select class="form-select" id="SELECTOR-${itemCounter}" onchange="qtyRules(${itemCounter})">
+                <select class="form-select" id="SELECTOR-${itemCounter}">
                 </select>
                 <label for="unit">Unit</label>
               </div>
@@ -447,6 +447,11 @@
       }
     }
 
+    console.log("e.detail.data.value", e.detail.data)
+    if(parseInt(e.detail.data.value)){
+      items[e.detail.data.index].gdn = e.detail.data.value;
+    }
+
     if(!e?.detail?.data?.itemCounter) return; 
     const currentITM = e.detail.data.itemCounter;
     console.log("Item Selected", e.detail.data);
@@ -500,11 +505,10 @@
         addItem(); 
       }
 
-
       
-      console.log("STOCKS",STOCKS, "->", STOCKS[selectedData.CODE])
-      console.log("CODE", selectedData.CODE);
-      console.log("selectedData", selectedData);
+      // console.log("STOCKS",STOCKS, "->", STOCKS[selectedData.CODE])
+      // console.log("CODE", selectedData.CODE);
+      // console.log("selectedData", selectedData);
 
       // [{06: 14}] -> convert to [{name: "06", title: "06", email: "06 | 14", code: "06", mrp: 14, value: {…}, avatar: "/assets/img/avatars/3.png"}]
 
@@ -514,6 +518,7 @@
           title: key,
           email: `${godownList.find(e=>e.value == key).name} | ${STOCKS[selectedData.CODE][key]}`,
           code: key,
+          index: itemCounter-1,
           mrp: STOCKS[selectedData.CODE][key],
           value: STOCKS[selectedData.CODE][key],
           avatar: "/assets/img/avatars/3.png"
@@ -534,20 +539,20 @@
       gdnTAGIFY[`#gdn-${itemCounter-1}`] =  tagifyElement(`#gdn-${itemCounter-1}`, data2);
 
     }
-}
-
-function qtyRules(i) {
-  e = items[i].value;
-  const qty = document.querySelector(`#qty-${i}`);
-  const selector = document.querySelector(`#SELECTOR-${i}`);
-  if(selector.value == "01"){
-    qty.setAttribute("max", STOCKS[e.CODE][fromGodown]);
-    console.log("max", STOCKS[e.CODE][fromGodown]);
-  } else {
-    qty.setAttribute("max", STOCKS[e.CODE][fromGodown] / e.MULT_F);
-    console.log("max", STOCKS[e.CODE][fromGodown] / e.MULT_F);  
   }
-}
+
+  function qtyRules(i) {
+    e = items[i];
+    const qty = document.querySelector(`#qty-${i}`);
+    const selector = document.querySelector(`#SELECTOR-${i}`);
+    if(selector.value == "01"){
+      qty.setAttribute("max", e.gdn);
+      console.log("max", e.gdn);
+    } else {
+      qty.setAttribute("max", e.gdn / e.value.MULT_F);
+      console.log("max", e.gdn / e.value.MULT_F);  
+    }
+  }
 
 
   function onRemoveTag(e) {
@@ -742,6 +747,7 @@ function submit() {
 
 
 
+
 </script>
 
 
@@ -750,4 +756,10 @@ function submit() {
 
 </html> 
 
-
+<!-- BNN5APEPGCIP8XUG57KSKYZ2JN2HR37JV6
+MZUTXCWZVJ7RJUH7AQZUKKF89US1VYX87Q
+UQZB1F1R15ZBRG3Z5VIN2BIY8RBZF3Y44E
+X4GP5G73ADT8FRK7R4KJPVFMKQRC7SPSPI
+JZJKIDIC5YTG1XJ5VV6IZH624A41BY6V8B
+6ZTTFYB3XNJG895RSAM91HZ6X9W24Q614Y
+EW7D5GJXPC9J81IBAGNE82IIC1E1CJN179 -->
