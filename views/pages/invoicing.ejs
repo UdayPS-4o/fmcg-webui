@@ -3,8 +3,6 @@
 
 <div class="container-xxl flex-grow-1 container-p-y">
   <h4 class="fw-bold py-3 mb-4">
-    <!-- <span class="text-muted fw-light">Account Settings /</span> -->
-    <!-- GODOWN TRANSFER -->
   </h4>
 
   <div class="row">
@@ -23,43 +21,45 @@
               </div>
               <div class="col-md-3">
                 <div class="form-floating mb-3">
-                  <input type="text" class="form-control" id="series" name="series" required value="" min="1" max="1">
+                  <input type="text" class="form-control" value="T" id="series" name="series" required value="" min="1">
                   <label for="series">Series</label>
                 </div>
               </div>
-              
               <div class="col-md-3">
-               <div class="form-floating mb-3">
-                 <input type="text" class="form-control" id="cash" name="cash" required value="" min="1" max="1">
-                 <label for="cash">Cash</label>
-               </div>
-             </div>
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="Cash" name="Cash" required value="" min="1">
+                  <label for="Cash">Cash</label>
+                </div>
+              </div>
               <div class="col-md-6">
-               <div class="form-floating mb-3">
-                 <input type="text" class="form-control" id="party-dropdown" name="party-dropdown" placeholder="" required value="" min="1">
-                 <label for="party-dropdown">party</label>
-               </div>
-             </div>
-             <div class="col-md-6">
-               <div class="form-floating mb-3">
-                 <input type="text" class="form-control" id="SM-dropdown" name="SM-dropdown" placeholder="" required value="" min="1">
-                 <label for="SM-dropdown">S/M</label>
-               </div>
-             </div>
-             <div class="col-md-3">
-               <div class="form-floating mb-3">
-                 <input type="number" class="form-control" id="due-days" name="due-days" required value="" min="1" max="1">
-                 <label for="due-days">Due-days</label>
-               </div>
-             </div>
-             <div class="col-md-3">
-               <div class="form-floating mb-3">
-                 <input type="text" class="form-control" id="ref" name="ref"  value="" >
-                 <label for="ref">Ref</label>
-               </div>
-             </div>
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="party-dropdown" name="party-dropdown" placeholder="" required value="" min="1">
+                  <label for="party-dropdown">party</label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="SM-dropdown" name="SM-dropdown" placeholder="" required value="" min="1">
+                  <label for="SM-dropdown">S/M</label>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-floating mb-3">
+                  <input type="number" class="form-control" id="due-days" name="due-days" required value="" min="1" max="1">
+                  <label for="due-days">Due-days</label>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="ref" name="ref"  value="" >
+                  <label for="ref">Ref</label>
+                </div>
+              </div>
               <div class="col-md-12">
                 <div class="accordion" id="itemContainer">
+
+
+
                 </div>
               </div>
             </div>
@@ -69,12 +69,13 @@
             <br>
             <br>
 
+            <button type="submit" class="btn btn-primary me-2" style="display: none;">Save changes</button>
 
-            <div class="col-12 mt-1" style="display: flex; justify-content: end;">
-              <button type="reset" class="btn btn-label-secondary" style="margin-right:20px">Cancel</button>
-              <button type="submit" class="btn btn-primary me-2">Save changes</button>
-            </div>
           </form>
+            <div class="col-12 mt-1" style="display: flex; justify-content: end;">
+            <button type="button" class="btn btn-label-secondary" style="margin-right:20px">Cancel</button>
+              <button type="button" class="btn btn-primary me-2" onclick="submit()">Save changes</button>
+            </div>
 
           <script>
             // Set today's date as the default value for the date input
@@ -111,37 +112,57 @@
   let pmplJSON = [];
   let tagifyFrom, tagifyTo;
   let godownList = [];
+  let gdnTAGIFY = {};
+  let schdtl = {};
   let STEP = 1;
-   let balance = [];
+  let STOCKS;
+  let fromGodown;
+  let toGodown;
 
   (async () => {
-   balance = await fetch("/json/balance")
-         balance = await balance.json();
-         balance = balance.data;
+    STOCKS = await calculateCurrentStock();
+    const lastHASH = await fetch("/api/TRFLAST").then(res => res.text());
 
-         
-   
-   // GODOWN
     const url = "/api/dbf/pmpl.json";
     const response = await fetch(url);
     let json = await response.json();
-    // FILTER -> .STK IS > 0
     json = json.filter(item => item.STK > 0);
-    pmplJSON = json.map(user => ({
+    pmplJSON = json;
+    let usersList = json.map(user => ({
       name: user.PRODUCT,
       title: user.PRODUCT,
       email: `${user.CODE} | ${user.MRP1}`,
+      code: user.CODE,
+      mrp: user.MRP1,
       value: user,
       avatar: "/assets/img/avatars/3.png"
     }));
 
-    global_usersList = pmplJSON;
+    const resGodown = await fetch("/api/dbf/godown.json");
+    const jsonGodown = await resGodown.json();
+
+    const billDTL = await fetch("/api/dbf/billdtl.json");
+    const jsonBill = await billDTL.json();
+
+    const purdtl = await fetch("/api/dbf/purdtl.json")
+    const jsonPur = await purdtl.json();
 
 
-   //  CMPL
-   const CMPLurl = "/cmpl"
-   const CMPLresponse = await fetch(CMPLurl);
-   let CMPLjson = await CMPLresponse.json();
+    schdtl = await fetch("/api/dbf/schdtl.json").then(res => res.json());
+
+    balance = await fetch("/json/balance")
+         balance = await balance.json();
+         balance = balance.data;
+  
+
+    const CMPLurl = "/cmpl"
+    const CMPLresponse = await fetch(CMPLurl);
+    let CMPLjson = await CMPLresponse.json();
+
+    function balanceOfUser(C_CODE){
+      let user = balance.find(user => user.partycode == C_CODE);
+      return user ? user.result : 0;
+    }
 
     let CMPLList = CMPLjson.map(user => ({
       name: user.C_NAME,
@@ -151,190 +172,182 @@
       value: user,
       avatar: "/assets/img/avatars/3.png"
     }));
-   //  sort by name
-   CMPLList = CMPLList.sort((a, b) => a.name.localeCompare(b.name));
+
+    CMPLList = CMPLList.sort((a, b) => a.name.localeCompare(b.name));
     tagifyElement("#party-dropdown", CMPLList);
-  
-   //  seperate SM list and CM list, if their value starts with SM or CM
-   let SM = CMPLList.filter(user => user.value.C_CODE.startsWith("SM"));
-   tagifyElement("#SM-dropdown", SM);
-   //  Balance
+    
+    let SM = CMPLList.filter(user => user.value.C_CODE.startsWith("SM"));
+    tagifyElement("#SM-dropdown", SM);
 
-  
+    console.log("CMPLList", CMPLList);
+    console.log("SM", SM);
+    
+    
 
- 
+
+
+    godownList = jsonGodown.map(user => ({
+      name: user.GDN_NAME,
+      title: user.GDN_NAME,
+      email: `${user.GDN_CODE}`,
+      value: user.GDN_CODE,
+      avatar: "/assets/img/avatars/3.png"
+    }));
+
+    usersList = usersList.filter(user => user.name && user.email);
+    usersList = usersList.sort((a, b) => a.name.localeCompare(b.name));
+    
+    godownList = godownList.filter(user => user.name && user.email);
+
+    global_usersList = usersList;
+    
+    console.log(godownList)
+    godownList = godownList.map(user => ({
+      ...user,
+      element: "#from-godown"
+    }));
+   
   })()
 
   
-  function balanceOfUser(C_CODE){
-            let user = balance.find(user => user.partycode == C_CODE);
-            return user ? user.result : 0;
-         }
+  
+
   function addItem() {
-    let usersList = global_usersList;
-    itemCounter++;
-    usersList = usersList.map(user => ({
-      ...user,
-      itemCounter
-    }));
+  // usersLIST means Product LIST
+  let usersList = JSON.parse(JSON.stringify(global_usersList));    
+  itemCounter++;
+  usersList = usersList.map(user => ({
+    ...user,
+    itemCounter
+  }));
 
-    let item = document.createElement("div");
-    // set the div to <div class="accordion-item" id="item${itemCounter}">
-    item.classList.add("accordion-item");
-    item.id = `item${itemCounter}`;
+  let item = document.createElement("div");
+  // set the div to <div class="accordion-item" id="item${itemCounter}">
+  item.classList.add("accordion-item");
+  item.id = `item${itemCounter}`;
 
-    item.innerHTML = `
-      <h2 class="accordion-header" id="heading${itemCounter}"> 
-      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${itemCounter}" aria-expanded="true" aria-controls="collapse${itemCounter}">
-        Add a new Item
-      </button>
-    </h2>
-    <div id="collapse${itemCounter}" class="accordion-collapse collapse show" aria-labelledby="heading${itemCounter}" data-bs-parent="#accordionExample"> 
-     <div class="accordion-body">
-           <div class="row">
-              <div class="col-md-4">
-                 <div class="form-floating mb-3">
-                    <input type="text" class="form-control" disabled id="item-name-${itemCounter}" name="item-name" placeholder="" required>
-                    <label for="item-name">Item Name</label>
-                 </div>
-              </div>
-             
-               
+  item.innerHTML = `
+    <h2 class="accordion-header" id="heading${itemCounter}"> 
+    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${itemCounter}" aria-expanded="true" aria-controls="collapse${itemCounter}">
+      Add a new Item
+    </button>
+  </h2>
+  <div id="collapse${itemCounter}" class="accordion-collapse collapse show" aria-labelledby="heading${itemCounter}" data-bs-parent="#accordionExample"> 
+    <div class="accordion-body">
+         <div class="row">
+            <div class="col-md-4">
+               <div class="form-floating mb-3">
+                  <input type="text" class="form-control" disabled id="item-name-${itemCounter}" name="item-name" placeholder="" >
+                  <label for="item-name">Item Name</label>
+               </div>
+            </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" disabled id="code-${itemCounter}" name="code" placeholder="" required>
-                <label for="code">Code</label>
+                <input type="text" class="form-control" disabled id="current-stock-${itemCounter}" name="current-stock" placeholder="" >
+                <label for="current-stock">Stock</label>
               </div>
             </div>
-             
-            <div class="col-md-2">
-              <div class="form-floating mb-3">
-                <input type="text" class="form-control" disabled id="product-${itemCounter}" name="product" placeholder="" required>
-                <label for="product">Product</label>
-              </div>
+            <div class="col-md-4">
+               <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="gdn-${itemCounter}" name="gdn-${itemCounter}" placeholder="" onchange="qtyRules(${itemCounter})">
+                  <label for="gdn">GDN</label>
+               </div>
             </div>
-              
-             
-            
-          
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" disabled id="pack-${itemCounter}" name="pack" placeholder="" required>
+                <input type="text" class="form-control" disabled id="pack-${itemCounter}" name="pack" placeholder="" >
                 <label for="pack">Pack</label>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" disabled id="gst-${itemCounter}" name="gst" placeholder="" required>
+                <input type="text" class="form-control" disabled id="gst-${itemCounter}" name="gst" placeholder="" >
                 <label for="gst">GST%</label>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="gdn-${itemCounter}" name="gdn" placeholder="" required>
-                <label for="gdn">Gdn</label>
+                <select class="form-select" id="SELECTOR-${itemCounter}" onchange="recalculate(${itemCounter})">
+                </select>
+                <label for="unit">Unit</label>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="cess-${itemCounter}" disabled name="cess" placeholder="" required>
+                <input type="text" class="form-control" disabled id="pc-bx-${itemCounter}" name="pc-bx" placeholder=""  onchange="recalculate(${itemCounter})">
+                <label for="pc-bx">Pc/Bx</label>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" disabled id="mrp-${itemCounter}" name="mrp" placeholder="" >
+                <label for="mrp">M.R.P.</label>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" disabled id="rate-${itemCounter}" name="rate" placeholder="" >
+                <label for="rate">Rate</label>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="number" class="form-control" id="qty-${itemCounter}" name="qty" placeholder="" onchange="recalculate(${itemCounter})" step="1" min="1" pattern="^\\d+$">
+                <label for="qty">QTY</label>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="cess-${itemCounter}" name="cess"  onchange="recalculate(${itemCounter})" placeholder="">
                 <label for="cess">Cess</label>
               </div>
             </div>
             
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="unit-${itemCounter}" name="unit" disabled placeholder="" required>
-                <label for="unit">Unit</label>
+                <input type="text" class="form-control" id="schrs-${itemCounter}" name="schrs" onchange="recalculate(${itemCounter})" placeholder="">
+                <label for="schrs">Sch.Rs.</label>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" disabled id="pc-bx-${itemCounter}" disabled name="pc-bx" placeholder="" required>
-                <label for="pc-bx">Pc/Bx</label>
+                <input type="text" class="form-control" id="sch-${itemCounter}" name="sch" onchange="recalculate(${itemCounter})" placeholder="">
+                <label for="sch">Sch%</label>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" disabled id="mrp-${itemCounter}" disabled name="mrp" placeholder="" required>
-                <label for="mrp">M.R.P.</label>
+                <input type="text" class="form-control" id="cd-${itemCounter}" name="cd" onchange="recalculate(${itemCounter})" placeholder="">
+                <label for="cd">CD%</label>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" disabled id="rate-${itemCounter}" name="rate" placeholder="" required>
-                <label for="rate">Rate</label>
+                <input type="text" class="form-control" id="amount-${itemCounter}" name="amount" placeholder="" disabled>
+                <label for="amount">Amount</label>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="qty-${itemCounter}" name="qty" placeholder="" required>
-                <label for="qty">QTY</label>
+                <input type="text" class="form-control" id="net-amount-${itemCounter}" name="net-amount" placeholder="" disabled>
+                <label for="net-amount">net-Amount</label>
               </div>
             </div>
-           <div class="col-md-2">
-              <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="free-${itemCounter}" name="free" placeholder="" required>
-                <label for="free">FREE</label>
-              </div>
-            </div>
-           
-            <div class="col-md-2">
-              <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="sch-${itemCounter}" name="sch" placeholder="" required>
-                <label for="sch">SCH</label>
-              </div>
-            </div>
-            <div class="col-md-2">
-              <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="cd-${itemCounter}" name="cd" placeholder="" required>
-                <label for="cd">CD</label>
-              </div>
-            </div>
-            <div class="col-md-2">
-              <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="amount-${itemCounter}" name="amount" placeholder="" required>
-                <label for="amount">AMOUNT</label>
-              </div>
-            </div>
-            <div class="col-md-2">
-              <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="ok-${itemCounter}" name="ok" placeholder="" required>
-                <label for="ok">OK</label>
-              </div>
-            </div>
-            <div class="col-md-2">
-              <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="amount-${itemCounter}" name="amount" placeholder="" required>
-                <label for="amount">AMOUNT</label>
-              </div>
-            </div>
-
-            
-     
-
-          <div class="col-md-2">
-              <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="net-amount-${itemCounter}" name="net-amount" placeholder="" required>
-                <label for="net-amount">net-AMOUNT</label>
-              </div>
-            </div>
-              
-        </div>
+         </div>
+    </div>
   </div>
-      `;
+  `;
 
-    itemContainer.appendChild(item);
+  itemContainer.appendChild(item);
 
-    tagifyElement(`#item-name-${itemCounter}`, usersList);
+  tagifyElement(`#item-name-${itemCounter}`, usersList);
 
 
-  }
+}
 
 
   function tagifyElement(tagSEL, usersList) {
 
-    console.log(usersList);
 
 
     const TagifyUserListEl = document.querySelector(tagSEL);
@@ -353,13 +366,8 @@
       <div>
          <div class='tagify__tag__avatar-wrap'>
             <img onerror="this.style.visibility='hidden'" src="${tagData.avatar}">
-         </div>   
-         
-
-         <span class='tagify__tag-text'>${tagData.name } | ${balanceOfUser( tagData.C_CODE)}</span>
-            </span>
-         
-         
+         </div>
+         <span class='tagify__tag-text'>${tagData.name}</span>
       </div>
       </tag>
       `;
@@ -431,86 +439,203 @@
   }
 
 
+
   function onSelectSuggestion(e) {
     console.log(e);
-
-    if(STEP < 3){
-      let stp = STEP == 1 ? "from" : "to";
-      setTimeout(() => {
-        document.querySelector(`.tagify [element="#${stp}-godown"] x`).style.visibility = "hidden";
-      }, 10);
-
-      STEP++;
-
-      if (STEP == 2) {
-        
-        godownList = godownList.map(user => ({
-          ...user,
-          element: "#to-godown"
-        }));
-        godownList = godownList.filter(user => user.value != e?.detail?.data?.value);
-        tagifyTo   = tagifyElement("#to-godown", godownList);
-      }
     
+    if(STEP < 3){
+      let stp = STEP == 1 ? "from" : "to";STEP++;
       if (STEP == 3) {
         addItem()
       }
     }
 
-    if(!e?.detail?.data?.itemCounter) return; // Check for valid data
+    console.log("e.detail.data.value", e.detail.data)
+    if(parseInt(e.detail.data.value)){
+      items[e.detail.data.index].gdn = e.detail.data.value;
+    }
+
+    if(!e?.detail?.data?.itemCounter) return; 
+    const currentITM = e.detail.data.itemCounter;
     console.log("Item Selected", e.detail.data);
-    items[itemCounter] = e.detail.data;
-    itemCounter = e.detail.data.itemCounter;
-    controlAccordion('collapse', itemCounter-1);
-    if(itemCounter == e.detail.data.itemCounter){
+    items[currentITM] = e.detail.data;
+    controlAccordion('collapse', currentITM-1);
+    if(currentITM == e.detail.data.itemCounter){
       // Access the selected data
       const selectedData = e.detail.data.value;
 
       // Get references to the form elements
-      const itemNameInput = document.getElementById(`item-name-${itemCounter}`);
-      const packInput     = document.getElementById(`pack-${itemCounter}`);
-      const gstInput      = document.getElementById(`gst-${itemCounter}`);
-      const unitInput     = document.getElementById(`unit-${itemCounter}`);
-      const pcBxInput     = document.getElementById(`pc-bx-${itemCounter}`);
-      const mrpInput      = document.getElementById(`mrp-${itemCounter}`);
-      const rateInput     = document.getElementById(`rate-${itemCounter}`);
+      const itemNameInput = document.getElementById(`item-name-${currentITM}`);
+      const packInput     = document.getElementById(`pack-${currentITM}`);
+      const gstInput      = document.getElementById(`gst-${currentITM}`);
+      const pcBxInput     = document.getElementById(`pc-bx-${currentITM}`);
+      const mrpInput      = document.getElementById(`mrp-${currentITM}`);
+      const rateInput     = document.getElementById(`rate-${currentITM}`);
+      const current_stock = document.getElementById(`current-stock-${currentITM}`);
+      const selector      = document.getElementById(`SELECTOR-${currentITM}`);
+      const qty           = document.getElementById(`qty-${currentITM}`);
+      const heading       = document.querySelector(`#heading${currentITM} > button`);
+      const schrs         = document.getElementById(`schrs-${currentITM}`);
+      const sch           = document.getElementById(`sch-${currentITM}`);
+      
+      [packInput, gstInput, pcBxInput, mrpInput, rateInput, selector, qty, sch, schrs].forEach(input => {
+        input.setAttribute("required", true);
+      });
 
-      // Fill the form fields
+      sch.value = getSchDiscount(document.querySelector("#date").value, selectedData.CODE) || "";
+
+      console.log(STOCKS[selectedData.CODE], e.detail.data.value, [fromGodown] )
+      current_stock.value = selectedData.STK;
       itemNameInput.value = selectedData.PRODUCT;
       packInput.value = selectedData.PACK;
       gstInput.value = selectedData.GST;
-      unitInput.value = selectedData.UNIT_1; 
       pcBxInput.value = selectedData.MULT_F; 
       mrpInput.value = selectedData.MRP1;
-      rateInput.value = selectedData.PL_RATE;
+      rateInput.value = selectedData.RATE1;
+      heading ? heading.innerText = selectedData.PRODUCT : '';
+      console.log("currentITM", itemCounter, e.detail.data.itemCounter, itemCounter == e.detail.data.itemCounter)
+      
+      selector.innerHTML = `
+        <option value="01">${selectedData.UNIT_1}</option>
+        <option value="02">${selectedData.UNIT_2}</option>
+      `;
+      console.log(`
+        <option value="01">${selectedData.UNIT_1}</option>
+        <option value="02">${selectedData.UNIT_2}</option>
+      `)
 
-      addItem(); 
+      qtyRules(currentITM);
+      
+      if(itemCounter == e.detail.data.itemCounter){
+        addItem(); 
+      }
+
+      
+      // console.log("STOCKS",STOCKS, "->", STOCKS[selectedData.CODE])
+      // console.log("CODE", selectedData.CODE);
+      // console.log("selectedData", selectedData);
+
+      // [{06: 14}] -> convert to [{name: "06", title: "06", email: "06 | 14", code: "06", mrp: 14, value: {…}, avatar: "/assets/img/avatars/3.png"}]
+
+      let data2 = Object.keys(STOCKS[selectedData.CODE]).map(key => {
+        return {
+          name: `${godownList.find(e=>e.value == key).name} | ${STOCKS[selectedData.CODE][key]}`,
+          title: key,
+          email: `${godownList.find(e=>e.value == key).name} | ${STOCKS[selectedData.CODE][key]}`,
+          code: key,
+          index: itemCounter-1,
+          mrp: STOCKS[selectedData.CODE][key],
+          value: STOCKS[selectedData.CODE][key],
+          avatar: "/assets/img/avatars/3.png"
+        }
+      });
+
+      // let stockList = STOCKS[selectedData.CODE].map(user => ({
+      //     name: user.PRODUCT,
+      //     title: user.PRODUCT,
+      //     email: `${godownList.find(e=>e.value == "06").name} | ${user.MRP1}`,
+      //     code: user.CODE,
+      //     mrp: user.MRP1,
+      //     value: user,
+      //     avatar: "/assets/img/avatars/3.png"
+      //   }));
+
+      console.log(`#gdn-${itemCounter-1}`, data2);
+      gdnTAGIFY[`#gdn-${itemCounter-1}`] =  tagifyElement(`#gdn-${itemCounter-1}`, data2);
+
     }
-}
+  }
+
+  function qtyRules(i) {
+    e = items[i];
+    const qty = document.querySelector(`#qty-${i}`);
+    const selector = document.querySelector(`#SELECTOR-${i}`);
+    if(selector.value == "01"){
+      qty.setAttribute("max", e.gdn);
+      console.log("max", e.gdn);
+    } else {
+      qty.setAttribute("max", e.gdn / e.value.MULT_F);
+      console.log("max", e.gdn / e.value.MULT_F);  
+    }
+  }
+
+  function recalculate(itemCounter) {
+    // Get references to the form elements
+    const qtyInput = document.getElementById(`qty-${itemCounter}`);
+    const rateInput = document.getElementById(`rate-${itemCounter}`);
+    const schInput = document.getElementById(`sch-${itemCounter}`);
+    const cdInput = document.getElementById(`cd-${itemCounter}`);
+    const amountInput = document.getElementById(`amount-${itemCounter}`);
+    const netAmountInput = document.getElementById(`net-amount-${itemCounter}`);
+    const unitSelector = document.getElementById(`SELECTOR-${itemCounter}`);
+    const pcBxInput = document.getElementById(`pc-bx-${itemCounter}`);
+    const schrsInput = document.getElementById(`schrs-${itemCounter}`);
+
+    // Get the values
+    const qty = parseFloat(qtyInput.value) || 0;
+    const rate = parseFloat(rateInput.value) || 0;
+    const sch = parseFloat(schInput.value) || 0;
+    const schrs = parseFloat(schrsInput.value) || 0;
+    const cd = parseFloat(cdInput.value) || 0;
+    const unit = unitSelector.value;
+    const multF = items[itemCounter].value.MULT_F || 1;
+
+    // Adjust quantity if unit is Box
+    const adjustedQty = unit === "02" ? qty * multF : qty;
+
+    // Calculate the amount
+    const amount = adjustedQty * rate;
+    amountInput.value = amount.toFixed(2);
+
+    // Calculate the net amount by deducting sch% and cd%
+    const schDiscount = (sch / 100) * amount;
+    const cdDiscount = (cd / 100) * amount;
+    const netAmount = amount - schDiscount - cdDiscount - schrs;
+    netAmountInput.value = netAmount.toFixed(2);
+  }
+
 
   function onRemoveTag(e) {
     console.log(e?.detail?.data)
     if(!e?.detail?.data?.itemCounter) return;
     console.log("Item Removed", e.detail.data);
-    items[e.detail.data.itemCounter] = null;
-    itemCounter = e.detail.data.itemCounter;
+    const itemCounter = e.detail.data.itemCounter;
+    delete items[itemCounter];
     // Get references to the form elements
       const packInput     = document.getElementById(`pack-${itemCounter}`);
       const gstInput      = document.getElementById(`gst-${itemCounter}`);
-      const unitInput     = document.getElementById(`unit-${itemCounter}`);
       const pcBxInput     = document.getElementById(`pc-bx-${itemCounter}`);
       const mrpInput      = document.getElementById(`mrp-${itemCounter}`);
       const rateInput     = document.getElementById(`rate-${itemCounter}`);
+      const stockInput    = document.getElementById(`current-stock-${itemCounter}`);
+      const selector      = document.getElementById(`SELECTOR-${itemCounter}`);
+      const qty           = document.getElementById(`qty-${itemCounter}`);
+      const heading       = document.querySelector(`#heading${itemCounter} > button`);
+      const gdn           = document.getElementById(`gdn-${itemCounter}`);
+      const schrs         = document.getElementById(`schrs-${currentITM}`);
+      const sch           = document.getElementById(`sch-${currentITM}`);
+      
+      [packInput, gstInput, pcBxInput, mrpInput, rateInput, selector, qty, gdn, sch, schrs].forEach(input => {
+        input.removeAttribute("required");
+      });
+
+      gdnTAGIFY['#gdn-'+itemCounter].destroy()
 
       packInput.value     = "";
       gstInput.value      = "";
-      unitInput.value     = "";
       pcBxInput.value     = "";
       mrpInput.value      = "";
       rateInput.value     = "";
+      stockInput.value    = "";
+      selector.innerHTML  = "";
+      qty.value           = "";
+      gdn.value           = "";
+      heading ? heading.innerText   = "Add a new Item" : '';
+
   }
 
   function controlAccordion(action, index) {
+    return;
     // Using 1-based indexing for user-friendliness
     let collapseId = "#collapse" + index; 
     let collapseElement = $(collapseId);
@@ -528,8 +653,173 @@
       console.error('Invalid action:', action);
     }
   }
-  s
 
+
+  async function calculateCurrentStock() {
+  // Fetch the sales, purchases, and transfers data
+  const salesResponse = await fetch("/api/dbf/billdtl.json");
+  const salesData = await salesResponse.json();
+
+  const purchaseResponse = await fetch("/api/dbf/purdtl.json");
+  const purchaseData = await purchaseResponse.json();
+
+  const transferResponse = await fetch("/api/dbf/transfer.json");
+  const transferData = await transferResponse.json();
+
+  // Fetch the local godown transfer data
+  const localTransferResponse = await fetch("/json/godown");
+  const localTransferData = await localTransferResponse.json();
+
+  // Initialize a dictionary to track the stock
+  let stock = {};
+
+  // Process purchases to increment stock
+  purchaseData.forEach(purchase => {
+    const { CODE: code, GDN_CODE: gdn_code, QTY: qty, MULT_F: multF, UNIT: unit } = purchase;
+    const qtyInPieces = unit === "BOX" ? qty * multF : qty;
+
+    if (!stock[code]) {
+      stock[code] = {};
+    }
+    if (!stock[code][gdn_code]) {
+      stock[code][gdn_code] = 0;
+    }
+    stock[code][gdn_code] += qtyInPieces;
+  });
+
+  // Process sales to decrement stock
+  salesData.forEach(sale => {
+    const { CODE: code, GDN_CODE: gdn_code, QTY: qty, MULT_F: multF, UNIT: unit } = sale;
+    const qtyInPieces = unit === "BOX" ? qty * multF : qty;
+
+    if (stock[code] && stock[code][gdn_code]) {
+      stock[code][gdn_code] -= qtyInPieces;
+    }
+  });
+
+  // Process DBF transfers
+  transferData.forEach(transfer => {
+    const { CODE: code, GDN_CODE: from_gdn, TRF_TO: to_gdn, QTY: qty, MULT_F: multF, UNIT: unit } = transfer;
+    const qtyInPieces = unit === "BOX" ? qty * multF : qty;
+
+    // Handle outgoing transfers
+    if (stock[code] && stock[code][from_gdn]) {
+      stock[code][from_gdn] -= Math.abs(qtyInPieces); // Ensure qty is subtracted
+    }
+
+    // Handle incoming transfers
+    if (!stock[code]) {
+      stock[code] = {};
+    }
+    if (!stock[code][to_gdn]) {
+      stock[code][to_gdn] = 0;
+    }
+    stock[code][to_gdn] += Math.abs(qtyInPieces); // Ensure qty is added
+  });
+
+  // Process local godown transfers
+  localTransferData.forEach(transfer => {
+    const { fromGodown, toGodown, items } = transfer;
+    items.forEach(item => {
+      const { code, qty, unit } = item;
+      const qtyInPieces = unit === "BOX" ? qty * multF : qty; // Assuming unit "BOX" needs multiplication, else use qty as is
+
+      // Handle outgoing transfers
+      if (stock[code] && stock[code][fromGodown]) {
+        stock[code][fromGodown] -= Math.abs(qtyInPieces); // Ensure qty is subtracted
+      }
+
+      // Handle incoming transfers
+      if (!stock[code]) {
+        stock[code] = {};
+      }
+      if (!stock[code][toGodown]) {
+        stock[code][toGodown] = 0;
+      }
+      stock[code][toGodown] += Math.abs(qtyInPieces); // Ensure qty is added
+    });
+  });
+
+  return stock;
+}
+
+// calculateCurrentStock();
+
+
+
+
+
+
+
+function submit() {
+  const form = document.querySelector("form");
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+
+  const data = {
+    date: document.querySelector('input[name="date"]').value,
+    series: document.querySelector('input[name="series"]').value,
+    fromGodown: fromGodown,
+    toGodown: toGodown,
+    items: Object.values(items).map(item => ({
+      code: item.code,
+      qty: document.querySelector(`#qty-${item.itemCounter}`).value,
+      unit: document.querySelector(`#SELECTOR-${item.itemCounter}`).value
+    }))
+  };
+
+  const postForm = document.createElement("form");
+  postForm.method = "POST";
+  postForm.action = "/invoice";
+
+  Object.keys(data).forEach(key => {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = key;
+    input.value = key === "items" ? JSON.stringify(data[key]) : data[key];
+    postForm.appendChild(input);
+  });
+
+  document.body.appendChild(postForm);
+  postForm.submit();
+}
+
+
+
+function getSchDiscount(dateInput, code) {
+  function parseDate(dateStr) {
+    const [d1, d2, d3] = dateStr.split(/[-\/]/).map(Number);
+    if (dateStr.includes('-')) return new Date(d1, d2 - 1, d3);
+    if (dateStr.includes('/')) return dateStr.split('/')[0].length === 4 ? new Date(d1, d2 - 1, d3) : new Date(d3, d2 - 1, d1);
+    throw new Error('Invalid date format');
+  }
+
+  const inputDate = parseDate(dateInput);
+
+  for (const item of schdtl) {
+    if (item.CODE === code) {
+      const fromDate = parseDate(item.SCH_FROM);
+      const toDate = parseDate(item.SCH_TO);
+      if (inputDate >= fromDate && inputDate <= toDate) return item.DISCOUNT;
+    }
+  }
+
+  return null;
+}
+
+// Sample data
+// const schdtl = [
+//   {"SERIES":"S","BILL":1,"DATE":"2024-07-25","CODE":"H3854","DISCOUNT":2,"SCH_FROM":"2024-01-01","SCH_TO":"2024-03-31"},
+//   {"SERIES":"S","BILL":2,"DATE":"2024-07-25","CODE":"H3854","DISCOUNT":5,"SCH_FROM":"2024-04-01","SCH_TO":"2024-06-30"},
+//   {"SERIES":"S","BILL":3,"DATE":"2024-07-25","CODE":"H3854","DISCOUNT":10,"SCH_FROM":"2024-07-01","SCH_TO":"2024-12-31"}
+// ];
+
+// Sample usage
+// console.log(getSchDiscount('2024-02-15', 'H3854')); // Output: 2
+// console.log(getSchDiscount('2024/05/10', 'H3854')); // Output: 5
+// console.log(getSchDiscount('25/07/2024', 'H3854')); // Output: 10
 
 </script>
 
@@ -537,4 +827,12 @@
 
 </body>
 
-</html>
+</html> 
+
+<!-- BNN5APEPGCIP8XUG57KSKYZ2JN2HR37JV6
+MZUTXCWZVJ7RJUH7AQZUKKF89US1VYX87Q
+UQZB1F1R15ZBRG3Z5VIN2BIY8RBZF3Y44E
+X4GP5G73ADT8FRK7R4KJPVFMKQRC7SPSPI
+JZJKIDIC5YTG1XJ5VV6IZH624A41BY6V8B
+6ZTTFYB3XNJG895RSAM91HZ6X9W24Q614Y
+EW7D5GJXPC9J81IBAGNE82IIC1E1CJN179 -->

@@ -113,6 +113,7 @@
   let tagifyFrom, tagifyTo;
   let godownList = [];
   let gdnTAGIFY = {};
+  let schdtl = {};
   let STEP = 1;
   let STOCKS;
   let fromGodown;
@@ -146,6 +147,8 @@
     const purdtl = await fetch("/api/dbf/purdtl.json")
     const jsonPur = await purdtl.json();
 
+
+    schdtl = await fetch("/api/dbf/schdtl.json").then(res => res.json());
 
     balance = await fetch("/json/balance")
          balance = await balance.json();
@@ -246,7 +249,7 @@
             </div>
             <div class="col-md-4">
                <div class="form-floating mb-3">
-                  <input type="text" class="form-control" id="gdn-${itemCounter}" name="gdn-${itemCounter}" placeholder=""  onchange="qtyRules(${itemCounter})">
+                  <input type="text" class="form-control" id="gdn-${itemCounter}" name="gdn-${itemCounter}" placeholder="" onchange="qtyRules(${itemCounter})">
                   <label for="gdn">GDN</label>
                </div>
             </div>
@@ -264,14 +267,14 @@
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <select class="form-select" id="SELECTOR-${itemCounter}">
+                <select class="form-select" id="SELECTOR-${itemCounter}" onchange="recalculate(${itemCounter})">
                 </select>
                 <label for="unit">Unit</label>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" disabled id="pc-bx-${itemCounter}" name="pc-bx" placeholder="" >
+                <input type="text" class="form-control" disabled id="pc-bx-${itemCounter}" name="pc-bx" placeholder=""  onchange="recalculate(${itemCounter})">
                 <label for="pc-bx">Pc/Bx</label>
               </div>
             </div>
@@ -289,44 +292,44 @@
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="number" class="form-control" id="qty-${itemCounter}" name="qty" placeholder="" step="1" min="1" pattern="^\\d+$">
+                <input type="number" class="form-control" id="qty-${itemCounter}" name="qty" placeholder="" onchange="recalculate(${itemCounter})" step="1" min="1" pattern="^\\d+$">
                 <label for="qty">QTY</label>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="cess-${itemCounter}" name="cess" placeholder="">
+                <input type="text" class="form-control" id="cess-${itemCounter}" name="cess"  onchange="recalculate(${itemCounter})" placeholder="">
                 <label for="cess">Cess</label>
               </div>
             </div>
             
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="schrs-${itemCounter}" name="schrs" placeholder="">
+                <input type="text" class="form-control" id="schrs-${itemCounter}" name="schrs" onchange="recalculate(${itemCounter})" placeholder="">
                 <label for="schrs">Sch.Rs.</label>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="sch-${itemCounter}" name="sch" placeholder="">
+                <input type="text" class="form-control" id="sch-${itemCounter}" name="sch" onchange="recalculate(${itemCounter})" placeholder="">
                 <label for="sch">Sch%</label>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="cd-${itemCounter}" name="cd" placeholder="">
+                <input type="text" class="form-control" id="cd-${itemCounter}" name="cd" onchange="recalculate(${itemCounter})" placeholder="">
                 <label for="cd">CD%</label>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="amount-${itemCounter}" name="amount" placeholder="">
+                <input type="text" class="form-control" id="amount-${itemCounter}" name="amount" placeholder="" disabled>
                 <label for="amount">Amount</label>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="net-amount-${itemCounter}" name="net-amount" placeholder="">
+                <input type="text" class="form-control" id="net-amount-${itemCounter}" name="net-amount" placeholder="" disabled>
                 <label for="net-amount">net-Amount</label>
               </div>
             </div>
@@ -472,12 +475,14 @@
       const selector      = document.getElementById(`SELECTOR-${currentITM}`);
       const qty           = document.getElementById(`qty-${currentITM}`);
       const heading       = document.querySelector(`#heading${currentITM} > button`);
+      const schrs         = document.getElementById(`schrs-${currentITM}`);
+      const sch           = document.getElementById(`sch-${currentITM}`);
       
-      [packInput, gstInput, pcBxInput, mrpInput, rateInput, selector, qty].forEach(input => {
+      [packInput, gstInput, pcBxInput, mrpInput, rateInput, selector, qty, sch, schrs].forEach(input => {
         input.setAttribute("required", true);
       });
 
-      // Object.values(STOCKS[selectedData.CODE]) add all these in one line
+      sch.value = getSchDiscount(document.querySelector("#date").value, selectedData.CODE) || "";
 
       console.log(STOCKS[selectedData.CODE], e.detail.data.value, [fromGodown] )
       current_stock.value = selectedData.STK;
@@ -554,6 +559,41 @@
     }
   }
 
+  function recalculate(itemCounter) {
+    // Get references to the form elements
+    const qtyInput = document.getElementById(`qty-${itemCounter}`);
+    const rateInput = document.getElementById(`rate-${itemCounter}`);
+    const schInput = document.getElementById(`sch-${itemCounter}`);
+    const cdInput = document.getElementById(`cd-${itemCounter}`);
+    const amountInput = document.getElementById(`amount-${itemCounter}`);
+    const netAmountInput = document.getElementById(`net-amount-${itemCounter}`);
+    const unitSelector = document.getElementById(`SELECTOR-${itemCounter}`);
+    const pcBxInput = document.getElementById(`pc-bx-${itemCounter}`);
+    const schrsInput = document.getElementById(`schrs-${itemCounter}`);
+
+    // Get the values
+    const qty = parseFloat(qtyInput.value) || 0;
+    const rate = parseFloat(rateInput.value) || 0;
+    const sch = parseFloat(schInput.value) || 0;
+    const schrs = parseFloat(schrsInput.value) || 0;
+    const cd = parseFloat(cdInput.value) || 0;
+    const unit = unitSelector.value;
+    const multF = items[itemCounter].value.MULT_F || 1;
+
+    // Adjust quantity if unit is Box
+    const adjustedQty = unit === "02" ? qty * multF : qty;
+
+    // Calculate the amount
+    const amount = adjustedQty * rate;
+    amountInput.value = amount.toFixed(2);
+
+    // Calculate the net amount by deducting sch% and cd%
+    const schDiscount = (sch / 100) * amount;
+    const cdDiscount = (cd / 100) * amount;
+    const netAmount = amount - schDiscount - cdDiscount - schrs;
+    netAmountInput.value = netAmount.toFixed(2);
+  }
+
 
   function onRemoveTag(e) {
     console.log(e?.detail?.data)
@@ -572,8 +612,10 @@
       const qty           = document.getElementById(`qty-${itemCounter}`);
       const heading       = document.querySelector(`#heading${itemCounter} > button`);
       const gdn           = document.getElementById(`gdn-${itemCounter}`);
+      const schrs         = document.getElementById(`schrs-${currentITM}`);
+      const sch           = document.getElementById(`sch-${currentITM}`);
       
-      [packInput, gstInput, pcBxInput, mrpInput, rateInput, selector, qty, gdn].forEach(input => {
+      [packInput, gstInput, pcBxInput, mrpInput, rateInput, selector, qty, gdn, sch, schrs].forEach(input => {
         input.removeAttribute("required");
       });
 
@@ -721,7 +763,6 @@ function submit() {
     series: document.querySelector('input[name="series"]').value,
     fromGodown: fromGodown,
     toGodown: toGodown,
-    id: document.querySelector("#IDD").value,
     items: Object.values(items).map(item => ({
       code: item.code,
       qty: document.querySelector(`#qty-${item.itemCounter}`).value,
@@ -731,7 +772,7 @@ function submit() {
 
   const postForm = document.createElement("form");
   postForm.method = "POST";
-  postForm.action = "/godown";
+  postForm.action = "/invoice";
 
   Object.keys(data).forEach(key => {
     const input = document.createElement("input");
@@ -747,6 +788,38 @@ function submit() {
 
 
 
+function getSchDiscount(dateInput, code) {
+  function parseDate(dateStr) {
+    const [d1, d2, d3] = dateStr.split(/[-\/]/).map(Number);
+    if (dateStr.includes('-')) return new Date(d1, d2 - 1, d3);
+    if (dateStr.includes('/')) return dateStr.split('/')[0].length === 4 ? new Date(d1, d2 - 1, d3) : new Date(d3, d2 - 1, d1);
+    throw new Error('Invalid date format');
+  }
+
+  const inputDate = parseDate(dateInput);
+
+  for (const item of schdtl) {
+    if (item.CODE === code) {
+      const fromDate = parseDate(item.SCH_FROM);
+      const toDate = parseDate(item.SCH_TO);
+      if (inputDate >= fromDate && inputDate <= toDate) return item.DISCOUNT;
+    }
+  }
+
+  return null;
+}
+
+// Sample data
+// const schdtl = [
+//   {"SERIES":"S","BILL":1,"DATE":"2024-07-25","CODE":"H3854","DISCOUNT":2,"SCH_FROM":"2024-01-01","SCH_TO":"2024-03-31"},
+//   {"SERIES":"S","BILL":2,"DATE":"2024-07-25","CODE":"H3854","DISCOUNT":5,"SCH_FROM":"2024-04-01","SCH_TO":"2024-06-30"},
+//   {"SERIES":"S","BILL":3,"DATE":"2024-07-25","CODE":"H3854","DISCOUNT":10,"SCH_FROM":"2024-07-01","SCH_TO":"2024-12-31"}
+// ];
+
+// Sample usage
+// console.log(getSchDiscount('2024-02-15', 'H3854')); // Output: 2
+// console.log(getSchDiscount('2024/05/10', 'H3854')); // Output: 5
+// console.log(getSchDiscount('25/07/2024', 'H3854')); // Output: 10
 
 </script>
 
