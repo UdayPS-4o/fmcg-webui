@@ -249,7 +249,7 @@
             </div>
             <div class="col-md-4">
                <div class="form-floating mb-3">
-                  <input type="text" class="form-control" id="gdn-${itemCounter}" name="gdn-${itemCounter}" placeholder="" onchange="qtyRules(${itemCounter})">
+                  <input type="text" class="form-control" id="gdn-${itemCounter}" name="gdn-${itemCounter}" placeholder="" onchange="qtyRules(${itemCounter})" >
                   <label for="gdn">GDN</label>
                </div>
             </div>
@@ -440,9 +440,7 @@
 
 
 
-  function onSelectSuggestion(e) {
-    console.log(e);
-    
+  function onSelectSuggestion(e) {  
     if(STEP < 3){
       let stp = STEP == 1 ? "from" : "to";STEP++;
       if (STEP == 3) {
@@ -453,9 +451,14 @@
     console.log("e.detail.data.value", e.detail.data)
     if(parseInt(e.detail.data.value)){
       items[e.detail.data.index].gdn = e.detail.data.value;
+      items[e.detail.data.index].gdncode = e.detail.data.code;
     }
 
-    if(!e?.detail?.data?.itemCounter) return; 
+    
+    if(!e?.detail?.data?.itemCounter) {
+      recalculate((e?.detail?.data?.index));
+      return; 
+    }
     const currentITM = e.detail.data.itemCounter;
     console.log("Item Selected", e.detail.data);
     items[currentITM] = e.detail.data;
@@ -477,8 +480,9 @@
       const heading       = document.querySelector(`#heading${currentITM} > button`);
       const schrs         = document.getElementById(`schrs-${currentITM}`);
       const sch           = document.getElementById(`sch-${currentITM}`);
+      const cess          = document.getElementById(`cess-${currentITM}`);
       
-      [packInput, gstInput, pcBxInput, mrpInput, rateInput, selector, qty, sch, schrs].forEach(input => {
+      [packInput, gstInput, pcBxInput, mrpInput, rateInput, selector, qty].forEach(input => {
         input.setAttribute("required", true);
       });
 
@@ -560,6 +564,7 @@
   }
 
   function recalculate(itemCounter) {
+    qtyRules(itemCounter);
     // Get references to the form elements
     const qtyInput = document.getElementById(`qty-${itemCounter}`);
     const rateInput = document.getElementById(`rate-${itemCounter}`);
@@ -570,6 +575,7 @@
     const unitSelector = document.getElementById(`SELECTOR-${itemCounter}`);
     const pcBxInput = document.getElementById(`pc-bx-${itemCounter}`);
     const schrsInput = document.getElementById(`schrs-${itemCounter}`);
+    const cessInput = document.getElementById(`cess-${itemCounter}`);
 
     // Get the values
     const qty = parseFloat(qtyInput.value) || 0;
@@ -577,9 +583,10 @@
     const sch = parseFloat(schInput.value) || 0;
     const schrs = parseFloat(schrsInput.value) || 0;
     const cd = parseFloat(cdInput.value) || 0;
+    const cess = parseFloat(cessInput.value) || 0;
     const unit = unitSelector.value;
     const multF = items[itemCounter].value.MULT_F || 1;
-
+    
     // Adjust quantity if unit is Box
     const adjustedQty = unit === "02" ? qty * multF : qty;
 
@@ -590,13 +597,28 @@
     // Calculate the net amount by deducting sch% and cd%
     const schDiscount = (sch / 100) * amount;
     const cdDiscount = (cd / 100) * amount;
-    const netAmount = amount - schDiscount - cdDiscount - schrs;
+    const cessDiscount = (cess / 100) * amount;
+
+    const qtymaxattribute = qtyInput.getAttribute("max");
+    // if qty[max] is > qty then mark its value to minumum of qty[max] and recalculate
+    if(qty > qtymaxattribute){
+      qtyInput.value = Math.floor(qtymaxattribute);
+      recalculate(itemCounter);
+      return;
+    }
+
+    const netAmount = amount - schDiscount - cdDiscount - cessDiscount - schrs;
     netAmountInput.value = netAmount.toFixed(2);
   }
 
 
   function onRemoveTag(e) {
     console.log(e?.detail?.data)
+    try {
+      if(parseInt(e.detail.data.value)){
+        items[e.detail.data.index].gdn = null;
+      }
+    } catch (error) {}
     if(!e?.detail?.data?.itemCounter) return;
     console.log("Item Removed", e.detail.data);
     const itemCounter = e.detail.data.itemCounter;
@@ -612,12 +634,17 @@
       const qty           = document.getElementById(`qty-${itemCounter}`);
       const heading       = document.querySelector(`#heading${itemCounter} > button`);
       const gdn           = document.getElementById(`gdn-${itemCounter}`);
-      const schrs         = document.getElementById(`schrs-${currentITM}`);
-      const sch           = document.getElementById(`sch-${currentITM}`);
-      
-      [packInput, gstInput, pcBxInput, mrpInput, rateInput, selector, qty, gdn, sch, schrs].forEach(input => {
+      const schrs         = document.getElementById(`schrs-${itemCounter}`);
+      const sch           = document.getElementById(`sch-${itemCounter}`);
+      const cess          = document.getElementById(`cess-${itemCounter}`);
+      const amountInput   = document.getElementById(`amount-${itemCounter}`);
+      const netAmountInput = document.getElementById(`net-amount-${itemCounter}`);
+
+      [packInput, gstInput, pcBxInput, mrpInput, rateInput, selector, qty, gdn, sch, schrs, cess].forEach(input => {
         input.removeAttribute("required");
       });
+      
+   
 
       gdnTAGIFY['#gdn-'+itemCounter].destroy()
 
@@ -630,7 +657,18 @@
       selector.innerHTML  = "";
       qty.value           = "";
       gdn.value           = "";
+      schrs.value         = "";
+      sch.value           = "";
+      cess.value          = "";
+      amountInput.value   = "";
+      netAmountInput.value = "";
+
       heading ? heading.innerText   = "Add a new Item" : '';
+
+
+      Object.keys(items).forEach(key => {
+        recalculate(key);
+      });
 
   }
 
@@ -656,94 +694,11 @@
 
 
   async function calculateCurrentStock() {
-  // Fetch the sales, purchases, and transfers data
-  const salesResponse = await fetch("/api/dbf/billdtl.json");
-  const salesData = await salesResponse.json();
+    const salesResponse = await fetch("/api/stock");
+    const salesData = await salesResponse.json();
+    return salesData;
+  }
 
-  const purchaseResponse = await fetch("/api/dbf/purdtl.json");
-  const purchaseData = await purchaseResponse.json();
-
-  const transferResponse = await fetch("/api/dbf/transfer.json");
-  const transferData = await transferResponse.json();
-
-  // Fetch the local godown transfer data
-  const localTransferResponse = await fetch("/json/godown");
-  const localTransferData = await localTransferResponse.json();
-
-  // Initialize a dictionary to track the stock
-  let stock = {};
-
-  // Process purchases to increment stock
-  purchaseData.forEach(purchase => {
-    const { CODE: code, GDN_CODE: gdn_code, QTY: qty, MULT_F: multF, UNIT: unit } = purchase;
-    const qtyInPieces = unit === "BOX" ? qty * multF : qty;
-
-    if (!stock[code]) {
-      stock[code] = {};
-    }
-    if (!stock[code][gdn_code]) {
-      stock[code][gdn_code] = 0;
-    }
-    stock[code][gdn_code] += qtyInPieces;
-  });
-
-  // Process sales to decrement stock
-  salesData.forEach(sale => {
-    const { CODE: code, GDN_CODE: gdn_code, QTY: qty, MULT_F: multF, UNIT: unit } = sale;
-    const qtyInPieces = unit === "BOX" ? qty * multF : qty;
-
-    if (stock[code] && stock[code][gdn_code]) {
-      stock[code][gdn_code] -= qtyInPieces;
-    }
-  });
-
-  // Process DBF transfers
-  transferData.forEach(transfer => {
-    const { CODE: code, GDN_CODE: from_gdn, TRF_TO: to_gdn, QTY: qty, MULT_F: multF, UNIT: unit } = transfer;
-    const qtyInPieces = unit === "BOX" ? qty * multF : qty;
-
-    // Handle outgoing transfers
-    if (stock[code] && stock[code][from_gdn]) {
-      stock[code][from_gdn] -= Math.abs(qtyInPieces); // Ensure qty is subtracted
-    }
-
-    // Handle incoming transfers
-    if (!stock[code]) {
-      stock[code] = {};
-    }
-    if (!stock[code][to_gdn]) {
-      stock[code][to_gdn] = 0;
-    }
-    stock[code][to_gdn] += Math.abs(qtyInPieces); // Ensure qty is added
-  });
-
-  // Process local godown transfers
-  localTransferData.forEach(transfer => {
-    const { fromGodown, toGodown, items } = transfer;
-    items.forEach(item => {
-      const { code, qty, unit } = item;
-      const qtyInPieces = unit === "BOX" ? qty * multF : qty; // Assuming unit "BOX" needs multiplication, else use qty as is
-
-      // Handle outgoing transfers
-      if (stock[code] && stock[code][fromGodown]) {
-        stock[code][fromGodown] -= Math.abs(qtyInPieces); // Ensure qty is subtracted
-      }
-
-      // Handle incoming transfers
-      if (!stock[code]) {
-        stock[code] = {};
-      }
-      if (!stock[code][toGodown]) {
-        stock[code][toGodown] = 0;
-      }
-      stock[code][toGodown] += Math.abs(qtyInPieces); // Ensure qty is added
-    });
-  });
-
-  return stock;
-}
-
-// calculateCurrentStock();
 
 
 
@@ -761,18 +716,28 @@ function submit() {
   const data = {
     date: document.querySelector('input[name="date"]').value,
     series: document.querySelector('input[name="series"]').value,
-    fromGodown: fromGodown,
-    toGodown: toGodown,
+    cash: document.querySelector('input[name="Cash"]').value,
+    party: document.querySelector('input[name="party-dropdown"]').value,
+    sm: document.querySelector('input[name="SM-dropdown"]').value,
+    dueDays: document.querySelector('input[name="due-days"]').value,
+    ref: document.querySelector('input[name="ref"]').value,
     items: Object.values(items).map(item => ({
       code: item.code,
       qty: document.querySelector(`#qty-${item.itemCounter}`).value,
-      unit: document.querySelector(`#SELECTOR-${item.itemCounter}`).value
+      unit: document.querySelector(`#SELECTOR-${item.itemCounter}`).value,
+      gdn: document.querySelector(`#gdn-${item.itemCounter}`).value,
+      cess: document.querySelector(`#cess-${item.itemCounter}`).value,
+      schrs: document.querySelector(`#schrs-${item.itemCounter}`).value,
+      sch: document.querySelector(`#sch-${item.itemCounter}`).value,
+      cd: document.querySelector(`#cd-${item.itemCounter}`).value,
+      amount: document.querySelector(`#amount-${item.itemCounter}`).value,
+      netAmount: document.querySelector(`#net-amount-${item.itemCounter}`).value
     }))
   };
 
   const postForm = document.createElement("form");
   postForm.method = "POST";
-  postForm.action = "/invoice";
+  postForm.action = "/godown";
 
   Object.keys(data).forEach(key => {
     const input = document.createElement("input");
@@ -785,6 +750,7 @@ function submit() {
   document.body.appendChild(postForm);
   postForm.submit();
 }
+
 
 
 
@@ -828,11 +794,3 @@ function getSchDiscount(dateInput, code) {
 </body>
 
 </html> 
-
-<!-- BNN5APEPGCIP8XUG57KSKYZ2JN2HR37JV6
-MZUTXCWZVJ7RJUH7AQZUKKF89US1VYX87Q
-UQZB1F1R15ZBRG3Z5VIN2BIY8RBZF3Y44E
-X4GP5G73ADT8FRK7R4KJPVFMKQRC7SPSPI
-JZJKIDIC5YTG1XJ5VV6IZH624A41BY6V8B
-6ZTTFYB3XNJG895RSAM91HZ6X9W24Q614Y
-EW7D5GJXPC9J81IBAGNE82IIC1E1CJN179 -->

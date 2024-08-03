@@ -58,4 +58,99 @@ res
 
 
 
+const DIR = "d01-2324"
+
+async function getSTOCKFILE(vvv){
+  return await fs.readFile(path.join(  __dirname,"..","..",DIR,"data","json",  vvv.replace(".dbf", ".json").replace(".DBF", ".json")),"utf8")
+  .then((data) => JSON.parse(data));
+}
+
+async function calculateCurrentStock() {
+  const salesData = await getSTOCKFILE("billdtl.json");
+  const purchaseData = await getSTOCKFILE("purdtl.json");
+  const transferData = await getSTOCKFILE("transfer.json");
+
+  // Fetch the local godown transfer data
+  const localTransferResponse = (await fs.readFile(`./db/godown.json`, "utf8")) || "[]";
+  const localTransferData = await JSON.parse(localTransferResponse);
+
+  // Initialize a dictionary to track the stock
+  let stock = {};
+
+  // Process purchases to increment stock
+  purchaseData.forEach(purchase => {
+    const { CODE: code, GDN_CODE: gdn_code, QTY: qty, MULT_F: multF, UNIT: unit } = purchase;
+    const qtyInPieces = unit === "BOX" ? qty * multF : qty;
+
+    if (!stock[code]) {
+      stock[code] = {};
+    }
+    if (!stock[code][gdn_code]) {
+      stock[code][gdn_code] = 0;
+    }
+    stock[code][gdn_code] += qtyInPieces;
+  });
+
+  // Process sales to decrement stock
+  salesData.forEach(sale => {
+    const { CODE: code, GDN_CODE: gdn_code, QTY: qty, MULT_F: multF, UNIT: unit } = sale;
+    const qtyInPieces = unit === "BOX" ? qty * multF : qty;
+
+    if (stock[code] && stock[code][gdn_code]) {
+      stock[code][gdn_code] -= qtyInPieces;
+    }
+  });
+
+  // Process DBF transfers
+  transferData.forEach(transfer => {
+    const { CODE: code, GDN_CODE: from_gdn, TRF_TO: to_gdn, QTY: qty, MULT_F: multF, UNIT: unit } = transfer;
+    const qtyInPieces = unit === "BOX" ? qty * multF : qty;
+
+    // Handle outgoing transfers
+    if (stock[code] && stock[code][from_gdn]) {
+      stock[code][from_gdn] -= Math.abs(qtyInPieces); // Ensure qty is subtracted
+    }
+
+    // Handle incoming transfers
+    if (!stock[code]) {
+      stock[code] = {};
+    }
+    if (!stock[code][to_gdn]) {
+      stock[code][to_gdn] = 0;
+    }
+    stock[code][to_gdn] += Math.abs(qtyInPieces); // Ensure qty is added
+  });
+
+  // Process local godown transfers
+  localTransferData.forEach(transfer => {
+    const { fromGodown, toGodown, items } = transfer;
+    items.forEach(item => {
+      const { code, qty, unit } = item;
+      const qtyInPieces = unit === "BOX" ? qty * multF : qty; // Assuming unit "BOX" needs multiplication, else use qty as is
+
+      // Handle outgoing transfers
+      if (stock[code] && stock[code][fromGodown]) {
+        stock[code][fromGodown] -= Math.abs(qtyInPieces); // Ensure qty is subtracted
+      }
+
+      // Handle incoming transfers
+      if (!stock[code]) {
+        stock[code] = {};
+      }
+      if (!stock[code][toGodown]) {
+        stock[code][toGodown] = 0;
+      }
+      stock[code][toGodown] += Math.abs(qtyInPieces); // Ensure qty is added
+    });
+  });
+
+  return stock;
+}
+
+app.get("/api/stock", async (req, res) => {
+  const stock = await calculateCurrentStock();
+  res.send(stock);
+});
+
+
 module.exports = app;
